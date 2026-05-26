@@ -17,7 +17,7 @@ const MEMBERS = [
   {
     name: "Bill",
     role: "Senior Robotic Engineer",
-    photo: "/team/bill.jpeg",
+    photo: "/team/bill.jpg",
     color: "var(--orange-secondary)",
     linkedin: "https://www.linkedin.com/in/tanawit-sinsukudomchai/",
     blurb:
