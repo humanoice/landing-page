@@ -5,7 +5,7 @@ import { Marquee } from "@/components/marquee";
 
 const NAV = [
   { label: "Curriculum", href: "#curriculum" },
-  { label: "Builders", href: "#team" },
+  { label: "Team", href: "#team" },
   { label: "Partners", href: "#partners" },
 ];
 
@@ -39,9 +39,9 @@ export function SiteFooter() {
               Bangkok, Thailand
             </p>
             <h2 className="mt-5 font-display text-[clamp(2.4rem,7vw,5.5rem)] font-black uppercase leading-[0.92] tracking-tight">
-              Doors open
+              First batch
               <br />
-              <span className="text-yellow-main">Q4 2026.</span>
+              <span className="text-yellow-main">starts Q4 2026.</span>
             </h2>
           </div>
 

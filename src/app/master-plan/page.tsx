@@ -145,7 +145,7 @@ export default function MasterPlanPage() {
         <div className="mt-20 border-t-2 border-ink/15 pt-10">
           <p className="font-display text-xl font-extrabold tracking-tight">
             Three steps. One mission.{" "}
-            <span className="text-crimson">Doors open Q4 2026.</span>
+            <span className="text-crimson">First batch starts Q4 2026.</span>
           </p>
           <Link
             href="/#early-list"

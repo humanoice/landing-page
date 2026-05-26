@@ -40,7 +40,7 @@ const PARTS = [
     color: "var(--yellow-main)",
     icon: <AssembleIcon />,
     blurb:
-      "Note that the curriculum can change based on the pace of learners",
+      "The curriculum can change based on the pace of learners",
     sessions: [
       {
         s: "01",
@@ -92,7 +92,7 @@ const PARTS = [
     color: "var(--red)",
     icon: <WalkIcon />,
     blurb:
-      "Note that the curriculum can change based on the pace of learners",
+      "The curriculum can change based on the pace of learners",
     sessions: [
       {
         s: "09",

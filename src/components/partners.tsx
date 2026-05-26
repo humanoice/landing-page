@@ -52,9 +52,6 @@ export function Partners() {
                   height={72}
                   className="size-16 rounded-2xl transition-transform duration-200 group-hover:rotate-[-6deg]"
                 />
-                <span className="rounded-full border-2 border-ink bg-yellow-main px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em]">
-                  Reference Platform
-                </span>
               </div>
               <h3 className="mt-6 font-display text-2xl font-extrabold tracking-tight">
                 Asimov
@@ -68,7 +65,9 @@ export function Partners() {
           {/* Become a partner CTA */}
           <Reveal delay={260}>
             <Link
-              href="mailto:sitthavee.t@gmail.com?subject=Open-source%20a%20humanoid%20%E2%80%94%20Partner%20up"
+              href="https://airtable.com/appUH4Cp6jG720uUL/pagoe00CRjfglXwch/form"
+              target="_blank"
+              rel="noopener noreferrer"
               className="group flex h-full min-h-[15rem] flex-col justify-between rounded-3xl border-[3px] border-ink bg-crimson p-7 shadow-[8px_8px_0_0_var(--yellow-main)] transition-all duration-200 hover:-translate-y-1.5 hover:shadow-[12px_12px_0_0_var(--yellow-main)]"
             >
               <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-yellow-main">

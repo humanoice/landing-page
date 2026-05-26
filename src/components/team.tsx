@@ -7,7 +7,7 @@ import { Reveal } from "@/components/reveal";
 const MEMBERS = [
   {
     name: "Son",
-    role: "Founder & CEO",
+    role: "Main Instructor",
     photo: "/team/son.jpg",
     color: "var(--yellow-main)",
     linkedin: "https://www.linkedin.com/in/sitthaveet/",
@@ -26,7 +26,7 @@ const MEMBERS = [
   {
     name: "Mild",
     role: "Head of AI",
-    photo: "/team/mild.jpeg",
+    photo: "/team/mild.jpg",
     color: "var(--red)",
     linkedin: "https://www.linkedin.com/in/punthira-chinotaikul-15163a100/",
     blurb:
@@ -54,12 +54,12 @@ export function Team() {
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {MEMBERS.map((member, i) => (
             <Reveal key={member.name} delay={i * 130}>
-              <article className="group">
+              <article className="group mx-auto max-w-xs">
                 <div
                   className="relative overflow-hidden rounded-3xl border-[3px] border-ink shadow-[8px_8px_0_0_var(--shadow)] transition-all duration-200 group-hover:-translate-y-1.5 group-hover:shadow-[12px_12px_0_0_var(--shadow)]"
                   style={{ "--shadow": member.color } as React.CSSProperties}
                 >
-                  <div className="relative aspect-[4/5]">
+                  <div className="relative aspect-square">
                     <Image
                       src={member.photo}
                       alt={`${member.name}, ${member.role} at Humanoice`}

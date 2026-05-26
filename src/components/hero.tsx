@@ -4,8 +4,7 @@ import Link from "next/link";
 const FACTS = [
   { label: "Location", value: "Bangkok, TH" },
   { label: "Program", value: "3-Stage Build" },
-  { label: "Platforms", value: "Open-Source" },
-  { label: "Doors Open", value: "Q4 2026" },
+  { label: "First Batch", value: "Q4 2026" },
 ];
 
 export function Hero() {
@@ -51,7 +50,7 @@ export function Hero() {
           <h1 className="mt-6 font-display text-[clamp(2.6rem,8.5vw,6rem)] font-black uppercase leading-[0.92] tracking-tight">
             <span className="line-mask">
               <span className="line-inner" style={{ animationDelay: "0.05s" }}>
-                We teach
+                Teach
               </span>
             </span>
             <span className="line-mask">
@@ -64,7 +63,7 @@ export function Hero() {
                 className="line-inner text-yellow-main"
                 style={{ animationDelay: "0.31s" }}
               >
-                build robots.
+                build humanoids.
               </span>
             </span>
           </h1>
@@ -73,11 +72,11 @@ export function Hero() {
             className="hero-rise mt-7 max-w-md text-base leading-relaxed text-cream/80 sm:text-lg"
             style={{ animationDelay: "0.55s" }}
           >
-            Thailand&apos;s first hands-on humanoid bootcamp. From the first bolt
+            Thailand&apos;s first hands-on humanoid school. From raw materials
             to full deployment — you{" "}
             <span className="font-semibold text-cream">assemble</span>,{" "}
-            <span className="font-semibold text-cream">simulate</span>, and{" "}
-            <span className="font-semibold text-cream">ship</span> a real robot.
+            <span className="font-semibold text-cream">program</span>, and{" "}
+            <span className="font-semibold text-cream">deploy</span> a real humanoid.
           </p>
 
           <div
@@ -88,7 +87,7 @@ export function Hero() {
               href="#early-list"
               className="group inline-flex items-center gap-2 rounded-full border-2 border-ink bg-yellow-main px-7 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.12em] text-ink shadow-[5px_5px_0_0_var(--ink)] transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[9px_9px_0_0_var(--ink)] active:translate-x-0 active:translate-y-0 active:shadow-[3px_3px_0_0_var(--ink)]"
             >
-              Join the early list
+              Join the waiting list
               <span className="transition-transform duration-200 group-hover:translate-x-1">
                 →
               </span>
