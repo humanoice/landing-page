@@ -27,7 +27,7 @@ export function Partners() {
         <Reveal>
           <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-yellow-main">
             <span className="inline-block h-px w-8 bg-yellow-main" />
-            // Open-Source Partners
+            {"// Open-Source Partners"}
           </p>
           <div className="mt-5 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <h2 className="max-w-2xl font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight">
@@ -57,7 +57,27 @@ export function Partners() {
                 Asimov
               </h3>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-ink/70">
-              Asimov 1, Here Be Dragons Edition - Open-source humanoid robot by Menlo Research.
+                Asimov 1, Here Be Dragons Edition - Open-source humanoid robot by Menlo Research.
+              </p>
+            </article>
+          </Reveal>
+
+          <Reveal delay={130}>
+            <article className="group flex h-full flex-col rounded-3xl border-[3px] border-cream/15 bg-cream p-7 text-ink shadow-[8px_8px_0_0_var(--orange-secondary)] transition-all duration-200 hover:-translate-y-1.5 hover:shadow-[12px_12px_0_0_var(--orange-secondary)]">
+              <div className="flex items-center justify-between">
+                <Image
+                  src="/partners/roboparty.png"
+                  alt="Roboparty — ROBOTO ORIGIN open-source humanoid robot"
+                  width={72}
+                  height={72}
+                  className="size-16 rounded-2xl transition-transform duration-200 group-hover:rotate-[-6deg]"
+                />
+              </div>
+              <h3 className="mt-6 font-display text-2xl font-extrabold tracking-tight">
+                Roboparty
+              </h3>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-ink/70">
+                ROBOTO ORIGIN, open-source humanoid robot by Shanghai-based company.
               </p>
             </article>
           </Reveal>
