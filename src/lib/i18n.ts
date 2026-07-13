@@ -166,9 +166,6 @@ const en = {
         "Use the profit to manufacture the actuators and sensors the replacement market will need.",
       ],
     ],
-    closing: "Three steps. One mission.",
-    closingHighlight: "Add LINE for more details",
-    join: "Apply",
   },
 };
 

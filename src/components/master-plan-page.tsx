@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { MasterPlanCopy } from "@/lib/i18n";
-import { siteConfig } from "@/lib/site";
 
 type MasterPlanPageProps = { copy: MasterPlanCopy };
 
@@ -53,20 +52,6 @@ export function MasterPlanPage({ copy }: MasterPlanPageProps) {
             </li>
           ))}
         </ol>
-
-        <div className="mt-20 border-t-2 border-ink/15 pt-10">
-          <p className="font-display text-xl font-extrabold tracking-tight">
-            {copy.closing} <span className="text-crimson">{copy.closingHighlight}</span>
-          </p>
-          <a
-            href={siteConfig.lineAddUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="group mt-7 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-yellow-main px-6 py-3 font-mono text-sm font-bold uppercase tracking-[0.12em] text-ink shadow-[4px_4px_0_0_var(--ink)] transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[7px_7px_0_0_var(--ink)] active:translate-x-0 active:translate-y-0 active:shadow-[2px_2px_0_0_var(--ink)]"
-          >
-            {copy.join}<span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-          </a>
-        </div>
       </main>
     </div>
   );
