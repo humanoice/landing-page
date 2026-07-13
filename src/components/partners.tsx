@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
-import type { Dictionary } from "@/lib/i18n";
+import type { HomeDictionary } from "@/lib/i18n";
 
-type PartnersProps = { copy: Dictionary["partners"] };
+type PartnersProps = { copy: HomeDictionary["partners"] };
 
 export function Partners({ copy }: PartnersProps) {
   return (

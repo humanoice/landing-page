@@ -5,11 +5,11 @@ import { Navbar } from "@/components/navbar";
 import { Partners } from "@/components/partners";
 import { SiteFooter } from "@/components/site-footer";
 import { Team } from "@/components/team";
-import type { Dictionary, Locale } from "@/lib/i18n";
+import type { HomeDictionary, Locale } from "@/lib/i18n";
 
 type HomePageProps = {
   locale: Locale;
-  copy: Dictionary;
+  copy: HomeDictionary;
   ticker: string[];
 };
 

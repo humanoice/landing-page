@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { localePath, type Dictionary, type Locale } from "@/lib/i18n";
+import { localePath, type HomeDictionary, type Locale } from "@/lib/i18n";
 import { siteConfig } from "@/lib/site";
 
-type NavbarProps = { locale: Locale; copy: Dictionary["nav"] };
+type NavbarProps = { locale: Locale; copy: HomeDictionary["nav"] };
 
 export function Navbar({ locale, copy }: NavbarProps) {
   const links = [

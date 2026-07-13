@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Dictionary } from "@/lib/i18n";
+import type { HomeDictionary } from "@/lib/i18n";
 import { siteConfig } from "@/lib/site";
 
-type HeroProps = { copy: Dictionary["hero"] };
+type HeroProps = { copy: HomeDictionary["hero"] };
 
 export function Hero({ copy }: HeroProps) {
   return (

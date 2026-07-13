@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Reveal } from "@/components/reveal";
-import type { Dictionary } from "@/lib/i18n";
+import type { HomeDictionary } from "@/lib/i18n";
 
 /**
  * Placeholder roles + blurbs — easy to edit. Photos live in /public/team.
@@ -35,7 +35,7 @@ const MEMBERS = [
   },
 ];
 
-type TeamProps = { copy: Dictionary["team"] };
+type TeamProps = { copy: HomeDictionary["team"] };
 
 export function Team({ copy }: TeamProps) {
   const members = MEMBERS.map((member, index) => ({

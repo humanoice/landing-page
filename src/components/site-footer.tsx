@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Marquee } from "@/components/marquee";
-import { localePath, type Dictionary, type Locale } from "@/lib/i18n";
+import { localePath, type HomeDictionary, type Locale } from "@/lib/i18n";
 import { siteConfig } from "@/lib/site";
 
-type SiteFooterProps = { locale: Locale; copy: Dictionary };
+type SiteFooterProps = { locale: Locale; copy: HomeDictionary };
 
 const LINE_QR_URL =
   "https://qr-official.line.me/gs/M_178uukqb_BW.png?oat_content=qr";

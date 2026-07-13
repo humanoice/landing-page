@@ -1,5 +1,5 @@
 import { Reveal } from "@/components/reveal";
-import type { Dictionary } from "@/lib/i18n";
+import type { HomeDictionary } from "@/lib/i18n";
 
 const ICON_PROPS = {
   width: 34,
@@ -119,7 +119,7 @@ const PARTS = [
   },
 ];
 
-type CurriculumProps = { copy: Dictionary["curriculum"] };
+type CurriculumProps = { copy: HomeDictionary["curriculum"] };
 
 export function Curriculum({ copy }: CurriculumProps) {
   const parts = PARTS.map((part, index) => ({
