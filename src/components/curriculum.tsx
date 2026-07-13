@@ -1,9 +1,10 @@
 import { Reveal } from "@/components/reveal";
 import type { HomeDictionary } from "@/lib/i18n";
+import { siteConfig } from "@/lib/site";
 
 const ICON_PROPS = {
-  width: 34,
-  height: 34,
+  width: 28,
+  height: 28,
   viewBox: "0 0 24 24",
   fill: "none",
   stroke: "currentColor",
@@ -11,6 +12,16 @@ const ICON_PROPS = {
   strokeLinecap: "round" as const,
   strokeLinejoin: "round" as const,
 };
+
+function CodeIcon() {
+  return (
+    <svg {...ICON_PROPS} aria-hidden>
+      <path d="m8 7-5 5 5 5" />
+      <path d="m16 7 5 5-5 5" />
+      <path d="m13.5 4-3 16" />
+    </svg>
+  );
+}
 
 function AssembleIcon() {
   return (
@@ -32,89 +43,38 @@ function WalkIcon() {
   );
 }
 
-const PARTS = [
+type TrackMeta = {
+  n: string;
+  color: string;
+  stickerRotate: string;
+  icon: React.ReactNode;
+  featured?: boolean;
+  /** For the combined track: which 101 track each line corresponds to. */
+  refs?: { n: string; color: string; source: number }[];
+};
+
+const TRACKS: TrackMeta[] = [
   {
     n: "01",
-    name: "Assemble",
-    tag: "Build the body",
-    span: "Months 1–2 · Sessions 1–8",
     color: "var(--yellow-main)",
-    icon: <AssembleIcon />,
-    blurb:
-      "The curriculum can change based on the pace of learners",
-    sessions: [
-      {
-        s: "01",
-        t: "Foundations & safety",
-        d: "Robotics fundamentals, shop tooling and safety, the bill of materials, and the open-source platform you build on.",
-      },
-      {
-        s: "02",
-        t: "Actuators & joints",
-        d: "BLDC motors, FOC drivers, and cycloidal gearboxes — the joint modules that make a robot move.",
-      },
-      {
-        s: "03",
-        t: "Legs & drivetrain",
-        d: "Assemble the hip, knee, and ankle joints that carry the robot's weight and define its gait.",
-      },
-      {
-        s: "04",
-        t: "Torso & arms",
-        d: "Build out the spine, shoulders, and arm linkages from 3D-printed and CNC structural parts.",
-      },
-      {
-        s: "05",
-        t: "Power system",
-        d: "Battery, BMS, and power distribution sized to keep a moving humanoid running.",
-      },
-      {
-        s: "06",
-        t: "Wiring & buses",
-        d: "Route the harness and wire the CAN / EtherCAT buses linking every joint to power and data.",
-      },
-      {
-        s: "07",
-        t: "Sensing",
-        d: "Install and calibrate the IMU, joint encoders, and force-torque sensors the robot feels with.",
-      },
-      {
-        s: "08",
-        t: "Hardware bring-up",
-        d: "First power-on: joint-by-joint checks, safe limits, and a skeleton that answers to commands.",
-      },
-    ],
+    stickerRotate: "-2deg",
+    icon: <CodeIcon />,
   },
   {
     n: "02",
-    name: "Software",
-    tag: "Make it walk",
-    span: "Month 3 · Sessions 9–12",
-    color: "var(--red)",
+    color: "var(--orange-secondary)",
+    stickerRotate: "2deg",
+    icon: <AssembleIcon />,
+  },
+  {
+    n: "03",
+    color: "var(--yellow-main)",
+    stickerRotate: "-2deg",
     icon: <WalkIcon />,
-    blurb:
-      "The curriculum can change based on the pace of learners",
-    sessions: [
-      {
-        s: "09",
-        t: "Kinematics & control",
-        d: "URDF modeling, forward / inverse kinematics, and PID joint loops on ROS 2 Control.",
-      },
-      {
-        s: "10",
-        t: "Digital twin",
-        d: "Mirror your robot in Isaac Sim / MuJoCo, rehearse motions safely, and close the sim-to-real gap.",
-      },
-      {
-        s: "11",
-        t: "Balance & first steps",
-        d: "Whole-body control and a learned walking gait — tune the policy until it holds balance and steps.",
-      },
-      {
-        s: "12",
-        t: "Capstone & demo day",
-        d: "Get it walking on the floor, run a real task, and present to family and friends.",
-      },
+    featured: true,
+    refs: [
+      { n: "02", color: "var(--orange-secondary)", source: 1 },
+      { n: "01", color: "var(--yellow-main)", source: 0 },
     ],
   },
 ];
@@ -122,19 +82,14 @@ const PARTS = [
 type CurriculumProps = { copy: HomeDictionary["curriculum"] };
 
 export function Curriculum({ copy }: CurriculumProps) {
-  const parts = PARTS.map((part, index) => ({
-    ...part,
-    ...copy.parts[index],
-    sessions: part.sessions.map((session, sessionIndex) => ({
-      ...session,
-      t: copy.parts[index].sessions[sessionIndex][0],
-      d: copy.parts[index].sessions[sessionIndex][1],
-    })),
+  const tracks = TRACKS.map((track, index) => ({
+    ...track,
+    ...copy.tracks[index],
   }));
   return (
     <section
       id="curriculum"
-      className="relative scroll-mt-20 overflow-hidden bg-cream py-20 sm:py-28"
+      className="relative scroll-mt-20 bg-cream py-20 sm:py-28"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         {/* Header */}
@@ -153,82 +108,157 @@ export function Curriculum({ copy }: CurriculumProps) {
           </div>
         </Reveal>
 
-        {/* Phase breadcrumb */}
-        <Reveal delay={180}>
-          <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs font-bold uppercase tracking-[0.18em] text-ink/40">
-            {parts.map((p, i) => (
-              <span key={p.n} className="flex items-center gap-3">
-                <span className="text-ink/70">{p.name}</span>
-                {i < PARTS.length - 1 && (
-                  <span className="text-crimson" aria-hidden>
-                    →
-                  </span>
-                )}
-              </span>
-            ))}
-          </div>
-        </Reveal>
-
-        {/* Phase panels — two parts, eight sessions then four */}
-        <div className="mt-10 space-y-8">
-          {parts.map((part, i) => (
-            <Reveal key={part.n} delay={i * 130}>
+        {/* Track cards — two 101s, then the full bootcamp that combines them */}
+        <div className="mt-14 grid items-stretch gap-x-6 gap-y-10 lg:grid-cols-3 xl:gap-x-8">
+          {tracks.map((track, i) => (
+            <Reveal key={track.n} delay={i * 130} className="h-full">
               <article
-                className="relative isolate overflow-hidden rounded-3xl border-[3px] border-ink bg-white p-6 shadow-[8px_8px_0_0_var(--shadow)] sm:p-8"
-                style={{ "--shadow": part.color } as React.CSSProperties}
+                className={`relative flex h-full flex-col rounded-3xl border-[3px] border-ink p-6 pt-9 shadow-[8px_8px_0_0_var(--shadow)] sm:p-7 sm:pt-10 ${
+                  track.featured ? "bg-crimson text-cream" : "bg-white text-ink"
+                }`}
+                style={{ "--shadow": track.color } as React.CSSProperties}
               >
-                <span className="pointer-events-none absolute -right-5 -top-12 z-0 select-none font-display text-[10rem] font-black leading-none text-ink/[0.04]">
-                  {part.n}
+                {/* Price sticker riding the top edge */}
+                <span
+                  className={`absolute -top-5 right-5 rounded-xl border-2 border-ink px-3.5 py-1.5 font-mono text-base font-bold tracking-tight shadow-[4px_4px_0_0_var(--ink)] ${
+                    track.featured
+                      ? "bg-yellow-main text-ink"
+                      : "bg-crimson text-white"
+                  }`}
+                  style={{ transform: `rotate(${track.stickerRotate})` }}
+                >
+                  {track.price}
                 </span>
 
-                {/* Panel header */}
-                <div className="relative z-10 flex flex-col gap-5 border-b-2 border-dashed border-ink/15 pb-6 md:flex-row md:items-start md:justify-between">
-                  <div className="flex items-start gap-4">
-                    <span
-                      className="grid size-14 shrink-0 place-items-center rounded-2xl border-2 border-ink text-ink"
-                      style={{ background: part.color }}
-                    >
-                      {part.icon}
-                    </span>
-                    <div>
-                      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-crimson">
-                        {part.span}
-                      </p>
-                      <h3 className="mt-1 font-display text-2xl font-extrabold uppercase tracking-tight text-ink sm:text-3xl">
-                        {copy.part} {part.n} — {part.name}
-                        <span className="ml-2 align-middle font-sans text-sm font-medium normal-case tracking-normal text-ink/50">
-                          {part.tag}
-                        </span>
-                      </h3>
-                    </div>
-                  </div>
-                  <p className="max-w-md text-sm leading-relaxed text-ink/70 md:text-right">
-                    {part.blurb}
+                {/* Card header */}
+                <div className="flex items-center gap-3.5">
+                  <span
+                    className="grid size-12 shrink-0 place-items-center rounded-2xl border-2 border-ink text-ink"
+                    style={{ background: track.color }}
+                  >
+                    {track.icon}
+                  </span>
+                  <p
+                    className={`font-mono text-[11px] font-bold uppercase tracking-[0.18em] ${
+                      track.featured ? "text-yellow-main" : "text-crimson"
+                    }`}
+                  >
+                    {copy.track} {track.n} · {track.tag}
                   </p>
                 </div>
 
-                {/* Session-by-session syllabus */}
-                <ol className="relative z-10 mt-6 grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
-                  {part.sessions.map((session) => (
-                    <li key={session.s} className="flex gap-3">
-                      <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-lg border-2 border-ink font-mono text-[11px] font-bold text-ink">
-                        {session.s}
-                      </span>
+                <h3 className="mt-4 font-display text-[1.35rem] font-extrabold uppercase leading-[1.1] tracking-tight sm:text-2xl">
+                  {track.name}
+                </h3>
+
+                <p className="mt-3">
+                  <span
+                    className={`inline-flex items-center gap-2 rounded-full border-2 px-3 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.14em] ${
+                      track.featured
+                        ? "border-cream/30 text-yellow-main"
+                        : "border-ink/15 text-crimson"
+                    }`}
+                  >
+                    <span
+                      className={`size-1.5 rounded-full ${
+                        track.featured ? "bg-yellow-main" : "bg-crimson"
+                      }`}
+                    />
+                    {track.duration}
+                  </span>
+                </p>
+
+                <p
+                  className={`mt-4 text-sm leading-relaxed ${
+                    track.featured ? "text-cream/80" : "text-ink/70"
+                  }`}
+                >
+                  {track.blurb}
+                </p>
+
+                <div
+                  className={`mt-5 border-t-2 border-dashed ${
+                    track.featured ? "border-cream/25" : "border-ink/15"
+                  }`}
+                />
+
+                {track.featured && (
+                  <p className="mt-5 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-yellow-main">
+                    ★ {copy.combined}
+                  </p>
+                )}
+
+                {/* What's inside */}
+                <ul className={`${track.featured ? "mt-4" : "mt-5"} space-y-4`}>
+                  {track.items.map(([title, detail], itemIndex) => (
+                    <li key={title} className="flex gap-3">
+                      {track.refs ? (
+                        <span
+                          className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-lg border-2 border-ink font-mono text-[11px] font-bold text-ink"
+                          style={{ background: track.refs[itemIndex].color }}
+                        >
+                          {track.refs[itemIndex].n}
+                        </span>
+                      ) : (
+                        <span
+                          className="mt-1 size-3.5 shrink-0 rounded border-2 border-ink"
+                          style={{ background: track.color }}
+                        />
+                      )}
                       <div>
-                        <p className="font-display text-sm font-bold uppercase tracking-tight text-ink">
-                          {session.t}
+                        <p className="font-display text-sm font-bold uppercase tracking-tight">
+                          {title}
                         </p>
-                        <p className="mt-0.5 text-[13px] leading-snug text-ink/60">
-                          {session.d}
+                        <p
+                          className={`mt-0.5 text-[13px] leading-snug ${
+                            track.featured ? "text-cream/70" : "text-ink/60"
+                          }`}
+                        >
+                          {detail}
                         </p>
+                        {track.refs && (
+                          <span className="mt-2.5 flex flex-wrap gap-1.5">
+                            {copy.tracks[track.refs[itemIndex].source].items.map(
+                              ([topic]) => (
+                                <span
+                                  key={topic}
+                                  className="rounded-full border border-cream/30 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.08em] text-cream/80"
+                                >
+                                  {topic}
+                                </span>
+                              ),
+                            )}
+                          </span>
+                        )}
                       </div>
                     </li>
                   ))}
-                </ol>
+                </ul>
+
+                {/* CTA */}
+                <div className="mt-auto pt-7">
+                  <a
+                    href={siteConfig.lineAddUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-yellow-main px-6 py-3 font-mono text-xs font-bold uppercase tracking-[0.12em] text-ink shadow-[4px_4px_0_0_var(--ink)] transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_var(--ink)] active:translate-x-0 active:translate-y-0 active:shadow-[2px_2px_0_0_var(--ink)]"
+                  >
+                    {track.cta}
+                    <span className="transition-transform duration-200 group-hover:translate-x-1">
+                      →
+                    </span>
+                  </a>
+                </div>
               </article>
             </Reveal>
           ))}
         </div>
+
+        <Reveal delay={200}>
+          <p className="mt-10 text-center font-mono text-xs text-ink/50">
+            ※ {copy.note}
+          </p>
+        </Reveal>
       </div>
     </section>
   );

@@ -19,79 +19,90 @@ const en = {
     curriculum: "See the curriculum",
     facts: [
       ["Location", "Phra Khanong, Bangkok"],
-      ["Program", "3-Stage Build"],
+      ["Program", "3 Tracks"],
       ["First Batch", "Q4 2026"],
     ],
   },
   curriculum: {
-    eyebrow: "// The Curriculum",
-    title: "From bolts",
-    highlight: "to brains.",
+    eyebrow: "// The Tracks",
+    title: "Pick your",
+    highlight: "track.",
     description:
-      "A three-month bootcamp that meets once a week — twelve hands-on sessions, no lecture marathons. Two months building the body, one month bringing it to life, and a humanoid that can walk.",
-    part: "Part",
-    parts: [
+      "Start with a two-day 101 — software or hardware — or take your team through the full twelve-day build. Every track is hands-on with real humanoids from the first hour. No lecture marathons.",
+    track: "Track",
+    combined: "Track 01 + Track 02, end to end",
+    note: "The curriculum can change based on the pace of learners.",
+    tracks: [
       {
-        name: "Assemble",
-        tag: "Build the body",
-        span: "Months 1–2 · Sessions 1–8",
-        blurb: "The curriculum can change based on the pace of learners",
-        sessions: [
+        name: "Humanoid Programming 101",
+        tag: "Software",
+        duration: "2 days",
+        price: "7,900 THB",
+        blurb:
+          "The software side of humanoids: model one, simulate it, and train it to walk.",
+        cta: "Apply",
+        items: [
           [
-            "Foundations & safety",
-            "Robotics fundamentals, shop tooling and safety, the bill of materials, and the open-source platform you build on.",
+            "ROS 2",
+            "The framework almost every modern robot runs on — nodes, topics, and control loops.",
           ],
           [
-            "Actuators & joints",
-            "BLDC motors, FOC drivers, and cycloidal gearboxes — the joint modules that make a robot move.",
+            "Simulation",
+            "Isaac Sim and MuJoCo — rehearse every motion in real physics before it touches hardware.",
           ],
           [
-            "Legs & drivetrain",
-            "Assemble the hip, knee, and ankle joints that carry the robot's weight and define its gait.",
+            "URDF",
+            "Model a humanoid's body so your code knows every link and joint.",
           ],
           [
-            "Torso & arms",
-            "Build out the spine, shoulders, and arm linkages from 3D-printed and CNC structural parts.",
-          ],
-          [
-            "Power system",
-            "Battery, BMS, and power distribution sized to keep a moving humanoid running.",
-          ],
-          [
-            "Wiring & buses",
-            "Route the harness and wire the CAN / EtherCAT buses linking every joint to power and data.",
-          ],
-          [
-            "Sensing",
-            "Install and calibrate the IMU, joint encoders, and force-torque sensors the robot feels with.",
-          ],
-          [
-            "Hardware bring-up",
-            "First power-on: joint-by-joint checks, safe limits, and a skeleton that answers to commands.",
+            "Locomotion policies",
+            "Train and tune the controllers that keep a humanoid on its feet.",
           ],
         ],
       },
       {
-        name: "Software",
-        tag: "Make it walk",
-        span: "Month 3 · Sessions 9–12",
-        blurb: "The curriculum can change based on the pace of learners",
-        sessions: [
+        name: "Hardware in Humanoid 101",
+        tag: "Hardware",
+        duration: "2 days",
+        price: "9,900 THB",
+        blurb:
+          "The physical side: build a humanoid's body with your own hands, joint by joint, wire by wire.",
+        cta: "Apply",
+        items: [
           [
-            "Kinematics & control",
-            "URDF modeling, forward / inverse kinematics, and PID joint loops on ROS 2 Control.",
+            "Leg assembly",
+            "Hips, knees, and ankles — build the joints that carry all the weight.",
           ],
           [
-            "Digital twin",
-            "Mirror your robot in Isaac Sim / MuJoCo, rehearse motions safely, and close the sim-to-real gap.",
+            "Body assembly",
+            "The torso and spine that every other part hangs off.",
           ],
           [
-            "Balance & first steps",
-            "Whole-body control and a learned walking gait — tune the policy until it holds balance and steps.",
+            "Arm assembly",
+            "Shoulders to wrists — linkages, actuators, and range of motion.",
           ],
           [
-            "Capstone & demo day",
-            "Get it walking on the floor, run a real task, and present to family and friends.",
+            "Electronics in humanoid",
+            "Power, motor drivers, and the buses that wire every joint together.",
+          ],
+        ],
+      },
+      {
+        name: "Full Bootcamp",
+        tag: "B2B",
+        duration: "n days",
+        price: "xx,xxx THB",
+        blurb:
+          "Both tracks end to end for companies and teams — assemble a full humanoid, then program it to walk.",
+        cta: "Talk to us",
+        items: [
+          [
+            "Hardware — Assemble",
+            "The complete build: legs, body, arms, and every wire in between.",
+          ],
+          [
+            "Software — Make it walk",
+            "ROS 2, simulation, URDF, and locomotion policies — until it takes real steps.",
           ],
         ],
       },
@@ -158,7 +169,7 @@ const en = {
     ],
     closing: "Three steps. One mission.",
     closingHighlight: "Add LINE for more details",
-    join: "Apply on LINE",
+    join: "Apply",
   },
 };
 
@@ -182,79 +193,90 @@ const th: HomeDictionary = {
     curriculum: "มาดูหลักสูตร",
     facts: [
       ["ที่ไหน", "พระโขนง, กรุงเทพฯ"],
-      ["รูปแบบ", "สร้าง 3 ช่วง"],
+      ["รูปแบบ", "3 คอร์ส"],
       ["รุ่นแรก", "ไตรมาส 4 ปี 2026"],
     ],
   },
   curriculum: {
-    eyebrow: "// หลักสูตร",
-    title: "จากน็อต",
-    highlight: "สู่สมองกล",
+    eyebrow: "// คอร์สการเรียน",
+    title: "เลือกคอร์ส",
+    highlight: "ของคุณ",
     description:
-      "บูตแคมป์ 3 เดือน เรียนสัปดาห์ละครั้ง รวม 12 เซสชันที่ได้ลงมือทำจริง ๆ ไม่มีนั่งฟังเลกเชอร์ยาว ๆ สองเดือนแรกมาสร้างร่างกาย เดือนสุดท้ายมาปลุกให้มีชีวิต แล้วจบด้วยฮิวแมนนอยด์ที่เดินได้",
-    part: "พาร์ต",
-    parts: [
+      "เริ่มจากคอร์ส 101 แบบ 2 วัน จะสายซอฟต์แวร์หรือฮาร์ดแวร์ก็ได้ หรือพาทีมมาลุยบูตแคมป์เต็ม 12 วันไปเลย ทุกคอร์สได้ลงมือทำกับฮิวแมนนอยด์ของจริงตั้งแต่ชั่วโมงแรก ไม่มีนั่งฟังเลกเชอร์ยาว ๆ",
+    track: "คอร์ส",
+    combined: "คอร์ส 01 + คอร์ส 02 แบบครบจบ",
+    note: "เนื้อหาอาจปรับตามจังหวะการเรียนของแต่ละรุ่น",
+    tracks: [
       {
-        name: "ประกอบ",
-        tag: "มาสร้างร่างกาย",
-        span: "เดือน 1–2 · เซสชัน 1–8",
-        blurb: "เนื้อหาอาจปรับตามจังหวะการเรียนของทุกคน",
-        sessions: [
+        name: "Humanoid Programming 101",
+        tag: "ซอฟต์แวร์",
+        duration: "2 วัน",
+        price: "7,900 บาท",
+        blurb:
+          "สายซอฟต์แวร์ของฮิวแมนนอยด์ — สร้างโมเดล จำลอง แล้วเทรนให้มันเดินได้",
+        cta: "สมัครทางไลน์",
+        items: [
           [
-            "พื้นฐานและความปลอดภัย",
-            "ปูพื้นฐานหุ่นยนต์ รู้จักเครื่องมือและความปลอดภัยในเวิร์กช็อป ไล่ดูรายการชิ้นส่วน และแพลตฟอร์มโอเพนซอร์สที่เราจะใช้สร้างกัน",
+            "ROS 2",
+            "เฟรมเวิร์กที่หุ่นยนต์ยุคใหม่แทบทุกตัวใช้ — โหนด ท็อปปิก และลูปควบคุม",
           ],
           [
-            "แอคชูเอเตอร์และข้อต่อ",
-            "มาทำความรู้จักมอเตอร์ BLDC ไดรเวอร์ FOC และเกียร์ไซโคลิดัล — โมดูลข้อต่อที่ทำให้หุ่นยนต์ขยับได้",
+            "simulation",
+            "Isaac Sim และ MuJoCo — ซ้อมทุกการเคลื่อนไหวในฟิสิกส์สมจริงก่อนลงฮาร์ดแวร์จริง",
           ],
           [
-            "ขาและระบบขับเคลื่อน",
-            "ประกอบข้อต่อสะโพก เข่า และข้อเท้า ที่ช่วยรับน้ำหนักและกำหนดจังหวะเดินของหุ่นยนต์",
+            "URDF",
+            "สร้างโมเดลร่างกายฮิวแมนนอยด์ให้โค้ดรู้จักทุกชิ้นส่วนและทุกข้อต่อ",
           ],
           [
-            "ลำตัวและแขน",
-            "สร้างกระดูกสันหลัง หัวไหล่ และกลไกแขนจากชิ้นส่วนโครงสร้างที่พิมพ์ 3 มิติและขึ้นรูปด้วย CNC",
-          ],
-          [
-            "ระบบพลังงาน",
-            "เลือกแบตเตอรี่ BMS และระบบกระจายไฟให้พอดีกับฮิวแมนนอยด์ตอนกำลังเคลื่อนที่",
-          ],
-          [
-            "สายไฟและบัส",
-            "เดินสายและต่อบัส CAN / EtherCAT เพื่อให้ทุกข้อต่อคุยกับระบบไฟและข้อมูลได้",
-          ],
-          [
-            "ระบบรับรู้",
-            "ติดตั้งและคาลิเบรต IMU เอ็นโค้ดเดอร์ข้อต่อ และเซนเซอร์แรง-แรงบิดที่ช่วยให้หุ่นยนต์รับรู้สิ่งรอบตัว",
-          ],
-          [
-            "เปิดระบบฮาร์ดแวร์",
-            "เปิดเครื่องครั้งแรก เช็กทีละข้อต่อ ตั้งขีดจำกัดความปลอดภัย แล้วดูโครงหุ่นยนต์ตอบสนองต่อคำสั่งของเรา",
+            "Locomotion policies",
+            "เทรนและจูนตัวควบคุมที่ทำให้ฮิวแมนนอยด์ทรงตัวและก้าวเดินได้",
           ],
         ],
       },
       {
-        name: "ซอฟต์แวร์",
-        tag: "มาทำให้มันเดิน",
-        span: "เดือน 3 · เซสชัน 9–12",
-        blurb: "เนื้อหาอาจปรับตามจังหวะการเรียนของทุกคน",
-        sessions: [
+        name: "Hardware in Humanoid 101",
+        tag: "ฮาร์ดแวร์",
+        duration: "2 วัน",
+        price: "9,900 บาท",
+        blurb:
+          "สายฮาร์ดแวร์ — สร้างร่างกายฮิวแมนนอยด์ด้วยมือคุณเอง ทีละข้อต่อ ทีละเส้นสาย",
+        cta: "สมัครทางไลน์",
+        items: [
           [
-            "จลนศาสตร์และการควบคุม",
-            "สร้างโมเดล URDF เรียนรู้จลนศาสตร์ไปข้างหน้า/ย้อนกลับ และทำวงควบคุมข้อต่อ PID บน ROS 2 Control",
+            "ประกอบขา",
+            "สะโพก เข่า และข้อเท้า — ประกอบข้อต่อที่รับน้ำหนักทั้งตัว",
           ],
           [
-            "ดิจิทัลทวิน",
-            "จำลองหุ่นยนต์ของเราใน Isaac Sim / MuJoCo ซ้อมการเคลื่อนไหวอย่างปลอดภัย แล้วค่อยลดช่องว่างระหว่างซิมกับของจริง",
+            "ประกอบลำตัว",
+            "โครงลำตัวและกระดูกสันหลังที่ทุกชิ้นส่วนมายึดเกาะ",
           ],
           [
-            "ทรงตัวและก้าวแรก",
-            "ลองควบคุมทั้งร่างกายและท่าเดินที่เรียนรู้ได้ ปรับนโยบายไปด้วยกันจนมันทรงตัวและก้าวเดินได้",
+            "ประกอบแขน",
+            "จากหัวไหล่ถึงข้อมือ — กลไก แอคชูเอเตอร์ และองศาการเคลื่อนไหว",
           ],
           [
-            "แคปสโตนและวันเดโม",
-            "พาหุ่นยนต์เดินบนพื้นจริง ทำงานจริง แล้วโชว์ให้ครอบครัวและเพื่อน ๆ ดูกัน",
+            "อิเล็กทรอนิกส์ในฮิวแมนนอยด์",
+            "ระบบไฟ ไดรเวอร์มอเตอร์ และบัสที่เชื่อมทุกข้อต่อเข้าด้วยกัน",
+          ],
+        ],
+      },
+      {
+        name: "Full Bootcamp",
+        tag: "B2B",
+        duration: "n วัน",
+        price: "xx,xxx บาท",
+        blurb:
+          "สองคอร์สแบบครบจบสำหรับบริษัทและทีม — ประกอบฮิวแมนนอยด์เต็มตัว แล้วเขียนโปรแกรมให้มันเดินได้จริง",
+        cta: "ทักมาคุยกันทางไลน์",
+        items: [
+          [
+            "ฮาร์ดแวร์ — ประกอบ",
+            "สร้างครบทั้งตัว ขา ลำตัว แขน และสายไฟทุกเส้น",
+          ],
+          [
+            "ซอฟต์แวร์ — ทำให้มันเดิน",
+            "ROS 2 simulation URDF และ locomotion policies จนหุ่นก้าวเดินได้จริง",
           ],
         ],
       },
