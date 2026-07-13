@@ -1,20 +1,26 @@
 import Image from "next/image";
 import Link from "next/link";
-import { EarlyList } from "@/components/early-list";
 import { Marquee } from "@/components/marquee";
+import { localePath, type Dictionary, type Locale } from "@/lib/i18n";
+import { siteConfig } from "@/lib/site";
 
-const NAV = [
-  { label: "Curriculum", href: "#curriculum" },
-  { label: "Team", href: "#team" },
-  { label: "Partners", href: "#partners" },
-];
+type SiteFooterProps = { locale: Locale; copy: Dictionary };
 
-export function SiteFooter() {
+const LINE_QR_URL =
+  "https://qr-official.line.me/gs/M_178uukqb_BW.png?oat_content=qr";
+
+export function SiteFooter({ locale, copy }: SiteFooterProps) {
+  const nav = [
+    { label: copy.nav.curriculum, href: "#curriculum" },
+    { label: copy.nav.team, href: "#team" },
+    { label: copy.nav.partners, href: "#partners" },
+  ];
+
   return (
     <footer className="relative overflow-hidden bg-crimson text-cream">
       {/* mission ticker as the section's top edge */}
       <Marquee
-        items={["Make Thailand the Shenzhen of Southeast Asia"]}
+        items={[copy.footer.ticker]}
         speed="30s"
         sep="✦"
         className="border-y-2 border-cream/20 bg-ink py-3 text-yellow-main"
@@ -30,29 +36,38 @@ export function SiteFooter() {
 
       {/* Big closing CTA */}
       <div
-        id="early-list"
+        id="apply"
         className="relative z-10 mx-auto max-w-7xl scroll-mt-20 px-5 py-20 sm:px-8 sm:py-28"
       >
-        <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr] lg:items-end">
-          <div>
-            <p className="font-mono text-xs uppercase tracking-[0.28em] text-yellow-main">
-              Bangkok, Thailand
-            </p>
-            <h2 className="mt-5 font-display text-[clamp(2.4rem,7vw,5.5rem)] font-black uppercase leading-[0.92] tracking-tight">
-              First batch
-              <br />
-              <span className="text-yellow-main">starts Q4 2026.</span>
-            </h2>
+        <div className="grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:items-end">
+          <div className="flex items-end">
+            <a
+              href={siteConfig.lineAddUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={copy.footer.qrLabel}
+              className="group relative block shrink-0 rounded-[1.35rem] bg-cream p-3 shadow-[6px_6px_0_0_var(--ink)] transition-transform duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[9px_9px_0_0_var(--ink)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-main"
+            >
+              <Image
+                src={LINE_QR_URL}
+                alt={copy.footer.qrLabel}
+                width={220}
+                height={220}
+                sizes="(max-width: 639px) 180px, 220px"
+                className="size-[180px] rounded-xl sm:size-[220px]"
+              />
+            </a>
           </div>
 
           <div>
-            <p className="text-base leading-relaxed text-cream/80">
-              Be first through the door. Get the curriculum, open days, and
-              enrollment news before anyone else.
+            <p className="font-mono text-xs uppercase tracking-[0.28em] text-yellow-main">
+              {copy.footer.location}
             </p>
-            <div className="mt-6">
-              <EarlyList />
-            </div>
+            <h2 className="mt-5 font-display text-[clamp(2.4rem,7vw,5.5rem)] font-black uppercase leading-[0.92] tracking-tight">
+              {copy.footer.title}
+              <br />
+              <span className="text-yellow-main">{copy.footer.highlight}</span>
+            </h2>
           </div>
         </div>
       </div>
@@ -60,7 +75,7 @@ export function SiteFooter() {
       {/* Bottom bar */}
       <div className="relative z-10 border-t-2 border-cream/20">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-5 py-8 sm:px-8 md:flex-row md:items-center md:justify-between">
-          <Link href="/" className="flex items-center gap-3">
+          <Link href={localePath(locale)} className="flex items-center gap-3">
             <span className="grid size-9 place-items-center rounded-xl border-2 border-cream/30 bg-white">
               <Image src="/logo.png" alt="Humanoice" width={24} height={24} />
             </span>
@@ -75,7 +90,7 @@ export function SiteFooter() {
           </Link>
 
           <ul className="flex flex-wrap gap-x-6 gap-y-2">
-            {NAV.map((item) => (
+            {nav.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
@@ -87,9 +102,27 @@ export function SiteFooter() {
             ))}
           </ul>
 
-          <p className="font-mono text-xs uppercase tracking-[0.14em] text-cream/50">
-            © 2026 Humanoice
-          </p>
+          <div className="flex items-center gap-3">
+            <a
+              href={siteConfig.lineAddUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Follow Humanoice on LINE"
+              className="group inline-flex size-8 items-center justify-center rounded-md transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-main"
+            >
+              <Image
+                src="/line-logo.png"
+                alt="LINE"
+                width={28}
+                height={28}
+                className="invert transition-transform group-hover:scale-110"
+              />
+            </a>
+
+            <p className="font-mono text-xs uppercase tracking-[0.14em] text-cream/50">
+              © 2026 Humanoice
+            </p>
+          </div>
         </div>
       </div>
     </footer>

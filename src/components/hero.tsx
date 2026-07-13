@@ -1,13 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Dictionary } from "@/lib/i18n";
+import { siteConfig } from "@/lib/site";
 
-const FACTS = [
-  { label: "Location", value: "Bangkok, TH" },
-  { label: "Program", value: "3-Stage Build" },
-  { label: "First Batch", value: "Q4 2026" },
-];
+type HeroProps = { copy: Dictionary["hero"] };
 
-export function Hero() {
+export function Hero({ copy }: HeroProps) {
   return (
     <section className="relative overflow-hidden bg-crimson text-cream">
       {/* Atmosphere: blueprint grid + warm core glow + floating pills */}
@@ -44,18 +42,18 @@ export function Hero() {
         <div>
           <p className="hero-rise flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-yellow-main">
             <span className="inline-block h-px w-8 bg-yellow-main" />
-            Humanoid Bootcamp · Bangkok
+            {copy.eyebrow}
           </p>
 
           <h1 className="mt-6 font-display text-[clamp(2.6rem,8.5vw,6rem)] font-black uppercase leading-[0.92] tracking-tight">
             <span className="line-mask">
               <span className="line-inner" style={{ animationDelay: "0.05s" }}>
-                Teach
+                {copy.title[0]}
               </span>
             </span>
             <span className="line-mask">
               <span className="line-inner" style={{ animationDelay: "0.18s" }}>
-                humans to
+                {copy.title[1]}
               </span>
             </span>
             <span className="line-mask">
@@ -63,7 +61,7 @@ export function Hero() {
                 className="line-inner text-yellow-main"
                 style={{ animationDelay: "0.31s" }}
               >
-                build humanoids.
+                {copy.title[2]}
               </span>
             </span>
           </h1>
@@ -72,31 +70,29 @@ export function Hero() {
             className="hero-rise mt-7 max-w-md text-base leading-relaxed text-cream/80 sm:text-lg"
             style={{ animationDelay: "0.55s" }}
           >
-            Thailand&apos;s first hands-on humanoid school. From raw materials
-            to full deployment — you{" "}
-            <span className="font-semibold text-cream">assemble</span>,{" "}
-            <span className="font-semibold text-cream">program</span>, and{" "}
-            <span className="font-semibold text-cream">deploy</span> a real humanoid.
+            {copy.description}
           </p>
 
           <div
             className="hero-rise mt-9 flex flex-wrap items-center gap-4"
             style={{ animationDelay: "0.7s" }}
           >
-            <Link
-              href="#early-list"
+            <a
+              href={siteConfig.lineAddUrl}
+              target="_blank"
+              rel="noreferrer"
               className="group inline-flex items-center gap-2 rounded-full border-2 border-ink bg-yellow-main px-7 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.12em] text-ink shadow-[5px_5px_0_0_var(--ink)] transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[9px_9px_0_0_var(--ink)] active:translate-x-0 active:translate-y-0 active:shadow-[3px_3px_0_0_var(--ink)]"
             >
-              Join the waiting list
+              {copy.join}
               <span className="transition-transform duration-200 group-hover:translate-x-1">
                 →
               </span>
-            </Link>
+            </a>
             <Link
               href="#curriculum"
               className="inline-flex items-center gap-2 rounded-full border-2 border-cream/60 px-6 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.12em] text-cream transition-colors duration-200 hover:border-cream hover:bg-cream hover:text-crimson"
             >
-              See the curriculum
+              {copy.curriculum}
             </Link>
           </div>
         </div>
@@ -144,16 +140,16 @@ export function Hero() {
       {/* ---------- Spec bar ---------- */}
       <div className="relative z-10 border-t-2 border-cream/20">
         <dl className="mx-auto grid max-w-7xl grid-cols-2 divide-cream/15 sm:grid-cols-4 sm:divide-x">
-          {FACTS.map((fact) => (
+          {copy.facts.map(([label, value]) => (
             <div
-              key={fact.label}
+              key={label}
               className="border-t border-cream/15 px-5 py-5 first:border-t-0 sm:border-t-0 sm:px-8 [&:nth-child(2)]:border-t-0"
             >
               <dt className="font-mono text-[10px] uppercase tracking-[0.22em] text-yellow-main">
-                {fact.label}
+                {label}
               </dt>
               <dd className="mt-1 font-display text-lg font-bold tracking-tight text-cream">
-                {fact.value}
+                {value}
               </dd>
             </div>
           ))}

@@ -11,7 +11,8 @@ export const siteConfig = {
   description:
     "Thailand's first hands-on humanoid bootcamp. From assemble to make it walk.",
   url: "https://humanoice.com",
-  locale: "th_TH",
+  locale: "en_US",
+  lineAddUrl: "https://lin.ee/vlNRsOQ",
   // The cream paper canvas (globals.css --cream) — drives theme-color + manifest.
   themeColor: "#fbf3e2",
   // public/opengraph.png — dimensions are the real file size so platforms don't reflow it.

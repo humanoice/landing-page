@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/reveal";
+import type { Dictionary } from "@/lib/i18n";
 
 const ICON_PROPS = {
   width: 34,
@@ -118,7 +119,18 @@ const PARTS = [
   },
 ];
 
-export function Curriculum() {
+type CurriculumProps = { copy: Dictionary["curriculum"] };
+
+export function Curriculum({ copy }: CurriculumProps) {
+  const parts = PARTS.map((part, index) => ({
+    ...part,
+    ...copy.parts[index],
+    sessions: part.sessions.map((session, sessionIndex) => ({
+      ...session,
+      t: copy.parts[index].sessions[sessionIndex][0],
+      d: copy.parts[index].sessions[sessionIndex][1],
+    })),
+  }));
   return (
     <section
       id="curriculum"
@@ -129,16 +141,14 @@ export function Curriculum() {
         <Reveal>
           <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-crimson">
             <span className="inline-block h-px w-8 bg-crimson" />
-            {"// The Curriculum"}
+            {copy.eyebrow}
           </p>
           <div className="mt-5 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <h2 className="max-w-2xl font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight text-ink">
-              From bolts <span className="text-crimson">to brains.</span>
+              {copy.title} <span className="text-crimson">{copy.highlight}</span>
             </h2>
             <p className="max-w-sm text-base leading-relaxed text-ink/70">
-              A three-month bootcamp that meets once a week — twelve hands-on
-              sessions, no lecture marathons. Two months building the body, one
-              month bringing it to life, and a humanoid that can walk.
+              {copy.description}
             </p>
           </div>
         </Reveal>
@@ -146,7 +156,7 @@ export function Curriculum() {
         {/* Phase breadcrumb */}
         <Reveal delay={180}>
           <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs font-bold uppercase tracking-[0.18em] text-ink/40">
-            {PARTS.map((p, i) => (
+            {parts.map((p, i) => (
               <span key={p.n} className="flex items-center gap-3">
                 <span className="text-ink/70">{p.name}</span>
                 {i < PARTS.length - 1 && (
@@ -161,7 +171,7 @@ export function Curriculum() {
 
         {/* Phase panels — two parts, eight sessions then four */}
         <div className="mt-10 space-y-8">
-          {PARTS.map((part, i) => (
+          {parts.map((part, i) => (
             <Reveal key={part.n} delay={i * 130}>
               <article
                 className="relative isolate overflow-hidden rounded-3xl border-[3px] border-ink bg-white p-6 shadow-[8px_8px_0_0_var(--shadow)] sm:p-8"
@@ -185,7 +195,7 @@ export function Curriculum() {
                         {part.span}
                       </p>
                       <h3 className="mt-1 font-display text-2xl font-extrabold uppercase tracking-tight text-ink sm:text-3xl">
-                        Part {part.n} — {part.name}
+                        {copy.part} {part.n} — {part.name}
                         <span className="ml-2 align-middle font-sans text-sm font-medium normal-case tracking-normal text-ink/50">
                           {part.tag}
                         </span>

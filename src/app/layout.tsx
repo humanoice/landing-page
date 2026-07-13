@@ -50,6 +50,10 @@ export const metadata: Metadata = {
   category: "education",
   alternates: {
     canonical: "/",
+    languages: {
+      en: "/",
+      th: "/th",
+    },
   },
   openGraph: {
     type: "website",

@@ -1,18 +1,23 @@
 import Image from "next/image";
 import Link from "next/link";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { localePath, type Dictionary, type Locale } from "@/lib/i18n";
+import { siteConfig } from "@/lib/site";
 
-const LINKS = [
-  { label: "Curriculum", href: "#curriculum", n: "01" },
-  { label: "Team", href: "#team", n: "02" },
-  { label: "Partners", href: "#partners", n: "03" },
-];
+type NavbarProps = { locale: Locale; copy: Dictionary["nav"] };
 
-export function Navbar() {
+export function Navbar({ locale, copy }: NavbarProps) {
+  const links = [
+    { label: copy.curriculum, href: "#curriculum", n: "01" },
+    { label: copy.team, href: "#team", n: "02" },
+    { label: copy.partners, href: "#partners", n: "03" },
+  ];
+
   return (
     <header className="sticky top-0 z-50 border-b-2 border-ink bg-cream/90 backdrop-blur-sm">
       <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3 sm:px-8">
         {/* Brand */}
-        <Link href="/" className="group flex items-center gap-3">
+        <Link href={localePath(locale)} className="group flex items-center gap-3">
           <span className="grid size-10 place-items-center rounded-xl border-2 border-ink bg-white shadow-[3px_3px_0_0_var(--ink)] transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:rotate-[-4deg]">
             <Image
               src="/logo.png"
@@ -34,7 +39,7 @@ export function Navbar() {
 
         {/* Section links */}
         <ul className="hidden items-center gap-7 md:flex">
-          {LINKS.map((link) => (
+          {links.map((link) => (
             <li key={link.href}>
               <Link
                 href={link.href}
@@ -49,17 +54,24 @@ export function Navbar() {
           ))}
         </ul>
 
-        {/* CTA */}
-        <Link
-          href="#early-list"
-          className="group inline-flex items-center gap-2 rounded-full border-2 border-ink bg-crimson px-4 py-2 font-mono text-xs font-bold uppercase tracking-[0.14em] text-white shadow-[3px_3px_0_0_var(--ink)] transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_var(--ink)] active:translate-x-0 active:translate-y-0 active:shadow-[2px_2px_0_0_var(--ink)] sm:px-5"
-        >
-          <span className="size-1.5 animate-pulse rounded-full bg-yellow-main" />
-          APPLY
-          <span className="transition-transform duration-200 group-hover:translate-x-0.5">
-            →
-          </span>
-        </Link>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <LanguageSwitcher
+            locale={locale}
+            englishHref={localePath("en")}
+            thaiHref={localePath("th")}
+            label={copy.language}
+          />
+          <a
+            href={siteConfig.lineAddUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="group inline-flex items-center gap-2 rounded-full border-2 border-ink bg-crimson px-4 py-2 font-mono text-xs font-bold uppercase tracking-[0.14em] text-white shadow-[3px_3px_0_0_var(--ink)] transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_var(--ink)] active:translate-x-0 active:translate-y-0 active:shadow-[2px_2px_0_0_var(--ink)] sm:px-5"
+          >
+            <span className="size-1.5 animate-pulse rounded-full bg-yellow-main" />
+            {copy.apply}
+            <span className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+          </a>
+        </div>
       </nav>
     </header>
   );

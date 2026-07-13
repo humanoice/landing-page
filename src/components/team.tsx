@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Reveal } from "@/components/reveal";
+import type { Dictionary } from "@/lib/i18n";
 
 /**
  * Placeholder roles + blurbs — easy to edit. Photos live in /public/team.
@@ -34,7 +35,14 @@ const MEMBERS = [
   },
 ];
 
-export function Team() {
+type TeamProps = { copy: Dictionary["team"] };
+
+export function Team({ copy }: TeamProps) {
+  const members = MEMBERS.map((member, index) => ({
+    ...member,
+    role: copy.roles[index],
+    blurb: copy.blurbs[index],
+  }));
   return (
     <section
       id="team"
@@ -44,15 +52,15 @@ export function Team() {
         <Reveal>
           <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-crimson">
             <span className="inline-block h-px w-8 bg-crimson" />
-            // Team
+            {copy.eyebrow}
           </p>
           <h2 className="mt-5 max-w-3xl font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight text-ink">
-            Meet your <span className="text-crimson">instructors</span>
+            {copy.title} <span className="text-crimson">{copy.highlight}</span>
           </h2>
         </Reveal>
 
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {MEMBERS.map((member, i) => (
+          {members.map((member, i) => (
             <Reveal key={member.name} delay={i * 130}>
               <article className="group mx-auto max-w-xs">
                 <div

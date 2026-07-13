@@ -1,10 +1,5 @@
-import { Navbar } from "@/components/navbar";
-import { Hero } from "@/components/hero";
-import { Marquee } from "@/components/marquee";
-import { Curriculum } from "@/components/curriculum";
-import { Team } from "@/components/team";
-import { Partners } from "@/components/partners";
-import { SiteFooter } from "@/components/site-footer";
+import { HomePage } from "@/components/home-page";
+import { getDictionary } from "@/lib/i18n";
 
 const TICKER = [
   "Assemble",
@@ -15,26 +10,5 @@ const TICKER = [
 ];
 
 export default function Home() {
-  return (
-    <>
-      <Navbar />
-      <main>
-        <Hero />
-
-        <Marquee
-          items={TICKER}
-          speed="28s"
-          sep="◆"
-          className="border-y-2 border-ink bg-yellow-main py-3.5 text-ink"
-          itemClassName="font-display text-sm font-black uppercase tracking-[0.18em]"
-          sepClassName="text-crimson"
-        />
-
-        <Curriculum />
-        <Team />
-        <Partners />
-      </main>
-      <SiteFooter />
-    </>
-  );
+  return <HomePage locale="en" copy={getDictionary("en")} ticker={TICKER} />;
 }

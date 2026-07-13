@@ -3,23 +3,23 @@ import { MasterPlanPage } from "@/components/master-plan-page";
 import { getDictionary } from "@/lib/i18n";
 import { siteConfig } from "@/lib/site";
 
-const copy = getDictionary("en");
+const copy = getDictionary("th");
 
 export const metadata: Metadata = {
   title: copy.plan.title,
   description: copy.plan.description,
-  alternates: { canonical: "/master-plan", languages: { en: "/master-plan", th: "/th/master-plan" } },
+  alternates: { canonical: "/th/master-plan", languages: { en: "/master-plan", th: "/th/master-plan" } },
   openGraph: {
     type: "article",
     siteName: siteConfig.name,
     title: `${copy.plan.title} — ${siteConfig.name}`,
     description: copy.plan.description,
-    url: "/master-plan",
-    locale: "en_US",
+    url: "/th/master-plan",
+    locale: "th_TH",
     images: [{ ...siteConfig.ogImage, alt: `${copy.plan.title} — ${siteConfig.name}` }],
   },
 };
 
-export default function MasterPlanRoute() {
-  return <MasterPlanPage locale="en" copy={copy} />;
+export default function ThaiMasterPlanRoute() {
+  return <MasterPlanPage locale="th" copy={copy} />;
 }
