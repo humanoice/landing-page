@@ -11,7 +11,7 @@ const en = {
     language: "Language",
   },
   hero: {
-    eyebrow: "Humanoid Bootcamp · Bangkok",
+    eyebrow: "Humanoid School · Bangkok",
     title: ["Teach", "humans to", "build humanoids."],
     description:
       "Thailand's first hands-on humanoid school. From raw materials to full deployment — you assemble, program, and deploy a real humanoid.",
@@ -20,15 +20,14 @@ const en = {
     facts: [
       ["Location", "Phra Khanong, Bangkok"],
       ["Program", "3 Tracks"],
-      ["First Batch", "Q4 2026"],
     ],
   },
   curriculum: {
     eyebrow: "// The Tracks",
     title: "Pick your",
-    highlight: "track.",
+    highlight: "track",
     description:
-      "Start with a two-day 101 — software or hardware — or take your team through the full twelve-day build. Every track is hands-on with real humanoids from the first hour. No lecture marathons.",
+      "We welcome whether you're software or hardware or newbie. Every track is hands-on with real humanoids.",
     track: "Track",
     combined: "Track 01 + Track 02, end to end",
     note: "The curriculum can change based on the pace of learners.",
@@ -122,7 +121,7 @@ const en = {
   partners: {
     eyebrow: "// Open-Source Partners",
     title: "We build on",
-    highlight: "open robots.",
+    highlight: "open robots",
     description:
       "Our students learn on real, open-source humanoid platforms — the same hardware shaping the future of robotics worldwide.",
     asimov:
@@ -185,16 +184,15 @@ const th: HomeDictionary = {
     language: "ภาษา",
   },
   hero: {
-    eyebrow: "บูตแคมป์ฮิวแมนนอยด์ · กรุงเทพฯ",
+    eyebrow: "โรงเรียนสอนฮิวแมนนอยด์ · กรุงเทพฯ",
     title: ["สอนคน", "ให้สร้าง", "ฮิวแมนนอยด์"],
     description:
-      "โรงเรียนฮิวแมนนอยด์แบบลงมือทำแห่งแรกของไทย ตั้งแต่ชิ้นส่วนแรกจนพร้อมใช้งานจริง — คุณจะได้ประกอบ เขียนโปรแกรม และพาฮิวแมนนอยด์ของจริงไปลุยงาน",
+      "โรงเรียนสอนประกอบฮิวแมนนอยด์ แบบลงมือทำแห่งแรกของไทย ตั้งแต่ชิ้นส่วนแรกจนพร้อมใช้งานจริง — คุณจะได้ประกอบ เขียนโปรแกรม และพาฮิวแมนนอยด์ของจริงไปลุยงาน",
     join: "สมัคร",
     curriculum: "มาดูหลักสูตร",
     facts: [
-      ["ที่ไหน", "พระโขนง, กรุงเทพฯ"],
+      ["สถานที่", "พระโขนง, กรุงเทพฯ"],
       ["รูปแบบ", "3 คอร์ส"],
-      ["รุ่นแรก", "ไตรมาส 4 ปี 2026"],
     ],
   },
   curriculum: {
@@ -202,7 +200,7 @@ const th: HomeDictionary = {
     title: "เลือกคอร์ส",
     highlight: "ของคุณ",
     description:
-      "เริ่มจากคอร์ส 101 แบบ 2 วัน จะสายซอฟต์แวร์หรือฮาร์ดแวร์ก็ได้ หรือพาทีมมาลุยบูตแคมป์เต็ม 12 วันไปเลย ทุกคอร์สได้ลงมือทำกับฮิวแมนนอยด์ของจริงตั้งแต่ชั่วโมงแรก ไม่มีนั่งฟังเลกเชอร์ยาว ๆ",
+      "มีให้เลือกไม่ว่าจะสายซอฟต์แวร์หรือฮาร์ดแวร์ ทุกคอร์สได้ลงมือทำเกี่ยวกับฮิวแมนนอยด์ของจริง",
     track: "คอร์ส",
     combined: "คอร์ส 01 + คอร์ส 02 แบบครบจบ",
     note: "เนื้อหาอาจปรับตามจังหวะการเรียนของแต่ละรุ่น",

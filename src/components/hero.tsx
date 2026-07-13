@@ -88,12 +88,6 @@ export function Hero({ copy }: HeroProps) {
                 →
               </span>
             </a>
-            <Link
-              href="#curriculum"
-              className="inline-flex items-center gap-2 rounded-full border-2 border-cream/60 px-6 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.12em] text-cream transition-colors duration-200 hover:border-cream hover:bg-cream hover:text-crimson"
-            >
-              {copy.curriculum}
-            </Link>
           </div>
         </div>
 
