@@ -3,7 +3,7 @@ import { Prompt, Unbounded, Space_Mono } from "next/font/google";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
-// Body + Thai script (ฮิวแมนน้อยส์)
+// Body + Thai script (ฮิวแมนน้อย)
 const prompt = Prompt({
   variable: "--font-prompt",
   subsets: ["latin", "thai"],
@@ -98,7 +98,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "EducationalOrganization",
   name: siteConfig.name,
-  alternateName: "ฮิวแมนน้อยส์",
+  alternateName: "ฮิวแมนน้อย",
   url: siteConfig.url,
   logo: `${siteConfig.url}/logo.png`,
   description: siteConfig.description,

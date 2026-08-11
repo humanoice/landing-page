@@ -29,7 +29,7 @@ export function Navbar({ locale, copy }: NavbarProps) {
           </span>
           <span className="leading-none">
             <span className="block font-display text-lg font-extrabold tracking-tight text-ink">
-              ฮิวแมนน้อยส์
+              ฮิวแมนน้อย
             </span>
             <span className="block font-mono text-[10px] uppercase tracking-[0.32em] text-crimson">
               Humanoice

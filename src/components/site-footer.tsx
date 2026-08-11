@@ -92,7 +92,7 @@ export function SiteFooter({ locale, copy }: SiteFooterProps) {
             </span>
             <span className="leading-none">
               <span className="block font-display text-base font-extrabold tracking-tight">
-                ฮิวแมนน้อยส์
+                ฮิวแมนน้อย
               </span>
               <span className="block font-mono text-[10px] uppercase tracking-[0.28em] text-yellow-main">
                 Humanoice

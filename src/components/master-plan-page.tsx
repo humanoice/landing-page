@@ -12,7 +12,7 @@ export function MasterPlanPage({ copy }: MasterPlanPageProps) {
           <span className="grid size-9 place-items-center rounded-xl border-2 border-ink bg-white shadow-[2px_2px_0_0_var(--ink)] transition-transform duration-200 group-hover:rotate-[-4deg]">
             <Image src="/logo.png" alt="Humanoice" width={24} height={24} />
           </span>
-          <span className="font-display text-base font-extrabold tracking-tight">ฮิวแมนน้อยส์</span>
+          <span className="font-display text-base font-extrabold tracking-tight">ฮิวแมนน้อย</span>
         </Link>
         <Link
           href="/"
