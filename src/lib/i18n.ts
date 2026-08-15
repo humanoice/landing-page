@@ -36,26 +36,26 @@ const en = {
         name: "Humanoid Programming 101",
         tag: "Software",
         duration: "2 days",
-        price: "7,900 THB",
+        price: "8,900 THB",
         blurb:
           "The software side of humanoids: model one, simulate it, and train it to walk.",
         cta: "Apply",
         items: [
           [
             "ROS 2",
-            "The framework almost every modern robot runs on — nodes, topics, and control loops.",
+            "The framework every modern robot runs on — nodes, topics, and control loops.",
           ],
           [
             "Simulation",
-            "Isaac Sim and MuJoCo — rehearse every motion in real physics before it touches hardware.",
+            "Gazebo and MuJoCo — rehearse every motion in real physics before it touches hardware.",
           ],
           [
             "URDF",
             "Model a humanoid's body so your code knows every link and joint.",
           ],
           [
-            "Locomotion policies",
-            "Train and tune the controllers that keep a humanoid on its feet.",
+            "Deployment",
+            "Deploy the policy to control and make it walk",
           ],
         ],
       },
@@ -63,9 +63,9 @@ const en = {
         name: "Hardware in Humanoid 101",
         tag: "Hardware",
         duration: "2 days",
-        price: "9,900 THB",
+        price: "12,900 THB",
         blurb:
-          "The physical side: build a humanoid's body with your own hands, joint by joint, wire by wire.",
+          "It's like IKEA but for humanoids - assemble from ground up yourself",
         cta: "Apply",
         items: [
           [
@@ -82,7 +82,7 @@ const en = {
           ],
           [
             "Electronics in humanoid",
-            "Power, motor drivers, and the buses that wire every joint together.",
+            "Actuators, IMU, and CAN buses that wire every joint together.",
           ],
         ],
       },
@@ -206,26 +206,26 @@ const th: HomeDictionary = {
         name: "Humanoid Programming 101",
         tag: "ซอฟต์แวร์",
         duration: "2 วัน",
-        price: "7,900 บาท",
+        price: "8,900 บาท",
         blurb:
           "สายซอฟต์แวร์ของฮิวแมนนอยด์ — สร้างโมเดล จำลอง แล้วเทรนให้มันเดินได้",
         cta: "สมัครทางไลน์",
         items: [
           [
             "ROS 2",
-            "เฟรมเวิร์กที่หุ่นยนต์ยุคใหม่แทบทุกตัวใช้ — โหนด ท็อปปิก และลูปควบคุม",
+            "framework ที่หุ่นยนต์สมัยใหม่ใช้ — node, topic, และ control loop",
           ],
           [
             "simulation",
-            "Isaac Sim และ MuJoCo — ซ้อมทุกการเคลื่อนไหวในฟิสิกส์สมจริงก่อนลงฮาร์ดแวร์จริง",
+            "Gazebo และ MuJoCo — รัน simulation ทุกการเคลื่อนไหวในฟิสิกส์",
           ],
           [
             "URDF",
-            "สร้างโมเดลร่างกายฮิวแมนนอยด์ให้โค้ดรู้จักทุกชิ้นส่วนและทุกข้อต่อ",
+            "สร้างโมเดลร่างกายฮิวแมนนอยด์ให้ code รู้จักทุกชิ้นส่วนและทุกข้อต่อ",
           ],
           [
-            "Locomotion policies",
-            "เทรนและจูนตัวควบคุมที่ทำให้ฮิวแมนนอยด์ทรงตัวและก้าวเดินได้",
+            "Deployment",
+            "deploy policy ลงไปควบคุมหุ่นจริงจนมันเดินได้",
           ],
         ],
       },
@@ -233,9 +233,9 @@ const th: HomeDictionary = {
         name: "Hardware in Humanoid 101",
         tag: "ฮาร์ดแวร์",
         duration: "2 วัน",
-        price: "9,900 บาท",
+        price: "12,900 บาท",
         blurb:
-          "สายฮาร์ดแวร์ — สร้างร่างกายฮิวแมนนอยด์ด้วยมือคุณเอง ทีละข้อต่อ ทีละเส้นสาย",
+          "เหมือน IKEA แต่เป็นฮิวแมนนอยด์ — ประกอบเองตั้งแต่ชิ้นแรกจนครบทั้งตัว",
         cta: "สมัครทางไลน์",
         items: [
           [
@@ -252,7 +252,7 @@ const th: HomeDictionary = {
           ],
           [
             "อิเล็กทรอนิกส์ในฮิวแมนนอยด์",
-            "ระบบไฟ ไดรเวอร์มอเตอร์ และบัสที่เชื่อมทุกข้อต่อเข้าด้วยกัน",
+            "actuator, IMU, และ CAN bus ที่เชื่อมทุกข้อต่อเข้าด้วยกัน",
           ],
         ],
       },
