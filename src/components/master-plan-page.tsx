@@ -10,7 +10,7 @@ export function MasterPlanPage({ copy }: MasterPlanPageProps) {
       <header className="mx-auto flex max-w-2xl items-center justify-between gap-4 px-6 py-6">
         <Link href="/" className="group flex items-center gap-2.5">
           <span className="grid size-9 place-items-center rounded-xl border-2 border-ink bg-white shadow-[2px_2px_0_0_var(--ink)] transition-transform duration-200 group-hover:rotate-[-4deg]">
-            <Image src="/logo.png" alt="Humanoice" width={24} height={24} />
+            <Image src="/logo.png" alt="Humanoice" width={30} height={30} />
           </span>
           <span className="font-display text-base font-extrabold tracking-tight">ฮิวแมนน้อย</span>
         </Link>

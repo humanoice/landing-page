@@ -15,11 +15,11 @@ export const siteConfig = {
   lineAddUrl: "https://lin.ee/vlNRsOQ",
   // The cream paper canvas (globals.css --cream) — drives theme-color + manifest.
   themeColor: "#fbf3e2",
-  // public/opengraph.png — dimensions are the real file size so platforms don't reflow it.
+  // public/opengraph.jpg — dimensions are the real file size so platforms don't reflow it.
   ogImage: {
-    url: "/opengraph.png",
-    width: 2918,
-    height: 1540,
+    url: "/opengraph.jpg",
+    width: 1920,
+    height: 1080,
     alt: "Humanoice — Thailand's Humanoid School",
   },
 } as const;

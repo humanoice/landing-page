@@ -70,10 +70,8 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     images: [siteConfig.ogImage.url],
   },
-  // favicon.ico in app/ is picked up automatically; declare the rest that live in public/.
-  icons: {
-    apple: "/apple-touch-icon.png",
-  },
+  // favicon.ico and apple-icon.png in app/ are picked up automatically —
+  // Next emits the <link> tags with the right sizes, so nothing to declare here.
   robots: {
     index: true,
     follow: true,

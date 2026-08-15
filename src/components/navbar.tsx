@@ -19,11 +19,13 @@ export function Navbar({ locale, copy }: NavbarProps) {
         {/* Brand */}
         <Link href={localePath(locale)} className="group flex items-center gap-3">
           <span className="grid size-10 place-items-center rounded-xl border-2 border-ink bg-white shadow-[3px_3px_0_0_var(--ink)] transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:rotate-[-4deg]">
+            {/* Sized against the mark's own margin, not the badge, so the cat
+                fills the frame the way the favicon does. */}
             <Image
               src="/logo.png"
               alt="Humanoice"
-              width={28}
-              height={28}
+              width={34}
+              height={34}
               preload
             />
           </span>

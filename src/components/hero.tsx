@@ -115,7 +115,7 @@ export function Hero({ copy }: HeroProps) {
             />
             <Image
               src="/logo.png"
-              alt="The Humanoice mascot — a smiling humanoid hidden in the letter H"
+              alt="The Humanoice mascot — a robot cat with an antenna and a toolbox chest"
               width={420}
               height={420}
               preload

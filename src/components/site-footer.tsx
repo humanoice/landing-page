@@ -88,7 +88,7 @@ export function SiteFooter({ locale, copy }: SiteFooterProps) {
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-5 py-8 sm:px-8 md:flex-row md:items-center md:justify-between">
           <Link href={localePath(locale)} className="flex items-center gap-3">
             <span className="grid size-9 place-items-center rounded-xl border-2 border-cream/30 bg-white">
-              <Image src="/logo.png" alt="Humanoice" width={24} height={24} />
+              <Image src="/logo.png" alt="Humanoice" width={30} height={30} />
             </span>
             <span className="leading-none">
               <span className="block font-display text-base font-extrabold tracking-tight">

@@ -22,10 +22,13 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: "512x512",
         type: "image/png",
       },
+      // Android crops adaptive icons to a circle/squircle — this one keeps the
+      // mark inside the safe zone so nothing gets clipped.
       {
-        src: "/apple-touch-icon.png",
-        sizes: "180x180",
+        src: "/android-chrome-maskable-512x512.png",
+        sizes: "512x512",
         type: "image/png",
+        purpose: "maskable",
       },
     ],
   };
