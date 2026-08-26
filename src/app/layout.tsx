@@ -101,6 +101,7 @@ const jsonLd = {
   url: siteConfig.url,
   logo: `${siteConfig.url}/logo.png`,
   description: siteConfig.description,
+  sameAs: [siteConfig.lineAddUrl, ...Object.values(siteConfig.socialUrls)],
   foundingDate: "2026",
   address: {
     "@type": "PostalAddress",

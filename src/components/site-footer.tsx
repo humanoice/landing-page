@@ -14,6 +14,46 @@ export function SiteFooter({ locale, copy }: SiteFooterProps) {
     { label: copy.nav.partners, href: "#partners" },
   ];
 
+  // Every mark in public/social is a solid black badge on transparent, so `invert`
+  // flips it to a white badge with the glyph knocked out — no chrome needed around
+  // it. The LINE bubble carries built-in padding the circular marks don't, hence
+  // the per-icon `size` nudge so all four read at the same optical weight.
+  const socials = [
+    {
+      name: "LINE",
+      href: siteConfig.lineAddUrl,
+      icon: "/social/line-logo.png",
+      size: "size-8",
+      // LINE keeps its own event — the existing GA funnel counts on it.
+      event: "line_click",
+      params: { location: "footer_social" },
+    },
+    {
+      name: "Facebook",
+      href: siteConfig.socialUrls.facebook,
+      icon: "/social/fb-logo.png",
+      size: "size-7",
+      event: "social_click",
+      params: { network: "facebook", location: "footer_social" },
+    },
+    {
+      name: "Instagram",
+      href: siteConfig.socialUrls.instagram,
+      icon: "/social/instagram-logo.webp",
+      size: "size-7",
+      event: "social_click",
+      params: { network: "instagram", location: "footer_social" },
+    },
+    {
+      name: "X",
+      href: siteConfig.socialUrls.x,
+      icon: "/social/x_logo.webp",
+      size: "size-7",
+      event: "social_click",
+      params: { network: "x", location: "footer_social" },
+    },
+  ];
+
   return (
     <footer className="relative overflow-hidden bg-crimson text-cream">
       {/* mission ticker as the section's top edge */}
@@ -113,24 +153,30 @@ export function SiteFooter({ locale, copy }: SiteFooterProps) {
             ))}
           </ul>
 
-          <div className="flex items-center gap-3">
-            <TrackedAnchor
-              event="line_click"
-              params={{ location: "footer_social" }}
-              href={siteConfig.lineAddUrl}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Follow Humanoice on LINE"
-              className="group inline-flex size-8 items-center justify-center rounded-md transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-main"
-            >
-              <Image
-                src="/line-logo.png"
-                alt="LINE"
-                width={28}
-                height={28}
-                className="invert transition-transform group-hover:scale-110"
-              />
-            </TrackedAnchor>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+            <ul className="flex items-center gap-2">
+              {socials.map((social) => (
+                <li key={social.name}>
+                  <TrackedAnchor
+                    event={social.event}
+                    params={social.params}
+                    href={social.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`Follow Humanoice on ${social.name}`}
+                    className="group grid size-9 place-items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-main"
+                  >
+                    <Image
+                      src={social.icon}
+                      alt=""
+                      width={32}
+                      height={32}
+                      className={`${social.size} opacity-90 invert transition-[transform,opacity] duration-200 group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:opacity-100`}
+                    />
+                  </TrackedAnchor>
+                </li>
+              ))}
+            </ul>
 
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-cream/50">
               © 2026 Humanoice
