@@ -2,12 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { Marquee } from "@/components/marquee";
 import { localePath, type HomeDictionary, type Locale } from "@/lib/i18n";
+import { TrackedAnchor } from "@/components/track";
 import { siteConfig } from "@/lib/site";
 
 type SiteFooterProps = { locale: Locale; copy: HomeDictionary };
-
-const LINE_QR_URL =
-  "https://qr-official.line.me/gs/M_178uukqb_BW.png?oat_content=qr";
 
 export function SiteFooter({ locale, copy }: SiteFooterProps) {
   const nav = [
@@ -51,7 +49,9 @@ export function SiteFooter({ locale, copy }: SiteFooterProps) {
         <div className="relative mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-28">
           <div className="grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:items-end">
             <div className="flex items-end">
-              <a
+              <TrackedAnchor
+                event="line_click"
+                params={{ location: "footer_qr" }}
                 href={siteConfig.lineAddUrl}
                 target="_blank"
                 rel="noreferrer"
@@ -59,14 +59,14 @@ export function SiteFooter({ locale, copy }: SiteFooterProps) {
                 className="group relative block shrink-0 rounded-[1.35rem] bg-cream p-3 shadow-[6px_6px_0_0_var(--ink)] transition-transform duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[9px_9px_0_0_var(--ink)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-main"
               >
                 <Image
-                  src={LINE_QR_URL}
+                  src={siteConfig.lineQrUrl}
                   alt={copy.footer.qrLabel}
                   width={220}
                   height={220}
                   sizes="(max-width: 639px) 180px, 220px"
                   className="size-[180px] rounded-xl sm:size-[220px]"
                 />
-              </a>
+              </TrackedAnchor>
             </div>
 
             <div>
@@ -114,7 +114,9 @@ export function SiteFooter({ locale, copy }: SiteFooterProps) {
           </ul>
 
           <div className="flex items-center gap-3">
-            <a
+            <TrackedAnchor
+              event="line_click"
+              params={{ location: "footer_social" }}
               href={siteConfig.lineAddUrl}
               target="_blank"
               rel="noreferrer"
@@ -128,7 +130,7 @@ export function SiteFooter({ locale, copy }: SiteFooterProps) {
                 height={28}
                 className="invert transition-transform group-hover:scale-110"
               />
-            </a>
+            </TrackedAnchor>
 
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-cream/50">
               © 2026 Humanoice

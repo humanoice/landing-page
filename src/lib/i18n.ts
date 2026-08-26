@@ -1,4 +1,5 @@
 import "server-only";
+import type { Language, ProgrammingLanguage, Skill } from "@/lib/apply-options";
 
 export type Locale = "en" | "th";
 
@@ -167,12 +168,93 @@ const en = {
       ],
     ],
   },
+  apply: {
+    title: "Apply",
+    description:
+      "Tell us about yourself, pick a run, and we'll confirm your seat on LINE.",
+    home: "Home",
+    eyebrow: "// Application",
+    heading: ["Book a", "seat."],
+    sticker: "~2 min",
+    intro:
+      "Tell us about yourself, choose the track, we'll confirm you a seat in a few days.",
+    sections: {
+      about: "About you",
+      background: "Your background",
+      course: "Pick a run",
+    },
+    optional: "optional",
+    fields: {
+      firstName: "First name",
+      lastName: "Last name",
+      nickname: "Nickname",
+      email: "Email",
+      phone: "Phone",
+      lineId: "LINE ID",
+      jobTitle: "Job title",
+      company: "Company / university",
+      languages: "Languages you can speak",
+      roboticsYears: "Years in robotics",
+      programmingYears: "Years programming",
+      programmingLanguages: "Languages & tools you use",
+      skills: "Hands-on skills",
+    },
+    backgroundHint:
+      "Your answwer will increase the chance of acceptance",
+    languages: { th: "Thai", en: "English" } satisfies Record<Language, string>,
+    programmingLanguages: {
+      python: "Python",
+      cpp: "C / C++",
+      plc: "PLC",
+      javascript: "JavaScript",
+      linux: "Linux",
+      ros: "ROS",
+    } satisfies Record<ProgrammingLanguage, string>,
+    skills: {
+      electronics: "Electronics",
+      mechanics: "Mechanics",
+      cad: "CAD / 3D printing",
+      ml: "Machine learning",
+    } satisfies Record<Skill, string>,
+    course: {
+      track: "Track",
+      // indexed by courses.track_no − 1
+      trackTags: ["Hardware", "Software", "B2B"],
+      dayUnit: ["day", "days"],
+      priceUnit: "THB",
+      priceTbd: "Talk to us",
+      seatsLeft: "seats left",
+      full: "Full",
+      empty:
+        "No runs are open right now. Add us on LINE and we'll ping you the moment the next one opens.",
+      line: "Add LINE",
+    },
+    submit: "Send application",
+    submitting: "Sending…",
+    errors: {
+      required: "Required",
+      email: "That doesn't look like an email",
+      number: "Whole years, please",
+      course: "Pick a run",
+      server: "Something broke on our side. Try again, or ping us on LINE.",
+    },
+    success: {
+      eyebrow: "// Thank you",
+      title: "Registration complete",
+      highlight: "Payment pending",
+      body: "Your seat will only be confirmed after payment. Please add us on LINE to make your payment.",
+      line: "Pay via LINE",
+      qrLabel: "@humanoice",
+    },
+  },
 };
 
-export type HomeDictionary = Omit<typeof en, "plan">;
+export type HomeDictionary = Omit<typeof en, "plan" | "apply">;
 export type MasterPlanCopy = typeof en.plan;
+export type ApplyCopy = typeof en.apply;
+type ThaiDictionary = HomeDictionary & { apply: ApplyCopy };
 
-const th: HomeDictionary = {
+const th: ThaiDictionary = {
   nav: {
     curriculum: "หลักสูตร",
     team: "ทีม",
@@ -209,7 +291,7 @@ const th: HomeDictionary = {
         price: "12,900 บาท",
         blurb:
           "เหมือน IKEA แต่เป็นฮิวแมนนอยด์ — ประกอบเองตั้งแต่ชิ้นแรกจนครบทั้งตัว",
-        cta: "สมัครทางไลน์",
+        cta: "สมัคร",
         items: [
           [
             "ประกอบขา",
@@ -236,7 +318,7 @@ const th: HomeDictionary = {
         price: "8,900 บาท",
         blurb:
           "สายซอฟต์แวร์ของฮิวแมนนอยด์ — สร้างโมเดล จำลอง แล้วเทรนให้มันเดินได้",
-        cta: "สมัครทางไลน์",
+        cta: "สมัคร",
         items: [
           [
             "ROS 2",
@@ -307,14 +389,97 @@ const th: HomeDictionary = {
     highlight: "เพื่อขอรายละเอียด",
     qrLabel: "@humanoice",
   },
+  apply: {
+    title: "สมัครเรียน",
+    description:
+      "บอกเราเกี่ยวกับตัวคุณ เลือกรอบที่อยากเรียน แล้วเราจะยืนยันที่นั่งทางไลน์",
+    home: "หน้าแรก",
+    eyebrow: "// ใบสมัคร",
+    heading: ["จอง", "ที่นั่ง"],
+    sticker: "~2 นาที",
+    intro:
+      "ทำความรู้จักกันหน่อย เลือกคอร์สที่คุณสนใจ แล้วเราจะติดต่อกลับเพื่อยืนยันที่นั่ง",
+    sections: {
+      about: "เกี่ยวกับคุณ",
+      background: "พื้นฐานของคุณ",
+      course: "เลือกรอบเรียน",
+    },
+    optional: "ไม่บังคับ",
+    fields: {
+      firstName: "ชื่อ",
+      lastName: "นามสกุล",
+      nickname: "ชื่อเล่น",
+      email: "อีเมล",
+      phone: "เบอร์โทร",
+      lineId: "LINE ID",
+      jobTitle: "อาชีพ / ตำแหน่ง",
+      company: "บริษัท / มหาวิทยาลัย",
+      languages: "ภาษาที่เรียนได้",
+      roboticsYears: "ประสบการณ์ด้านหุ่นยนต์ (ปี)",
+      programmingYears: "ประสบการณ์เขียนโปรแกรม (ปี)",
+      programmingLanguages: "ภาษาโปรแกรม / เครื่องมือที่ใช้",
+      skills: "ทักษะที่ลงมือทำได้",
+    },
+    backgroundHint:
+      "คำตอบของคุณจะช่วยเพิ่มโอกาสในการได้รับการตอบรับ",
+    languages: { th: "ไทย", en: "อังกฤษ" },
+    programmingLanguages: {
+      python: "Python",
+      cpp: "C / C++",
+      plc: "PLC",
+      javascript: "JavaScript",
+      linux: "Linux",
+      ros: "ROS",
+    },
+    skills: {
+      electronics: "อิเล็กทรอนิกส์",
+      mechanics: "เครื่องกล",
+      cad: "CAD / 3D printing",
+      ml: "Machine learning",
+    },
+    course: {
+      track: "คอร์ส",
+      trackTags: ["ฮาร์ดแวร์", "ซอฟต์แวร์", "B2B"],
+      dayUnit: ["วัน", "วัน"],
+      priceUnit: "บาท",
+      priceTbd: "ทักมาคุยกัน",
+      seatsLeft: "ที่นั่งว่าง",
+      full: "เต็มแล้ว",
+      empty:
+        "ตอนนี้ยังไม่มีรอบเปิดรับสมัคร แอดไลน์ไว้ แล้วเราจะแจ้งทันทีที่รอบใหม่เปิด",
+      line: "แอดไลน์",
+    },
+    submit: "ส่งใบสมัคร",
+    submitting: "กำลังส่ง…",
+    errors: {
+      required: "กรุณากรอก",
+      email: "รูปแบบอีเมลไม่ถูกต้อง",
+      number: "กรอกเป็นจำนวนปีเต็ม",
+      course: "กรุณาเลือกรอบเรียน",
+      server: "ระบบมีปัญหา ลองใหม่อีกครั้ง หรือทักเราทางไลน์",
+    },
+    success: {
+      eyebrow: "// ขอบคุณ",
+      title: "สมัครเรียบร้อย",
+      highlight: "รอจ่ายเงิน",
+      body: "ยืนยันที่นั่ง หลังจ่ายเงินเรียบร้อยแล้วเท่านั้น รบกวนแอดไลน์มาจ่ายเงินกับเราหน่อยน้า",
+      line: "จ่ายเงินใน LINE",
+      qrLabel: "@humanoice",
+    },
+  },
 };
 
 const dictionaries = { en, th };
 
 export function getDictionary(locale: "en"): typeof en;
-export function getDictionary(locale: "th"): HomeDictionary;
-export function getDictionary(locale: Locale): typeof en | HomeDictionary {
+export function getDictionary(locale: "th"): ThaiDictionary;
+export function getDictionary(locale: Locale): typeof en | ThaiDictionary {
   return dictionaries[locale];
+}
+
+/** The application page, optionally pre-ticking a run: /apply?course=hardware, /th/apply?course=software */
+export function applyPath(locale: Locale, course?: string) {
+  return `${localePath(locale, "/apply")}${course ? `?course=${course}` : ""}`;
 }
 
 export function localePath(locale: Locale, path = "/") {

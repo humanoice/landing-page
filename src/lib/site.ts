@@ -13,6 +13,8 @@ export const siteConfig = {
   url: "https://humanoice.com",
   locale: "en_US",
   lineAddUrl: "https://lin.ee/vlNRsOQ",
+  // Official LINE QR for the same account — the host is allow-listed in next.config.ts.
+  lineQrUrl: "https://qr-official.line.me/gs/M_178uukqb_BW.png?oat_content=qr",
   // The cream paper canvas (globals.css --cream) — drives theme-color + manifest.
   themeColor: "#fbf3e2",
   // public/opengraph.jpg — dimensions are the real file size so platforms don't reflow it.

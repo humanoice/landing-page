@@ -1,6 +1,10 @@
 import { Reveal } from "@/components/reveal";
-import type { HomeDictionary } from "@/lib/i18n";
+import { applyPath, type HomeDictionary, type Locale } from "@/lib/i18n";
+import { TrackedAnchor, TrackedLink } from "@/components/track";
 import { siteConfig } from "@/lib/site";
+
+const CTA_CLASS =
+  "group inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-yellow-main px-6 py-3 font-mono text-xs font-bold uppercase tracking-[0.12em] text-ink shadow-[4px_4px_0_0_var(--ink)] transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_var(--ink)] active:translate-x-0 active:translate-y-0 active:shadow-[2px_2px_0_0_var(--ink)]";
 
 const ICON_PROPS = {
   width: 28,
@@ -49,6 +53,8 @@ type TrackMeta = {
   stickerRotate: string;
   icon: React.ReactNode;
   featured?: boolean;
+  /** courses.slug this card applies for. Absent = no self-serve run (B2B) → talk on LINE. */
+  applySlug?: "hardware" | "software";
   /** For the combined track: which 101 track each line corresponds to. */
   refs?: { n: string; color: string; source: number }[];
 };
@@ -59,12 +65,14 @@ const TRACKS: TrackMeta[] = [
     color: "var(--yellow-main)",
     stickerRotate: "-2deg",
     icon: <AssembleIcon />,
+    applySlug: "hardware",
   },
   {
     n: "02",
     color: "var(--orange-secondary)",
     stickerRotate: "2deg",
     icon: <CodeIcon />,
+    applySlug: "software",
   },
   {
     n: "03",
@@ -79,9 +87,9 @@ const TRACKS: TrackMeta[] = [
   },
 ];
 
-type CurriculumProps = { copy: HomeDictionary["curriculum"] };
+type CurriculumProps = { locale: Locale; copy: HomeDictionary["curriculum"] };
 
-export function Curriculum({ copy }: CurriculumProps) {
+export function Curriculum({ locale, copy }: CurriculumProps) {
   const tracks = TRACKS.map((track, index) => ({
     ...track,
     ...copy.tracks[index],
@@ -237,17 +245,33 @@ export function Curriculum({ copy }: CurriculumProps) {
 
                 {/* CTA */}
                 <div className="mt-auto pt-7">
-                  <a
-                    href={siteConfig.lineAddUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="group inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-yellow-main px-6 py-3 font-mono text-xs font-bold uppercase tracking-[0.12em] text-ink shadow-[4px_4px_0_0_var(--ink)] transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_var(--ink)] active:translate-x-0 active:translate-y-0 active:shadow-[2px_2px_0_0_var(--ink)]"
-                  >
-                    {track.cta}
-                    <span className="transition-transform duration-200 group-hover:translate-x-1">
-                      →
-                    </span>
-                  </a>
+                  {track.applySlug ? (
+                    <TrackedLink
+                      event="apply_click"
+                      params={{ location: "curriculum", track: track.applySlug }}
+                      href={applyPath(locale, track.applySlug)}
+                      className={CTA_CLASS}
+                    >
+                      {track.cta}
+                      <span className="transition-transform duration-200 group-hover:translate-x-1">
+                        →
+                      </span>
+                    </TrackedLink>
+                  ) : (
+                    <TrackedAnchor
+                      event="line_click"
+                      params={{ location: "curriculum" }}
+                      href={siteConfig.lineAddUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={CTA_CLASS}
+                    >
+                      {track.cta}
+                      <span className="transition-transform duration-200 group-hover:translate-x-1">
+                        →
+                      </span>
+                    </TrackedAnchor>
+                  )}
                 </div>
               </article>
             </Reveal>

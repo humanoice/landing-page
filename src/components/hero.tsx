@@ -1,11 +1,10 @@
 import Image from "next/image";
-import Link from "next/link";
-import type { HomeDictionary } from "@/lib/i18n";
-import { siteConfig } from "@/lib/site";
+import { TrackedLink } from "@/components/track";
+import { applyPath, type HomeDictionary, type Locale } from "@/lib/i18n";
 
-type HeroProps = { copy: HomeDictionary["hero"] };
+type HeroProps = { locale: Locale; copy: HomeDictionary["hero"] };
 
-export function Hero({ copy }: HeroProps) {
+export function Hero({ locale, copy }: HeroProps) {
   return (
     <section className="relative overflow-hidden bg-crimson text-cream">
       {/* Atmosphere: blueprint grid + warm core glow + floating pills */}
@@ -77,17 +76,17 @@ export function Hero({ copy }: HeroProps) {
             className="hero-rise mt-9 flex flex-wrap items-center gap-4"
             style={{ animationDelay: "0.7s" }}
           >
-            <a
-              href={siteConfig.lineAddUrl}
-              target="_blank"
-              rel="noreferrer"
+            <TrackedLink
+              event="apply_click"
+              params={{ location: "hero" }}
+              href={applyPath(locale)}
               className="group inline-flex items-center gap-2 rounded-full border-2 border-ink bg-yellow-main px-7 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.12em] text-ink shadow-[5px_5px_0_0_var(--ink)] transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[9px_9px_0_0_var(--ink)] active:translate-x-0 active:translate-y-0 active:shadow-[3px_3px_0_0_var(--ink)]"
             >
               {copy.join}
               <span className="transition-transform duration-200 group-hover:translate-x-1">
                 →
               </span>
-            </a>
+            </TrackedLink>
           </div>
         </div>
 

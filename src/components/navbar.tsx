@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { localePath, type HomeDictionary, type Locale } from "@/lib/i18n";
-import { siteConfig } from "@/lib/site";
+import { TrackedLink } from "@/components/track";
+import { applyPath, localePath, type HomeDictionary, type Locale } from "@/lib/i18n";
 
 type NavbarProps = { locale: Locale; copy: HomeDictionary["nav"] };
 
@@ -63,16 +63,16 @@ export function Navbar({ locale, copy }: NavbarProps) {
             thaiHref={localePath("th")}
             label={copy.language}
           />
-          <a
-            href={siteConfig.lineAddUrl}
-            target="_blank"
-            rel="noreferrer"
+          <TrackedLink
+            event="apply_click"
+            params={{ location: "navbar" }}
+            href={applyPath(locale)}
             className="group inline-flex items-center gap-2 rounded-full border-2 border-ink bg-crimson px-4 py-2 font-mono text-xs font-bold uppercase tracking-[0.14em] text-white shadow-[3px_3px_0_0_var(--ink)] transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_var(--ink)] active:translate-x-0 active:translate-y-0 active:shadow-[2px_2px_0_0_var(--ink)] sm:px-5"
           >
             <span className="size-1.5 animate-pulse rounded-full bg-yellow-main" />
             {copy.apply}
             <span className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
-          </a>
+          </TrackedLink>
         </div>
       </nav>
     </header>

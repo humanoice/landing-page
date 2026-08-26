@@ -43,7 +43,7 @@ create table if not exists students (
   -- migration. Expected keys today (all optional):
   --   robotics_years         number    e.g. 2
   --   programming_years      number    e.g. 5
-  --   programming_languages  string[]  e.g. ["python", "c++"]
+  --   programming_languages  string[]  languages + tools, e.g. ["python", "linux"]
   --   skills                 string[]  e.g. ["electronics", "mechanics"]
   -- Query examples: (background->>'robotics_years')::int >= 2   |   background->'skills' ? 'electronics'
   background    jsonb       not null default '{}'

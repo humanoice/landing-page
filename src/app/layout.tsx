@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Prompt, Unbounded, Space_Mono } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
@@ -118,7 +119,9 @@ export default function RootLayout({
       lang="en"
       className={`${prompt.variable} ${unbounded.variable} ${spaceMono.variable} antialiased`}
     >
-      <body className="min-h-screen bg-cream text-ink">
+      {/* Extensions (ColorZilla, Grammarly…) tack attributes onto <body> before React
+          hydrates — suppress the mismatch warning they cause. */}
+      <body className="min-h-screen bg-cream text-ink" suppressHydrationWarning>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -129,6 +132,12 @@ export default function RootLayout({
         </noscript>
         {children}
       </body>
+      {/* GA4 — loads gtag.js after hydration. Client-side route changes are
+          tracked automatically via history events (Enhanced Measurement).
+          Skipped in dev so localhost traffic stays out of the property. */}
+      {process.env.NODE_ENV === "production" && (
+        <GoogleAnalytics gaId="G-F5KWLB1XNM" />
+      )}
     </html>
   );
 }

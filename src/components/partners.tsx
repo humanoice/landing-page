@@ -1,6 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
 import { Reveal } from "@/components/reveal";
+import { TrackedLink } from "@/components/track";
 import type { HomeDictionary } from "@/lib/i18n";
 
 type PartnersProps = { copy: HomeDictionary["partners"] };
@@ -86,7 +86,9 @@ export function Partners({ copy }: PartnersProps) {
 
           {/* Become a partner CTA */}
           <Reveal delay={260}>
-            <Link
+            <TrackedLink
+              event="partner_click"
+              params={{ location: "partners" }}
               href="https://airtable.com/appUH4Cp6jG720uUL/pagoe00CRjfglXwch/form"
               target="_blank"
               rel="noopener noreferrer"
@@ -107,7 +109,7 @@ export function Partners({ copy }: PartnersProps) {
                   </span>
                 </span>
               </span>
-            </Link>
+            </TrackedLink>
           </Reveal>
         </div>
       </div>

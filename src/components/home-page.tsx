@@ -18,7 +18,7 @@ export function HomePage({ locale, copy, ticker }: HomePageProps) {
     <>
       <Navbar locale={locale} copy={copy.nav} />
       <main>
-        <Hero copy={copy.hero} />
+        <Hero locale={locale} copy={copy.hero} />
         <Marquee
           items={ticker}
           speed="28s"
@@ -27,7 +27,7 @@ export function HomePage({ locale, copy, ticker }: HomePageProps) {
           itemClassName="font-display text-sm font-black uppercase tracking-[0.18em]"
           sepClassName="text-crimson"
         />
-        <Curriculum copy={copy.curriculum} />
+        <Curriculum locale={locale} copy={copy.curriculum} />
         <Team copy={copy.team} />
         <Partners copy={copy.partners} />
       </main>
