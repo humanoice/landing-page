@@ -33,6 +33,33 @@ const en = {
     note: "The curriculum can change based on the pace of learners.",
     tracks: [
       {
+        name: "Hardware in Humanoid 101",
+        tag: "Hardware",
+        duration: "3 days",
+        price: "12,900 THB",
+        blurb:
+          "It's like IKEA but for humanoids - assemble from ground up yourself",
+        cta: "Apply",
+        items: [
+          [
+            "Leg assembly",
+            "Hips, knees, and ankles — build the joints that carry all the weight.",
+          ],
+          [
+            "Body assembly",
+            "The torso and spine that every other part hangs off.",
+          ],
+          [
+            "Arm assembly",
+            "Shoulders to wrists — linkages, actuators, and range of motion.",
+          ],
+          [
+            "Electronics in humanoid",
+            "Actuators, IMU, and CAN buses that wire every joint together.",
+          ],
+        ],
+      },
+      {
         name: "Humanoid Programming 101",
         tag: "Software",
         duration: "2 days",
@@ -56,33 +83,6 @@ const en = {
           [
             "Deployment",
             "Deploy the policy to control and make it walk",
-          ],
-        ],
-      },
-      {
-        name: "Hardware in Humanoid 101",
-        tag: "Hardware",
-        duration: "2 days",
-        price: "12,900 THB",
-        blurb:
-          "It's like IKEA but for humanoids - assemble from ground up yourself",
-        cta: "Apply",
-        items: [
-          [
-            "Leg assembly",
-            "Hips, knees, and ankles — build the joints that carry all the weight.",
-          ],
-          [
-            "Body assembly",
-            "The torso and spine that every other part hangs off.",
-          ],
-          [
-            "Arm assembly",
-            "Shoulders to wrists — linkages, actuators, and range of motion.",
-          ],
-          [
-            "Electronics in humanoid",
-            "Actuators, IMU, and CAN buses that wire every joint together.",
           ],
         ],
       },
@@ -203,6 +203,33 @@ const th: HomeDictionary = {
     note: "เนื้อหาอาจปรับตามจังหวะการเรียนของแต่ละรุ่น",
     tracks: [
       {
+        name: "Hardware in Humanoid 101",
+        tag: "ฮาร์ดแวร์",
+        duration: "3 วัน",
+        price: "12,900 บาท",
+        blurb:
+          "เหมือน IKEA แต่เป็นฮิวแมนนอยด์ — ประกอบเองตั้งแต่ชิ้นแรกจนครบทั้งตัว",
+        cta: "สมัครทางไลน์",
+        items: [
+          [
+            "ประกอบขา",
+            "สะโพก เข่า และข้อเท้า — ประกอบข้อต่อที่รับน้ำหนักทั้งตัว",
+          ],
+          [
+            "ประกอบลำตัว",
+            "โครงลำตัวและกระดูกสันหลังที่ทุกชิ้นส่วนมายึดเกาะ",
+          ],
+          [
+            "ประกอบแขน",
+            "จากหัวไหล่ถึงข้อมือ — กลไก แอคชูเอเตอร์ และองศาการเคลื่อนไหว",
+          ],
+          [
+            "อิเล็กทรอนิกส์ในฮิวแมนนอยด์",
+            "actuator, IMU, และ CAN bus ที่เชื่อมทุกข้อต่อเข้าด้วยกัน",
+          ],
+        ],
+      },
+      {
         name: "Humanoid Programming 101",
         tag: "ซอฟต์แวร์",
         duration: "2 วัน",
@@ -226,33 +253,6 @@ const th: HomeDictionary = {
           [
             "Deployment",
             "deploy policy ลงไปควบคุมหุ่นจริงจนมันเดินได้",
-          ],
-        ],
-      },
-      {
-        name: "Hardware in Humanoid 101",
-        tag: "ฮาร์ดแวร์",
-        duration: "2 วัน",
-        price: "12,900 บาท",
-        blurb:
-          "เหมือน IKEA แต่เป็นฮิวแมนนอยด์ — ประกอบเองตั้งแต่ชิ้นแรกจนครบทั้งตัว",
-        cta: "สมัครทางไลน์",
-        items: [
-          [
-            "ประกอบขา",
-            "สะโพก เข่า และข้อเท้า — ประกอบข้อต่อที่รับน้ำหนักทั้งตัว",
-          ],
-          [
-            "ประกอบลำตัว",
-            "โครงลำตัวและกระดูกสันหลังที่ทุกชิ้นส่วนมายึดเกาะ",
-          ],
-          [
-            "ประกอบแขน",
-            "จากหัวไหล่ถึงข้อมือ — กลไก แอคชูเอเตอร์ และองศาการเคลื่อนไหว",
-          ],
-          [
-            "อิเล็กทรอนิกส์ในฮิวแมนนอยด์",
-            "actuator, IMU, และ CAN bus ที่เชื่อมทุกข้อต่อเข้าด้วยกัน",
           ],
         ],
       },

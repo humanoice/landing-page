@@ -58,13 +58,13 @@ const TRACKS: TrackMeta[] = [
     n: "01",
     color: "var(--yellow-main)",
     stickerRotate: "-2deg",
-    icon: <CodeIcon />,
+    icon: <AssembleIcon />,
   },
   {
     n: "02",
     color: "var(--orange-secondary)",
     stickerRotate: "2deg",
-    icon: <AssembleIcon />,
+    icon: <CodeIcon />,
   },
   {
     n: "03",
@@ -73,8 +73,8 @@ const TRACKS: TrackMeta[] = [
     icon: <WalkIcon />,
     featured: true,
     refs: [
-      { n: "02", color: "var(--orange-secondary)", source: 1 },
       { n: "01", color: "var(--yellow-main)", source: 0 },
+      { n: "02", color: "var(--orange-secondary)", source: 1 },
     ],
   },
 ];
