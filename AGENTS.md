@@ -20,7 +20,7 @@ Database is Neon
 - `src/components/` — every section; `home-page.tsx` composes them in order (Navbar → Hero → Marquee → Curriculum → Team → Partners → Footer).
 - `src/lib/site.ts` — single source of SEO truth (name, url, ogImage, themeColor, `lineAddUrl`). Metadata, sitemap, robots, manifest all read from it.
 - `src/lib/i18n.ts` — every user-facing string, `en` + `th`. Marked `server-only`.
-- `db/` — Neon Postgres. `schema.sql` = full current picture (already live on production), `seed.sql` = course catalog, `migrations/NNNN_*.sql` = the `alter` steps actually run against production.
+- `db/` — Neon Postgres. `schema.sql` = database schema
 
 ## Design language — "Build Joyfully"
 

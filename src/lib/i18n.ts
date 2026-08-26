@@ -171,7 +171,7 @@ const en = {
   apply: {
     title: "Apply",
     description:
-      "Tell us about yourself, pick a run, and we'll confirm your seat on LINE.",
+      "Tell us about yourself, choose the track, we'll confirm you a seat in a few days.",
     home: "Home",
     eyebrow: "// Application",
     heading: ["Book a", "seat."],
@@ -181,7 +181,7 @@ const en = {
     sections: {
       about: "About you",
       background: "Your background",
-      course: "Pick a run",
+      course: "Pick your track",
     },
     optional: "optional",
     fields: {
@@ -220,6 +220,7 @@ const en = {
       track: "Track",
       // indexed by courses.track_no − 1
       trackTags: ["Hardware", "Software", "B2B"],
+      pickDate: "Pick a date",
       dayUnit: ["day", "days"],
       priceUnit: "THB",
       priceTbd: "Talk to us",
@@ -235,7 +236,9 @@ const en = {
       required: "Required",
       email: "That doesn't look like an email",
       number: "Whole years, please",
-      course: "Pick a run",
+      course: "Pick your track",
+      full: "That run just filled up — pick another date",
+      rateLimit: "Too many tries just now. Give it a few minutes, or ping us on LINE.",
       server: "Something broke on our side. Try again, or ping us on LINE.",
     },
     success: {
@@ -440,6 +443,7 @@ const th: ThaiDictionary = {
     course: {
       track: "คอร์ส",
       trackTags: ["ฮาร์ดแวร์", "ซอฟต์แวร์", "B2B"],
+      pickDate: "เลือกรอบวันที่",
       dayUnit: ["วัน", "วัน"],
       priceUnit: "บาท",
       priceTbd: "ทักมาคุยกัน",
@@ -456,6 +460,8 @@ const th: ThaiDictionary = {
       email: "รูปแบบอีเมลไม่ถูกต้อง",
       number: "กรอกเป็นจำนวนปีเต็ม",
       course: "กรุณาเลือกรอบเรียน",
+      full: "รอบนี้เพิ่งเต็ม กรุณาเลือกรอบอื่น",
+      rateLimit: "ส่งคำสมัครบ่อยเกินไป รอสักครู่แล้วลองใหม่ หรือทักเราทางไลน์",
       server: "ระบบมีปัญหา ลองใหม่อีกครั้ง หรือทักเราทางไลน์",
     },
     success: {

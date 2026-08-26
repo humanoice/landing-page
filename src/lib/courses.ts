@@ -62,7 +62,12 @@ export async function getUpcomingCourses(locale: Locale): Promise<CourseOption[]
 export function pickCourse(courses: CourseOption[], query: string | string[] | undefined) {
   const key = Array.isArray(query) ? query[0] : query;
   if (!key) return undefined;
-  return courses.find((course) => String(course.id) === key || course.slug === key)?.id;
+  // `?course=hardware` matches every run of that track — tick the first one that
+  // still has a seat, since the form won't let a full run be picked anyway.
+  return courses.find(
+    (course) =>
+      (String(course.id) === key || course.slug === key) && (course.seats === null || course.seats.left > 0),
+  )?.id;
 }
 
 function toOption(row: CourseRow, locale: Locale): CourseOption {

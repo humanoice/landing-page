@@ -2,6 +2,7 @@
 
 import { LANGUAGES, PROGRAMMING_LANGUAGES, SKILLS } from "@/lib/apply-options";
 import { db } from "@/lib/db";
+import { clientKey, take } from "@/lib/rate-limit";
 
 /** Everything the form posted, echoed back on error so nothing the applicant typed is lost. */
 export type ApplyValues = {
@@ -22,7 +23,14 @@ export type ApplyValues = {
 };
 
 /** Keys into i18n `apply.errors` — the action stays locale-agnostic. */
-export type ApplyErrorCode = "required" | "email" | "number" | "course" | "server";
+export type ApplyErrorCode =
+  | "required"
+  | "email"
+  | "number"
+  | "course"
+  | "full"
+  | "rateLimit"
+  | "server";
 
 export type ApplyErrors = Partial<
   Record<
@@ -87,6 +95,15 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
   // Pretend it worked so the bot moves on.
   if (text(formData, "website")) return { status: "success" };
 
+  // Nothing authenticates this action, so the only thing between a script and an
+  // unbounded pile of rows is how often one caller may try. Checked after the
+  // honeypot, which costs nothing and gives bots no signal that a limit exists.
+  const key = await clientKey();
+  if (!take(key)) {
+    console.warn("[apply] rate limited", key);
+    return { status: "error", errors: { form: "rateLimit" }, values };
+  }
+
   const errors: ApplyErrors = {};
   if (!values.firstName) errors.firstName = "required";
   if (!values.lastName) errors.lastName = "required";
@@ -115,13 +132,25 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
   try {
     const sql = db();
 
-    // Same rule as the page's list: the run must still be open. A stale tab or a
-    // hand-crafted POST for a past run stops here.
-    const [course] = await sql`
-      select id from courses
-      where id = ${courseId}::int and is_active and start_time > now()
-    `;
+    // Same rule as the page's list: the run must still be open, with a seat left.
+    // A stale tab, a filled-up run, or a hand-crafted POST stops here.
+    const [course] = (await sql`
+      select
+        c.id,
+        case
+          when c.limit_seat is null then null
+          else (c.limit_seat - (
+            select count(*) from participations p
+            where p.course_id = c.id and p.paid_status
+          ))::int
+        end as seats_left
+      from courses c
+      where c.id = ${courseId}::int and c.is_active and c.start_time > now()
+    `) as { id: number; seats_left: number | null }[];
     if (!course) return { status: "error", errors: { course: "course" }, values };
+    if (course.seats_left !== null && course.seats_left <= 0) {
+      return { status: "error", errors: { course: "full" }, values };
+    }
 
     // One statement, so the student row and their participation land together or not at all.
     await sql`

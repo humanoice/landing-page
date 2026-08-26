@@ -166,7 +166,7 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
         />
       </Section>
 
-      {/* ---------- 03 · Pick a run ---------- */}
+      {/* ---------- 03 · Pick your track ---------- */}
       <Section n="03" title={copy.sections.course} shadow="var(--yellow-main)">
         {courses.length === 0 ? (
           <div className="rounded-2xl border-2 border-dashed border-ink/25 bg-cream/60 p-6 text-center">
@@ -185,13 +185,13 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
         ) : (
           <fieldset aria-invalid={errors.course ? true : undefined}>
             <legend className="sr-only">{copy.sections.course}</legend>
-            <div className="space-y-4">
-              {courses.map((course) => (
-                <CourseCard
-                  key={course.id}
-                  course={course}
+            <div className="space-y-5">
+              {groupByTrack(courses).map((group) => (
+                <TrackGroup
+                  key={group.trackNo ?? "other"}
+                  group={group}
                   copy={copy.course}
-                  defaultChecked={
+                  isChecked={(course) =>
                     values.course !== undefined ? values.course === String(course.id) : course.id === preselected
                   }
                 />
@@ -343,71 +343,183 @@ function Chips({ name, legend, options, isChecked, className = "" }: ChipsProps)
   );
 }
 
-type CourseCardProps = {
+type TrackGroup = {
+  /** courses.track_no — 1 Hardware / 2 Software / 3 B2B; null = untracked run */
+  trackNo: number | null;
+  courses: CourseOption[];
+};
+
+/** No seats left → the run can't be applied for, only looked at. */
+const isFull = (course: CourseOption) => course.seats !== null && course.seats.left === 0;
+
+const TRACK_ACCENT: Record<number, string> = {
+  1: "var(--yellow-main)",
+  2: "var(--orange-secondary)",
+  3: "var(--red)",
+};
+
+/**
+ * Runs of the same track differ only by date, so they belong in one box.
+ * Hardware before software before B2B — same order as the curriculum section.
+ */
+function groupByTrack(courses: CourseOption[]): TrackGroup[] {
+  const groups: TrackGroup[] = [];
+  for (const course of courses) {
+    const group = groups.find((g) => g.trackNo === course.trackNo);
+    if (group) group.courses.push(course);
+    else groups.push({ trackNo: course.trackNo, courses: [course] });
+  }
+  return groups.sort((a, b) => (a.trackNo ?? 99) - (b.trackNo ?? 99));
+}
+
+type TrackGroupProps = {
+  group: TrackGroup;
+  copy: ApplyCopy["course"];
+  isChecked: (course: CourseOption) => boolean;
+};
+
+function TrackGroup({ group, copy, isChecked }: TrackGroupProps) {
+  const [lead] = group.courses;
+  const trackNo = String(lead.trackNo ?? 0).padStart(2, "0");
+  const tag = lead.trackNo ? copy.trackTags[lead.trackNo - 1] : undefined;
+  const accent = TRACK_ACCENT[lead.trackNo ?? 0] ?? "var(--yellow-main)";
+  // Whatever every run shares gets hoisted into the header, so the options
+  // below are just dates. Anything that differs stays on its own row.
+  const sharedPrice = group.courses.every((course) => course.price === lead.price);
+  const sharedDescription = group.courses.every((course) => course.description === lead.description);
+
+  return (
+    <fieldset className="rounded-2xl border-2 border-ink bg-cream p-4 shadow-[4px_4px_0_0_var(--ink)] sm:p-5">
+      <legend className="sr-only">{`${copy.track} ${trackNo}${tag ? ` · ${tag}` : ""} — ${lead.name}`}</legend>
+
+      <div className="flex items-start gap-3.5">
+        <span
+          aria-hidden
+          className={`grid size-9 shrink-0 place-items-center rounded-lg border-2 border-ink font-mono text-xs font-bold ${
+            lead.trackNo === 1 ? "text-ink" : "text-cream"
+          }`}
+          style={{ background: accent }}
+        >
+          {trackNo}
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-crimson">
+            {copy.track} {trackNo}
+            {tag && ` · ${tag}`}
+          </p>
+          <p className="mt-1 font-display text-base font-extrabold uppercase leading-tight tracking-tight sm:text-lg">
+            {lead.name}
+          </p>
+        </div>
+        {sharedPrice && (
+          <span className="shrink-0 rounded-lg border-2 border-ink bg-crimson px-2.5 py-1 font-mono text-sm font-bold tracking-tight text-white shadow-[2px_2px_0_0_var(--ink)]">
+            {lead.price ? `${lead.price} ${copy.priceUnit}` : copy.priceTbd}
+          </span>
+        )}
+      </div>
+
+      {sharedDescription && lead.description && (
+        <p className="mt-3 text-sm leading-snug text-ink/60">{lead.description}</p>
+      )}
+
+      <p className="mb-2.5 mt-5 flex items-center gap-3 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-ink/45">
+        {copy.pickDate}
+        <span aria-hidden className="h-0.5 flex-1 bg-ink/10" />
+      </p>
+      <div className="space-y-2.5">
+        {group.courses.map((course) => (
+          <CourseOption
+            key={course.id}
+            course={course}
+            copy={copy}
+            defaultChecked={!isFull(course) && isChecked(course)}
+            showPrice={!sharedPrice}
+            showDescription={!sharedDescription}
+          />
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+type CourseOptionProps = {
   course: CourseOption;
   copy: ApplyCopy["course"];
   defaultChecked: boolean;
+  showPrice: boolean;
+  showDescription: boolean;
 };
 
-function CourseCard({ course, copy, defaultChecked }: CourseCardProps) {
-  const tag = course.trackNo ? copy.trackTags[course.trackNo - 1] : undefined;
+function CourseOption({ course, copy, defaultChecked, showPrice, showDescription }: CourseOptionProps) {
   const dayUnit = copy.dayUnit[course.days === 1 ? 0 : 1];
   const seats = course.seats;
+  const full = isFull(course);
   // Turn red when it's getting tight — two left is when people should hurry.
-  const seatsTight = seats !== null && seats.left <= 2;
+  const seatsTone = full
+    ? "border-crimson bg-crimson text-white"
+    : seats !== null && seats.left <= 2
+      ? "border-crimson text-crimson"
+      : "border-ink/25 text-ink/70";
 
   return (
-    <label className="group relative flex cursor-pointer items-start gap-4 rounded-2xl border-2 border-ink bg-cream p-4 transition-all duration-200 hover:-translate-y-0.5 has-[:checked]:-translate-x-0.5 has-[:checked]:-translate-y-0.5 has-[:checked]:bg-yellow-main has-[:checked]:shadow-[5px_5px_0_0_var(--ink)] has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-yellow-main/60 sm:p-5">
+    <label
+      className={`group relative flex items-center gap-3 rounded-xl border-2 p-3 transition-all duration-200 sm:px-4 ${
+        full
+          ? "cursor-not-allowed border-dashed border-ink/30 bg-cream-deep/50"
+          : "cursor-pointer border-ink bg-white hover:-translate-y-0.5 has-[:checked]:-translate-x-0.5 has-[:checked]:-translate-y-0.5 has-[:checked]:bg-yellow-main has-[:checked]:shadow-[4px_4px_0_0_var(--ink)] has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-yellow-main/60"
+      }`}
+    >
       <input
         type="radio"
         name="course"
         value={course.id}
         defaultChecked={defaultChecked}
+        disabled={full}
         className="sr-only"
       />
       {/* custom radio dot */}
       <span
         aria-hidden
-        className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full border-2 border-ink bg-white"
+        className={`grid size-5 shrink-0 place-items-center rounded-full border-2 ${
+          full ? "border-ink/30 bg-cream" : "border-ink bg-white"
+        }`}
       >
-        <span className="size-2.5 rounded-full bg-ink opacity-0 transition-opacity group-has-[:checked]:opacity-100" />
+        <span className="size-2 rounded-full bg-ink opacity-0 transition-opacity group-has-[:checked]:opacity-100" />
       </span>
 
-      <span className="min-w-0 flex-1">
-        <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-crimson">
-          {copy.track} {String(course.trackNo ?? 0).padStart(2, "0")}
-          {tag && ` · ${tag}`}
+      <span className={`min-w-0 flex-1 ${full ? "opacity-55" : ""}`}>
+        <span className="block font-mono text-[13px] font-bold leading-tight tracking-tight sm:text-sm">
+          {course.dates}
         </span>
-        <span className="mt-1 block font-display text-base font-extrabold uppercase leading-tight tracking-tight sm:text-lg">
-          {course.name}
-        </span>
-        <span className="mt-2 flex flex-wrap gap-x-2 font-mono text-xs text-ink/70">
-          <span>{course.dates}</span>
-          <span aria-hidden>·</span>
+        {/* Seats ride along with the meta line so narrow screens wrap instead of squeezing. */}
+        <span className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1.5 font-mono text-[11px] text-ink/60">
           <span>{course.hours}</span>
           <span aria-hidden>·</span>
           <span>
             {course.days} {dayUnit}
           </span>
+          {seats && (
+            <span
+              className={`rounded-full border-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] ${seatsTone}`}
+            >
+              {full ? copy.full : `${seats.left}/${seats.total} ${copy.seatsLeft}`}
+            </span>
+          )}
         </span>
-        {course.description && (
-          <span className="mt-2 block text-sm leading-snug text-ink/60">{course.description}</span>
-        )}
-        {seats && (
-          <span
-            className={`mt-3 inline-flex items-center gap-1.5 rounded-full border-2 px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] ${
-              seatsTight ? "border-crimson text-crimson" : "border-ink/25 text-ink/70"
-            }`}
-          >
-            <span className="size-1.5 rounded-full bg-current" />
-            {seats.left === 0 ? copy.full : `${seats.left}/${seats.total} ${copy.seatsLeft}`}
-          </span>
+        {showDescription && course.description && (
+          <span className="mt-1.5 block text-sm leading-snug text-ink/60">{course.description}</span>
         )}
       </span>
 
-      <span className="shrink-0 rounded-lg border-2 border-ink bg-crimson px-2.5 py-1 font-mono text-sm font-bold tracking-tight text-white shadow-[2px_2px_0_0_var(--ink)]">
-        {course.price ? `${course.price} ${copy.priceUnit}` : copy.priceTbd}
-      </span>
+      {showPrice && (
+        <span
+          className={`shrink-0 rounded-lg border-2 border-ink bg-crimson px-2.5 py-1 font-mono text-xs font-bold tracking-tight text-white shadow-[2px_2px_0_0_var(--ink)] ${
+            full ? "opacity-55" : ""
+          }`}
+        >
+          {course.price ? `${course.price} ${copy.priceUnit}` : copy.priceTbd}
+        </span>
+      )}
     </label>
   );
 }
