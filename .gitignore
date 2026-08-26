@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# neon cli local context (org/project/branch pointer)
+.neon
+
+# local agent skills
+.agents
+.claude
+skills-lock.json

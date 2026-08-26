@@ -92,7 +92,7 @@ const en = {
         duration: "n days",
         price: "xx,xxx THB",
         blurb:
-          "Both tracks end to end for companies and teams — assemble a full humanoid, then program it to walk.",
+          "Exclusive and customizable end-to-end track for companies — from assemble to programming a humanoid.",
         cta: "Talk to us",
         items: [
           [
@@ -262,7 +262,7 @@ const th: HomeDictionary = {
         duration: "n วัน",
         price: "xx,xxx บาท",
         blurb:
-          "สองคอร์สแบบครบจบสำหรับบริษัทและทีม — ประกอบฮิวแมนนอยด์เต็มตัว แล้วเขียนโปรแกรมให้มันเดินได้จริง",
+          "หลักสูตรแบบเอ็กซ์คลูซีฟที่ปรับแต่งได้สำหรับบริษัท — ตั้งแต่การประกอบไปจนถึงการเขียนโปรแกรม humanoid",
         cta: "ทักมาคุยกันทางไลน์",
         items: [
           [
