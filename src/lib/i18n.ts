@@ -13,22 +13,20 @@ const en = {
   },
   hero: {
     eyebrow: "Humanoid School · Bangkok",
-    title: ["Teach", "humans to", "build humanoids."],
+    title: ["Learn to", "", "build humanoids."],
     description:
       "Thailand's first hands-on humanoid school. From raw materials to full deployment — you assemble, program, and deploy a real humanoid.",
     join: "Apply",
     curriculum: "See the curriculum",
     facts: [
       ["Location", "Phra Khanong, Bangkok"],
-      ["Program", "3 Tracks"],
+      ["Program", "2 Tracks"],
     ],
   },
   curriculum: {
     eyebrow: "// The Tracks",
     title: "Pick your",
     highlight: "track",
-    description:
-      "We welcome whether you're software or hardware or newbie. Every track is hands-on with real humanoids.",
     track: "Track",
     combined: "Track 01 + Track 02, end to end",
     note: "The curriculum can change based on the pace of learners.",
@@ -36,7 +34,7 @@ const en = {
       {
         name: "Hardware in Humanoid 101",
         tag: "Hardware",
-        duration: "3 days",
+        duration: "2 days",
         price: "12,900 THB",
         blurb:
           "It's like IKEA but for humanoids - assemble from ground up yourself",
@@ -63,10 +61,10 @@ const en = {
       {
         name: "Humanoid Programming 101",
         tag: "Software",
-        duration: "2 days",
+        duration: "1 day",
         price: "8,900 THB",
         blurb:
-          "The software side of humanoids: model one, simulate it, and train it to walk.",
+          "Modern software for humanoids: From modeling to simulate for policy.",
         cta: "Apply",
         items: [
           [
@@ -74,26 +72,26 @@ const en = {
             "The framework every modern robot runs on — nodes, topics, and control loops.",
           ],
           [
-            "Simulation",
-            "Gazebo and MuJoCo — rehearse every motion in real physics before it touches hardware.",
-          ],
-          [
             "URDF",
             "Model a humanoid's body so your code knows every link and joint.",
           ],
           [
-            "Deployment",
-            "Deploy the policy to control and make it walk",
+            "Simulation",
+            "Gazebo and MuJoCo — rehearse every motion in real physics before it touches hardware.",
+          ],
+          [
+            "Policy",
+            "Deploy the RL model that make the robot walk.",
           ],
         ],
       },
       {
-        name: "Full Bootcamp",
-        tag: "B2B",
+        name: "B2B",
+        tag: "Full Scope",
         duration: "n days",
-        price: "xx,xxx THB",
+        price: "xxx,xxx THB",
         blurb:
-          "Exclusive and customizable end-to-end track for companies — from assemble to programming a humanoid.",
+          "Buy the robot kit. We teach you from assemble to programming. Suitable for labs or companies.",
         cta: "Talk to us",
         items: [
           [
@@ -123,14 +121,47 @@ const en = {
     eyebrow: "// Open-Source Partners",
     title: "We build on",
     highlight: "open robots",
-    description:
-      "Our students learn on real, open-source humanoid platforms — the same hardware shaping the future of robotics worldwide.",
     asimov:
       "Asimov 1, Here Be Dragons Edition — open-source humanoid robot by Menlo Research.",
     roboparty:
       "ROBOTO ORIGIN, open-source humanoid robot by a Shanghai-based company.",
     label: "Build with us",
     callout: ["Open-source", "a humanoid?", "Partner up"],
+  },
+  faq: {
+    eyebrow: "// FAQ",
+    title: "Questions,",
+    highlight: "answered",
+    items: [
+      {
+        q: "No background at all — can I still join?",
+        a: "Yes. Hardware in Humanoid 101 is beginner-friendly. Humanoid Programming 101 requires programming basics: if you can write simple Python or use a command line, that's enough.",
+      },
+      {
+        q: "How many days is it, and what time?",
+        a: "Hardware in Humanoid 101 runs 2 days; Humanoid Programming 101 is 1 day. Both run 10:00–17:00.",
+      },
+      {
+        q: "Why learn to build a humanoid?",
+        a: "Because once you’ve built one yourself, you understand it to the core. As Confucius put it: “I hear and I forget. I see and I remember. I do and I understand.”",
+      },
+      {
+        q: "What do I walk away with?",
+        a: "A certificate from Humanoice — and the experience of having built a real humanoid with your own hands.",
+      },
+      {
+        q: "Which humanoid do we learn on, and what are its specs?",
+        a: "1.25 m tall, 34 kg, 23 degrees of freedom, joints up to 120 N·m, and a 48 V / 15 Ah battery.",
+      },
+      {
+        q: "How old do I need to be to join?",
+        a: "15+ years old. This is real mechanical and electrical work — it can be dangerous if you’re careless.",
+      },
+      {
+        q: "What language do you teach in?",
+        a: "Thai or English — whichever the room needs.",
+      },
+    ],
   },
   footer: {
     ticker: "Make Thailand the Shenzhen of Southeast Asia",
@@ -184,6 +215,15 @@ const en = {
       course: "Pick your track",
     },
     optional: "optional",
+    /** Shown under the email field while / after we look a returning applicant up. */
+    lookup: {
+      checking: "Looking you up…",
+      /** We filled the form in ourselves. */
+      found: "Welcome back — we filled in what we already have. Change anything that's out of date.",
+      /** We know them, but they'd already started typing, so it's their call. */
+      known: "We've got you on file. Want your saved answers filled in?",
+      fill: "Use my saved details",
+    },
     fields: {
       firstName: "First name",
       lastName: "Last name",
@@ -201,6 +241,7 @@ const en = {
     },
     backgroundHint:
       "Your answwer will increase the chance of acceptance",
+    courseHint: "Pick a date in the track you want — or one in each.",
     languages: { th: "Thai", en: "English" } satisfies Record<Language, string>,
     programmingLanguages: {
       python: "Python",
@@ -221,6 +262,8 @@ const en = {
       // indexed by courses.track_no − 1
       trackTags: ["Hardware", "Software", "B2B"],
       pickDate: "Pick a date",
+      /** Drops this track's pick, for someone who only wants the other one. */
+      clear: "Clear",
       dayUnit: ["day", "days"],
       priceUnit: "THB",
       priceTbd: "Talk to us",
@@ -236,7 +279,8 @@ const en = {
       required: "Required",
       email: "That doesn't look like an email",
       number: "Whole years, please",
-      course: "Pick your track",
+      course: "Pick at least one date",
+      oneTrack: "One date per track, please",
       full: "That run just filled up — pick another date",
       rateLimit: "Too many tries just now. Give it a few minutes, or ping us on LINE.",
       server: "Something broke on our side. Try again, or ping us on LINE.",
@@ -267,22 +311,20 @@ const th: ThaiDictionary = {
   },
   hero: {
     eyebrow: "โรงเรียนสอนฮิวแมนนอยด์ · กรุงเทพฯ",
-    title: ["สอนคน", "ให้สร้าง", "ฮิวแมนนอยด์"],
+    title: ["เรียนการสร้าง", "", "ฮิวแมนนอยด์"],
     description:
-      "โรงเรียนสอนประกอบฮิวแมนนอยด์ แบบลงมือทำแห่งแรกของไทย ตั้งแต่ชิ้นส่วนแรกจนพร้อมใช้งานจริง — คุณจะได้ประกอบ เขียนโปรแกรม และพาฮิวแมนนอยด์ของจริงไปลุยงาน",
+      "โรงเรียนสอนประกอบฮิวแมนนอยด์ แบบลงมือทำแห่งแรกของไทย ตั้งแต่ชิ้นส่วนแรกจนพร้อมใช้งานจริง — คุณจะได้ประกอบ เขียนโปรแกรม และพาฮิวแมนนอยด์เดิน",
     join: "สมัคร",
     curriculum: "มาดูหลักสูตร",
     facts: [
       ["สถานที่", "พระโขนง, กรุงเทพฯ"],
-      ["รูปแบบ", "3 คอร์ส"],
+      ["รูปแบบ", "2 คอร์ส"],
     ],
   },
   curriculum: {
     eyebrow: "// คอร์สการเรียน",
     title: "เลือกคอร์ส",
     highlight: "ของคุณ",
-    description:
-      "มีให้เลือกไม่ว่าจะสายซอฟต์แวร์หรือฮาร์ดแวร์ ทุกคอร์สได้ลงมือทำเกี่ยวกับฮิวแมนนอยด์ของจริง",
     track: "คอร์ส",
     combined: "คอร์ส 01 + คอร์ส 02 แบบครบจบ",
     note: "เนื้อหาอาจปรับตามจังหวะการเรียนของแต่ละรุ่น",
@@ -290,7 +332,7 @@ const th: ThaiDictionary = {
       {
         name: "Hardware in Humanoid 101",
         tag: "ฮาร์ดแวร์",
-        duration: "3 วัน",
+        duration: "2 วัน",
         price: "12,900 บาท",
         blurb:
           "เหมือน IKEA แต่เป็นฮิวแมนนอยด์ — ประกอบเองตั้งแต่ชิ้นแรกจนครบทั้งตัว",
@@ -317,7 +359,7 @@ const th: ThaiDictionary = {
       {
         name: "Humanoid Programming 101",
         tag: "ซอฟต์แวร์",
-        duration: "2 วัน",
+        duration: "1 วัน",
         price: "8,900 บาท",
         blurb:
           "สายซอฟต์แวร์ของฮิวแมนนอยด์ — สร้างโมเดล จำลอง แล้วเทรนให้มันเดินได้",
@@ -377,13 +419,46 @@ const th: ThaiDictionary = {
     eyebrow: "// พาร์ตเนอร์โอเพนซอร์ส",
     title: "เราสร้างบน",
     highlight: "หุ่นยนต์เปิด",
-    description:
-      "ที่นี่คุณจะได้เรียนกับแพลตฟอร์มฮิวแมนนอยด์โอเพนซอร์สของจริง — ฮาร์ดแวร์เดียวกับที่กำลังพาโลกหุ่นยนต์ไปข้างหน้า",
     asimov:
       "Asimov 1, Here Be Dragons Edition — ฮิวแมนนอยด์โอเพนซอร์สจาก Menlo Research",
     roboparty: "ROBOTO ORIGIN — ฮิวแมนนอยด์โอเพนซอร์สจากบริษัทในเซี่ยงไฮ้",
     label: "มาสร้างด้วยกัน",
     callout: ["มีฮิวแมนนอยด์", "โอเพนซอร์สเหรอ?", "มาเป็นพาร์ตเนอร์กัน"],
+  },
+  faq: {
+    eyebrow: "// คำถามที่พบบ่อย",
+    title: "คำถาม",
+    highlight: "ที่เจอบ่อย",
+    items: [
+      {
+        q: "ถ้าไม่มีความรู้พื้นฐานเลย เรียนได้ไหม",
+        a: "คุณสามารถเรียน Hardware in Humanoid 101 ได้ ไม่ต้องมีพื้นฐานอะไรมาก่อน ส่วน Humanoid Programming 101 ขอพื้นฐานการเขียนโปรแกรมนิดหน่อย ถ้าเขียน Python ง่าย ๆ ได้ หรือใช้ command line เป็น ก็พอแล้ว",
+      },
+      {
+        q: "เรียนกี่วัน กี่โมง",
+        a: "Hardware in Humanoid 101 เรียน 2 วัน และ Humanoid Programming 101 เรียน 1 วัน เวลา 10:00–17:00 น.",
+      },
+      {
+        q: "ทำไมต้องเรียนประกอบฮิวแมนนอยด์",
+        a: "เพราะถ้าได้ทำด้วยตัวเอง คุณจะเข้าใจฮิวแมนนอยด์ถึงแก่น อย่างที่ขงจื๊อว่าไว้ “ได้ยินแล้วลืม ได้เห็นแล้วจำ ได้ลงมือทำจึงเข้าใจ”",
+      },
+      {
+        q: "เรียนจบแล้วได้อะไร",
+        a: "ได้ใบประกาศนียบัตรจาก Humanoice พร้อมประสบการณ์ประกอบและควบคุมฮิวแมนนอยด์จริงด้วยมือตัวเอง",
+      },
+      {
+        q: "ฮิวแมนนอยด์ที่ใช้สอน มีรายละเอียดเป็นยังไง",
+        a: "สูง 1.25 เมตร หนัก 34 กก. 23 องศาอิสระ (DOF) แรงบิดข้อต่อสูงสุด 120 N·m แบตเตอรี่ 48V 15Ah",
+      },
+      {
+        q: "ต้องอายุเท่าไหร่ถึงจะเรียนได้",
+        a: "อายุ 15+ ปี เพราะเป็นงาน mechanic และไฟฟ้าของจริง ถ้าไม่ระวังก็อาจเกิดอันตรายได้",
+      },
+      {
+        q: "สอนเป็นภาษาอะไร",
+        a: "ได้ทั้งภาษาไทยและอังกฤษ แล้วแต่ผู้เรียนในรอบนั้นถนัดภาษาไหน",
+      },
+    ],
   },
   footer: {
     ticker: "เปลี่ยนประเทศไทยให้เป็น Shenzhen แห่ง Southeast Asia",
@@ -408,6 +483,12 @@ const th: ThaiDictionary = {
       course: "เลือกรอบเรียน",
     },
     optional: "ไม่บังคับ",
+    lookup: {
+      checking: "กำลังค้นหาข้อมูลของคุณ…",
+      found: "ยินดีต้อนรับกลับมา — เรากรอกข้อมูลที่มีอยู่ให้แล้ว แก้ส่วนที่เปลี่ยนไปได้เลย",
+      known: "เราเคยเจออีเมลนี้แล้ว ให้กรอกข้อมูลเดิมให้ไหม",
+      fill: "ใช้ข้อมูลเดิมของฉัน",
+    },
     fields: {
       firstName: "ชื่อ",
       lastName: "นามสกุล",
@@ -425,6 +506,7 @@ const th: ThaiDictionary = {
     },
     backgroundHint:
       "คำตอบของคุณจะช่วยเพิ่มโอกาสในการได้รับการตอบรับ",
+    courseHint: "เลือกรอบวันที่ของคอร์สที่สนใจ จะเลือกคอร์สเดียวหรือทั้งสองคอร์สก็ได้",
     languages: { th: "ไทย", en: "อังกฤษ" },
     programmingLanguages: {
       python: "Python",
@@ -444,6 +526,7 @@ const th: ThaiDictionary = {
       track: "คอร์ส",
       trackTags: ["ฮาร์ดแวร์", "ซอฟต์แวร์", "B2B"],
       pickDate: "เลือกรอบวันที่",
+      clear: "ล้าง",
       dayUnit: ["วัน", "วัน"],
       priceUnit: "บาท",
       priceTbd: "ทักมาคุยกัน",
@@ -459,7 +542,8 @@ const th: ThaiDictionary = {
       required: "กรุณากรอก",
       email: "รูปแบบอีเมลไม่ถูกต้อง",
       number: "กรอกเป็นจำนวนปีเต็ม",
-      course: "กรุณาเลือกรอบเรียน",
+      course: "กรุณาเลือกอย่างน้อยหนึ่งรอบ",
+      oneTrack: "เลือกได้คอร์สละหนึ่งรอบ",
       full: "รอบนี้เพิ่งเต็ม กรุณาเลือกรอบอื่น",
       rateLimit: "ส่งคำสมัครบ่อยเกินไป รอสักครู่แล้วลองใหม่ หรือทักเราทางไลน์",
       server: "ระบบมีปัญหา ลองใหม่อีกครั้ง หรือทักเราทางไลน์",

@@ -1,9 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { useActionState, useEffect } from "react";
+import { useActionState, useCallback, useEffect, useRef, useState } from "react";
 import { track, TrackedAnchor } from "@/components/track";
-import { submitApplication, type ApplyErrors, type ApplyState, type ApplyValues } from "@/app/apply/actions";
+import {
+  lookupApplicant,
+  submitApplication,
+  type ApplyErrors,
+  type ApplyPrefill,
+  type ApplyState,
+  type ApplyValues,
+} from "@/app/apply/actions";
 import { LANGUAGES, PROGRAMMING_LANGUAGES, SKILLS } from "@/lib/apply-options";
 import type { CourseOption } from "@/lib/courses";
 import type { ApplyCopy } from "@/lib/i18n";
@@ -29,36 +36,187 @@ const CTA =
 
 const INITIAL: ApplyState = { status: "idle" };
 
+/** Everything the applicant types. The runs they pick live in their own state — a lookup never touches those. */
+type FormValues = Omit<ApplyValues, "courses">;
+type ChipField = "languages" | "programmingLanguages" | "skills";
+type TextName = Exclude<keyof FormValues, ChipField>;
+
+const EMPTY: FormValues = {
+  firstName: "",
+  lastName: "",
+  nickname: "",
+  email: "",
+  phone: "",
+  lineId: "",
+  jobTitle: "",
+  company: "",
+  languages: [],
+  roboticsYears: "",
+  programmingYears: "",
+  programmingLanguages: [],
+  skills: [],
+};
+
+/** Same shape the action validates with; here it only decides when an address is worth asking about. */
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** Long enough that typing an address doesn't fire a query per keystroke. */
+const LOOKUP_DELAY = 500;
+
+type Lookup =
+  | { status: "idle" }
+  | { status: "checking" }
+  /** `offer`: we know them, but the form already had answers in it — filling it in is their call. */
+  | { status: "found"; prefill: ApplyPrefill; offer: boolean };
+
 export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProps) {
   const [state, formAction, pending] = useActionState(submitApplication, INITIAL);
+  // Seeded from the action's echo, so a submit that fails without JS comes back filled in.
+  const [values, setValues] = useState<FormValues>(() =>
+    state.status === "error" ? { ...state.values } : EMPTY,
+  );
+  // The runs they've ticked. One per track, so a second pick in a track replaces
+  // the first — but a track is optional, and picking none of them isn't.
+  const [picked, setPicked] = useState<number[]>(() => {
+    const open = new Set(courses.filter((course) => !isFull(course)).map((course) => course.id));
+    const seeded =
+      state.status === "error"
+        ? state.values.courses.map(Number)
+        : preselected !== undefined
+          ? [preselected]
+          : [];
+    return seeded.filter((id) => open.has(id));
+  });
+  const [lookup, setLookup] = useState<Lookup>({ status: "idle" });
+  /** Anything but the email touched by hand since the last fill? Then it isn't ours to overwrite. */
+  const touched = useRef(false);
+  /** Last address the server answered for, so re-renders don't ask again. */
+  const asked = useRef<string | null>(null);
+
+  const fill = useCallback((prefill: ApplyPrefill) => {
+    setValues((current) => ({ ...current, ...prefill }));
+    touched.current = false;
+  }, []);
+
+  const email = values.email.trim();
+
+  // Once the address looks complete, ask quietly whether we already know them.
+  // A miss says nothing at all: whether an address is on file isn't the form's
+  // to announce.
+  useEffect(() => {
+    const key = email.toLowerCase();
+    if (asked.current === key) return;
+    // Whatever note is on screen belongs to the address they just edited away from.
+    setLookup((current) => (current.status === "idle" ? current : { status: "idle" }));
+    if (!EMAIL.test(email)) return;
+
+    let live = true;
+    const timer = setTimeout(async () => {
+      setLookup({ status: "checking" });
+      let prefill: ApplyPrefill | null = null;
+      try {
+        prefill = await lookupApplicant(email);
+      } catch {
+        // Offline, or the action never landed. Silent — an empty form still works.
+      }
+      if (!live) return;
+
+      asked.current = key;
+      if (!prefill) {
+        setLookup({ status: "idle" });
+        return;
+      }
+      track("apply_prefill");
+      const offer = touched.current;
+      if (!offer) fill(prefill);
+      setLookup({ status: "found", prefill, offer });
+    }, LOOKUP_DELAY);
+
+    return () => {
+      live = false;
+      clearTimeout(timer);
+    };
+  }, [email, fill]);
+
+  const set = (name: TextName, value: string) => {
+    // Typing the email is what starts a lookup, so it can't be what blocks one.
+    if (name !== "email") touched.current = true;
+    setValues((current) => ({ ...current, [name]: value }));
+  };
+
+  const toggle = (name: ChipField, code: string) => {
+    touched.current = true;
+    setValues((current) => ({
+      ...current,
+      [name]: current[name].includes(code)
+        ? current[name].filter((value) => value !== code)
+        : [...current[name], code],
+    }));
+  };
+
+  const trackOf = (id: number) => courses.find((course) => course.id === id)?.trackNo ?? null;
+
+  /** Tick a run — or untick it, which is how a track someone changed their mind about gets dropped. */
+  const pick = (course: CourseOption) => {
+    setPicked((current) =>
+      current.includes(course.id)
+        ? current.filter((id) => id !== course.id)
+        : [...current.filter((id) => trackOf(id) !== course.trackNo), course.id],
+    );
+  };
+
+  const clearTrack = (trackNo: number | null) => {
+    setPicked((current) => current.filter((id) => trackOf(id) !== trackNo));
+  };
 
   if (state.status === "success") {
     return <SuccessPanel copy={copy.success} lineUrl={lineUrl} />;
   }
 
   const errors: ApplyErrors = state.status === "error" ? state.errors : {};
-  const values: Partial<ApplyValues> = state.status === "error" ? state.values : {};
   const message = (key: keyof ApplyErrors) => (errors[key] ? copy.errors[errors[key]] : undefined);
-  const checked = (key: "languages" | "programmingLanguages" | "skills", code: string) =>
-    values[key]?.includes(code) ?? false;
 
   return (
     <form action={formAction} noValidate className="space-y-10">
       {/* ---------- 01 · About you ---------- */}
       <Section n="01" title={copy.sections.about} shadow="var(--yellow-main)">
         <div className="grid gap-5 sm:grid-cols-2">
+          {/* First, and on its own row: it's the key we look everything else up by. */}
+          <div className="sm:col-span-2">
+            <TextField
+              name="email"
+              label={copy.fields.email}
+              type="email"
+              autoComplete="email"
+              inputMode="email"
+              value={values.email}
+              onValueChange={set}
+              error={message("email")}
+            />
+            <LookupNote
+              lookup={lookup}
+              copy={copy.lookup}
+              onFill={() => {
+                if (lookup.status !== "found") return;
+                fill(lookup.prefill);
+                setLookup({ ...lookup, offer: false });
+              }}
+            />
+          </div>
           <TextField
             name="firstName"
             label={copy.fields.firstName}
             autoComplete="given-name"
-            defaultValue={values.firstName}
+            value={values.firstName}
+            onValueChange={set}
             error={message("firstName")}
           />
           <TextField
             name="lastName"
             label={copy.fields.lastName}
             autoComplete="family-name"
-            defaultValue={values.lastName}
+            value={values.lastName}
+            onValueChange={set}
             error={message("lastName")}
           />
           <TextField
@@ -66,23 +224,16 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
             label={copy.fields.nickname}
             optional={copy.optional}
             autoComplete="nickname"
-            defaultValue={values.nickname}
+            value={values.nickname}
+            onValueChange={set}
           />
           <TextField
             name="jobTitle"
             label={copy.fields.jobTitle}
             optional={copy.optional}
             autoComplete="organization-title"
-            defaultValue={values.jobTitle}
-          />
-          <TextField
-            name="email"
-            label={copy.fields.email}
-            type="email"
-            autoComplete="email"
-            inputMode="email"
-            defaultValue={values.email}
-            error={message("email")}
+            value={values.jobTitle}
+            onValueChange={set}
           />
           <TextField
             name="phone"
@@ -90,14 +241,16 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
             type="tel"
             autoComplete="tel"
             inputMode="tel"
-            defaultValue={values.phone}
+            value={values.phone}
+            onValueChange={set}
             error={message("phone")}
           />
           <TextField
             name="lineId"
             label={copy.fields.lineId}
             autoComplete="off"
-            defaultValue={values.lineId}
+            value={values.lineId}
+            onValueChange={set}
             error={message("lineId")}
           />
           <div className="sm:col-span-2">
@@ -106,7 +259,8 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
               label={copy.fields.company}
               optional={copy.optional}
               autoComplete="organization"
-              defaultValue={values.company}
+              value={values.company}
+              onValueChange={set}
             />
           </div>
         </div>
@@ -116,7 +270,8 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
           name="languages"
           legend={copy.fields.languages}
           options={LANGUAGES.map((code) => [code, copy.languages[code]])}
-          isChecked={(code) => checked("languages", code)}
+          picked={values.languages}
+          onToggle={toggle}
         />
       </Section>
 
@@ -133,7 +288,8 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
             max={80}
             step={1}
             placeholder="0"
-            defaultValue={values.roboticsYears}
+            value={values.roboticsYears}
+            onValueChange={set}
             error={message("roboticsYears")}
           />
           <TextField
@@ -146,7 +302,8 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
             max={80}
             step={1}
             placeholder="0"
-            defaultValue={values.programmingYears}
+            value={values.programmingYears}
+            onValueChange={set}
             error={message("programmingYears")}
           />
         </div>
@@ -155,19 +312,26 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
           name="programmingLanguages"
           legend={copy.fields.programmingLanguages}
           options={PROGRAMMING_LANGUAGES.map((code) => [code, copy.programmingLanguages[code]])}
-          isChecked={(code) => checked("programmingLanguages", code)}
+          picked={values.programmingLanguages}
+          onToggle={toggle}
         />
         <Chips
           className="mt-6"
           name="skills"
           legend={copy.fields.skills}
           options={SKILLS.map((code) => [code, copy.skills[code]])}
-          isChecked={(code) => checked("skills", code)}
+          picked={values.skills}
+          onToggle={toggle}
         />
       </Section>
 
       {/* ---------- 03 · Pick your track ---------- */}
-      <Section n="03" title={copy.sections.course} shadow="var(--yellow-main)">
+      <Section
+        n="03"
+        title={copy.sections.course}
+        hint={courses.length > 0 ? copy.courseHint : undefined}
+        shadow="var(--yellow-main)"
+      >
         {courses.length === 0 ? (
           <div className="rounded-2xl border-2 border-dashed border-ink/25 bg-cream/60 p-6 text-center">
             <p className="text-sm leading-relaxed text-ink/70">{copy.course.empty}</p>
@@ -191,9 +355,9 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
                   key={group.trackNo ?? "other"}
                   group={group}
                   copy={copy.course}
-                  isChecked={(course) =>
-                    values.course !== undefined ? values.course === String(course.id) : course.id === preselected
-                  }
+                  picked={picked}
+                  onPick={pick}
+                  onClear={() => clearTrack(group.trackNo)}
                 />
               ))}
             </div>
@@ -276,17 +440,19 @@ function Section({ n, title, hint, shadow, children }: SectionProps) {
 }
 
 type TextFieldProps = {
-  name: keyof ApplyValues;
+  name: TextName;
   label: string;
   optional?: string;
   error?: string;
-  defaultValue?: string;
+  /** Controlled, so a lookup can drop someone's saved answers straight into the form. */
+  value: string;
+  onValueChange: (name: TextName, value: string) => void;
 } & Pick<
   React.ComponentProps<"input">,
   "type" | "autoComplete" | "inputMode" | "placeholder" | "min" | "max" | "step"
 >;
 
-function TextField({ name, label, optional, error, ...input }: TextFieldProps) {
+function TextField({ name, label, optional, error, value, onValueChange, ...input }: TextFieldProps) {
   const id = `apply-${name}`;
   return (
     <div>
@@ -300,6 +466,8 @@ function TextField({ name, label, optional, error, ...input }: TextFieldProps) {
         id={id}
         name={name}
         className={INPUT}
+        value={value}
+        onChange={(event) => onValueChange(name, event.target.value)}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${id}-error` : undefined}
         {...input}
@@ -313,15 +481,64 @@ function TextField({ name, label, optional, error, ...input }: TextFieldProps) {
   );
 }
 
+type LookupNoteProps = {
+  lookup: Lookup;
+  copy: ApplyCopy["lookup"];
+  onFill: () => void;
+};
+
+/**
+ * The only trace the lookup leaves. Nothing renders on a miss — a first-time
+ * applicant sees the plain form they'd have seen anyway.
+ */
+function LookupNote({ lookup, copy, onFill }: LookupNoteProps) {
+  if (lookup.status === "idle") return null;
+
+  if (lookup.status === "checking") {
+    return (
+      <p
+        aria-live="polite"
+        className="mt-2 flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink/45"
+      >
+        <span aria-hidden className="size-1.5 animate-pulse rounded-full bg-ink/50" />
+        {copy.checking}
+      </p>
+    );
+  }
+
+  return (
+    <div
+      aria-live="polite"
+      className="pop-in mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-2.5 rounded-xl border-2 border-ink bg-yellow-main px-4 py-2.5 shadow-[3px_3px_0_0_var(--ink)]"
+      style={{ "--rot": "0deg" } as React.CSSProperties}
+    >
+      <p className="flex-1 text-[13px] leading-snug text-ink">
+        {lookup.offer ? copy.known : copy.found}
+      </p>
+      {/* Only when they'd already typed something we'd be trampling. */}
+      {lookup.offer && (
+        <button
+          type="button"
+          onClick={onFill}
+          className="shrink-0 rounded-full border-2 border-ink bg-white px-3.5 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink shadow-[2px_2px_0_0_var(--ink)] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_var(--ink)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+        >
+          {copy.fill}
+        </button>
+      )}
+    </div>
+  );
+}
+
 type ChipsProps = {
-  name: string;
+  name: ChipField;
   legend: string;
   options: [code: string, label: string][];
-  isChecked: (code: string) => boolean;
+  picked: string[];
+  onToggle: (name: ChipField, code: string) => void;
   className?: string;
 };
 
-function Chips({ name, legend, options, isChecked, className = "" }: ChipsProps) {
+function Chips({ name, legend, options, picked, onToggle, className = "" }: ChipsProps) {
   return (
     <fieldset className={className}>
       <legend className={LABEL}>{legend}</legend>
@@ -332,7 +549,8 @@ function Chips({ name, legend, options, isChecked, className = "" }: ChipsProps)
               type="checkbox"
               name={name}
               value={code}
-              defaultChecked={isChecked(code)}
+              checked={picked.includes(code)}
+              onChange={() => onToggle(name, code)}
               className="sr-only"
             />
             {label}
@@ -375,10 +593,13 @@ function groupByTrack(courses: CourseOption[]): TrackGroup[] {
 type TrackGroupProps = {
   group: TrackGroup;
   copy: ApplyCopy["course"];
-  isChecked: (course: CourseOption) => boolean;
+  picked: number[];
+  onPick: (course: CourseOption) => void;
+  /** Drops this track's pick — the discoverable half of "click the date again to untick it". */
+  onClear: () => void;
 };
 
-function TrackGroup({ group, copy, isChecked }: TrackGroupProps) {
+function TrackGroup({ group, copy, picked, onPick, onClear }: TrackGroupProps) {
   const [lead] = group.courses;
   const trackNo = String(lead.trackNo ?? 0).padStart(2, "0");
   const tag = lead.trackNo ? copy.trackTags[lead.trackNo - 1] : undefined;
@@ -387,6 +608,7 @@ function TrackGroup({ group, copy, isChecked }: TrackGroupProps) {
   // below are just dates. Anything that differs stays on its own row.
   const sharedPrice = group.courses.every((course) => course.price === lead.price);
   const sharedDescription = group.courses.every((course) => course.description === lead.description);
+  const chosen = group.courses.some((course) => picked.includes(course.id));
 
   return (
     <fieldset className="rounded-2xl border-2 border-ink bg-cream p-4 shadow-[4px_4px_0_0_var(--ink)] sm:p-5">
@@ -425,6 +647,15 @@ function TrackGroup({ group, copy, isChecked }: TrackGroupProps) {
       <p className="mb-2.5 mt-5 flex items-center gap-3 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-ink/45">
         {copy.pickDate}
         <span aria-hidden className="h-0.5 flex-1 bg-ink/10" />
+        {chosen && (
+          <button
+            type="button"
+            onClick={onClear}
+            className="shrink-0 rounded-full border-2 border-ink/25 px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-ink/55 transition-colors duration-150 hover:border-ink hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+          >
+            {copy.clear}
+          </button>
+        )}
       </p>
       <div className="space-y-2.5">
         {group.courses.map((course) => (
@@ -432,7 +663,8 @@ function TrackGroup({ group, copy, isChecked }: TrackGroupProps) {
             key={course.id}
             course={course}
             copy={copy}
-            defaultChecked={!isFull(course) && isChecked(course)}
+            checked={picked.includes(course.id)}
+            onPick={() => onPick(course)}
             showPrice={!sharedPrice}
             showDescription={!sharedDescription}
           />
@@ -445,12 +677,14 @@ function TrackGroup({ group, copy, isChecked }: TrackGroupProps) {
 type CourseOptionProps = {
   course: CourseOption;
   copy: ApplyCopy["course"];
-  defaultChecked: boolean;
+  /** Controlled: picking a date in this track unticks whatever the track had before. */
+  checked: boolean;
+  onPick: () => void;
   showPrice: boolean;
   showDescription: boolean;
 };
 
-function CourseOption({ course, copy, defaultChecked, showPrice, showDescription }: CourseOptionProps) {
+function CourseOption({ course, copy, checked, onPick, showPrice, showDescription }: CourseOptionProps) {
   const dayUnit = copy.dayUnit[course.days === 1 ? 0 : 1];
   const seats = course.seats;
   const full = isFull(course);
@@ -470,14 +704,15 @@ function CourseOption({ course, copy, defaultChecked, showPrice, showDescription
       }`}
     >
       <input
-        type="radio"
+        type="checkbox"
         name="course"
         value={course.id}
-        defaultChecked={defaultChecked}
+        checked={checked}
+        onChange={onPick}
         disabled={full}
         className="sr-only"
       />
-      {/* custom radio dot */}
+      {/* Round like a radio: within a track it behaves like one — but it unticks. */}
       <span
         aria-hidden
         className={`grid size-5 shrink-0 place-items-center rounded-full border-2 ${

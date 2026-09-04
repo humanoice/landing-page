@@ -1,4 +1,5 @@
 import { Curriculum } from "@/components/curriculum";
+import { Faq } from "@/components/faq";
 import { Hero } from "@/components/hero";
 import { Marquee } from "@/components/marquee";
 import { Navbar } from "@/components/navbar";
@@ -30,6 +31,7 @@ export function HomePage({ locale, copy, ticker }: HomePageProps) {
         <Curriculum locale={locale} copy={copy.curriculum} />
         <Team copy={copy.team} />
         <Partners copy={copy.partners} />
+        <Faq copy={copy.faq} />
       </main>
       <SiteFooter locale={locale} copy={copy} />
     </>

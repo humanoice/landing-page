@@ -68,6 +68,12 @@ create table if not exists participations (
   unique (student_id, course_id)               -- one row per student per course run (also indexes student_id lookups)
 );
 
+-- Email is a student's identity: /apply prefills a returning applicant's answers from
+-- this row and updates it instead of adding another. lower() because people type
+-- Ann@x.com one time and ann@x.com the next; nulls stay distinct, so the students who
+-- came in via LINE with no email don't collide.
+create unique index if not exists students_email_lower_idx on students (lower(email));
+
 create index if not exists participations_course_id_idx on participations (course_id);
 
 -- Keep updated_at current on every UPDATE (Postgres has no ON UPDATE clause).

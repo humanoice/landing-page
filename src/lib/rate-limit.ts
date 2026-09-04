@@ -8,13 +8,25 @@ import { headers } from "next/headers";
  * address, so the numbers are loose enough that an office applying together
  * won't trip them.
  */
-const BURST = { limit: 5, ms: 10 * 60_000 };
-const HOURLY = { limit: 15, ms: 60 * 60_000 };
+const BURST_MS = 10 * 60_000;
+const HOURLY_MS = 60 * 60_000;
+
+export type Budget = { burst: number; hourly: number };
+
+/** Writing an application. One person sends one, maybe two after a typo. */
+export const SUBMIT: Budget = { burst: 5, hourly: 15 };
+
+/**
+ * Reading a returning applicant back by email. Fires while someone types, and
+ * hands out one person's details, so it's looser than SUBMIT but still small
+ * enough that nobody walks a mailing list through it.
+ */
+export const LOOKUP: Budget = { burst: 20, hourly: 60 };
 
 /** Room for far more real callers than we'll see; past it, the coldest keys go. */
 const MAX_KEYS = 10_000;
 
-/** key → hit timestamps, oldest first, never more than HOURLY.limit of them. */
+/** key → hit timestamps, oldest first, never more than the budget's hourly limit. */
 const hits = new Map<string, number[]>();
 
 /**
@@ -26,12 +38,12 @@ const hits = new Map<string, number[]>();
  * Returns false when the caller is over either window. A rejected attempt isn't
  * recorded, so hammering can't extend anyone's own lockout indefinitely.
  */
-export function take(key: string, now = Date.now()): boolean {
-  const recent = (hits.get(key) ?? []).filter((at) => now - at < HOURLY.ms);
+export function take(key: string, budget: Budget = SUBMIT, now = Date.now()): boolean {
+  const recent = (hits.get(key) ?? []).filter((at) => now - at < HOURLY_MS);
 
   if (
-    recent.length >= HOURLY.limit ||
-    recent.filter((at) => now - at < BURST.ms).length >= BURST.limit
+    recent.length >= budget.hourly ||
+    recent.filter((at) => now - at < BURST_MS).length >= budget.burst
   ) {
     hits.set(key, recent);
     return false;
@@ -49,7 +61,7 @@ export function take(key: string, now = Date.now()): boolean {
 
 function evict(now: number) {
   for (const [key, times] of hits) {
-    if (now - times[times.length - 1] >= HOURLY.ms) hits.delete(key);
+    if (now - times[times.length - 1] >= HOURLY_MS) hits.delete(key);
   }
   for (const key of hits.keys()) {
     if (hits.size <= MAX_KEYS) break;

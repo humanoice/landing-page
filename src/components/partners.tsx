@@ -32,14 +32,9 @@ export function Partners({ copy }: PartnersProps) {
             <span className="inline-block h-px w-8 bg-yellow-main" />
             {copy.eyebrow}
           </p>
-          <div className="mt-5 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <h2 className="max-w-2xl font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight">
-              {copy.title} <span className="text-yellow-main">{copy.highlight}</span>
-            </h2>
-            <p className="max-w-sm text-base leading-relaxed text-cream/70">
-              {copy.description}
-            </p>
-          </div>
+          <h2 className="mt-5 max-w-2xl font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight">
+            {copy.title} <span className="text-yellow-main">{copy.highlight}</span>
+          </h2>
         </Reveal>
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">

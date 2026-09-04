@@ -106,14 +106,9 @@ export function Curriculum({ locale, copy }: CurriculumProps) {
             <span className="inline-block h-px w-8 bg-crimson" />
             {copy.eyebrow}
           </p>
-          <div className="mt-5 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <h2 className="max-w-2xl font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight text-ink">
-              {copy.title} <span className="text-crimson">{copy.highlight}</span>
-            </h2>
-            <p className="max-w-sm text-base leading-relaxed text-ink/70">
-              {copy.description}
-            </p>
-          </div>
+          <h2 className="mt-5 max-w-2xl font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight text-ink">
+            {copy.title} <span className="text-crimson">{copy.highlight}</span>
+          </h2>
         </Reveal>
 
         {/* Track cards — two 101s, then the full bootcamp that combines them */}
