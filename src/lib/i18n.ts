@@ -18,6 +18,9 @@ const en = {
       "Thailand's first hands-on humanoid school. From raw materials to full deployment — you assemble, program, and deploy a real humanoid.",
     join: "Apply",
     curriculum: "See the curriculum",
+    reel: {
+      alt: "Students laying out parts, testing a board with a multimeter, and walking a humanoid on a gantry at the Humanoice workshop",
+    },
     facts: [
       ["Location", "Phra Khanong, Bangkok"],
       ["Program", "2 Tracks"],
@@ -316,6 +319,9 @@ const th: ThaiDictionary = {
       "โรงเรียนสอนประกอบฮิวแมนนอยด์ แบบลงมือทำแห่งแรกของไทย ตั้งแต่ชิ้นส่วนแรกจนพร้อมใช้งานจริง — คุณจะได้ประกอบ เขียนโปรแกรม และพาฮิวแมนนอยด์เดิน",
     join: "สมัคร",
     curriculum: "มาดูหลักสูตร",
+    reel: {
+      alt: "นักเรียนกำลังจัดวางชิ้นส่วน ทดสอบบอร์ดด้วยมัลติมิเตอร์ และพาฮิวแมนนอยด์เดินบนราวช่วยพยุงที่เวิร์กช็อปของ Humanoice",
+    },
     facts: [
       ["สถานที่", "พระโขนง, กรุงเทพฯ"],
       ["รูปแบบ", "2 คอร์ส"],

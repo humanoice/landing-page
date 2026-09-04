@@ -157,6 +157,15 @@ body::before {
   to { transform: rotate(360deg); }
 }
 
+/* Buffering readout — square ticks, not a spinner, to match the hard-edge kit */
+.tick {
+  animation: tick 0.9s ease-in-out infinite;
+}
+@keyframes tick {
+  0%, 100% { opacity: 0.25; transform: translateY(0); }
+  40%      { opacity: 1;    transform: translateY(-3px); }
+}
+
 /* ---------- Scroll reveal (IntersectionObserver toggles .is-visible) ---------- */
 .reveal {
   opacity: 0;

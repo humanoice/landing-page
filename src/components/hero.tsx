@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { HeroReel } from "@/components/hero-reel";
 import { TrackedLink } from "@/components/track";
 import { applyPath, type HomeDictionary, type Locale } from "@/lib/i18n";
 
@@ -90,43 +90,15 @@ export function Hero({ locale, copy }: HeroProps) {
           </div>
         </div>
 
-        {/* ---------- Right: waving mascot in a framed badge ---------- */}
-        <div className="relative mx-auto w-full max-w-sm lg:max-w-none">
-          {/* speech bubble */}
-          <div
-            className="pop-in absolute -left-2 -top-4 z-20 rotate-[-5deg] rounded-2xl border-2 border-ink bg-white px-4 py-2 shadow-[4px_4px_0_0_var(--ink)] sm:-left-6"
-            style={{ "--rot": "-5deg", animationDelay: "0.9s" } as React.CSSProperties}
-          >
-            <span className="font-display text-base font-extrabold text-ink">
-              สวัสดี!
-            </span>
-          </div>
-
-          {/* rotated badge frame holding the mascot */}
-          <div
-            className="hero-rise relative rotate-[3deg] rounded-[2rem] border-[3px] border-ink bg-cream p-6 shadow-[12px_12px_0_0_var(--yellow-main)] sm:p-10"
-            style={{ animationDelay: "0.4s" }}
-          >
-            <div
-              className="dots absolute inset-0 rounded-[2rem] opacity-50"
-              style={{ "--dot": "rgba(189,17,74,0.14)" } as React.CSSProperties}
-              aria-hidden
-            />
-            <Image
-              src="/logo.png"
-              alt="The Humanoice mascot — a robot cat with an antenna and a toolbox chest"
-              width={420}
-              height={420}
-              preload
-              className="wave relative mx-auto h-auto w-full max-w-[320px]"
-            />
-            <span
-              className="pop-in absolute -bottom-4 -right-3 z-20 rotate-[8deg] rounded-full border-2 border-ink bg-crimson px-4 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-white shadow-[3px_3px_0_0_var(--ink)]"
-              style={{ "--rot": "8deg", animationDelay: "1.05s" } as React.CSSProperties}
-            >
-              ★ Est. 2026
-            </span>
-          </div>
+        {/* ---------- Right: the bench window ---------- */}
+        <div
+          className="hero-rise mx-auto w-fit"
+          style={{ animationDelay: "0.4s" }}
+        >
+          <HeroReel
+            alt={copy.reel.alt}
+            className="w-[min(64vw,252px)] sm:w-[268px] lg:w-[300px]"
+          />
         </div>
       </div>
 

@@ -128,8 +128,10 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <noscript>
-          {/* Without JS the scroll-reveal observer never runs — keep content visible */}
-          <style>{`.reveal{opacity:1 !important;transform:none !important}`}</style>
+          {/* Without JS the scroll-reveal observer never runs — keep content visible.
+              The hero reel never starts either, so drop its buffering chip and
+              let the poster frame stand as the finished state. */}
+          <style>{`.reveal{opacity:1 !important;transform:none !important}.reel-waiting{display:none !important}`}</style>
         </noscript>
         {children}
       </body>
