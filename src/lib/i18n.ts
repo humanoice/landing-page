@@ -216,6 +216,7 @@ const en = {
       about: "About you",
       background: "Your background",
       course: "Pick your track",
+      payer: "Receipt & payment",
     },
     optional: "optional",
     /** Shown under the email field while / after we look a returning applicant up. */
@@ -287,6 +288,7 @@ const en = {
       full: "That run just filled up — pick another date",
       rateLimit: "Too many tries just now. Give it a few minutes, or ping us on LINE.",
       server: "Something broke on our side. Try again, or ping us on LINE.",
+      payer: "Pick one",
     },
     success: {
       eyebrow: "// Thank you",
@@ -295,6 +297,120 @@ const en = {
       body: "Your seat will only be confirmed after payment. Please add us on LINE to make your payment.",
       line: "Pay via LINE",
       qrLabel: "@humanoice",
+    },
+    /** Section 04: who pays, what goes on the receipt, and a live total. */
+    payer: {
+      hint: "Who's paying? It sets the amount to transfer and what goes on the receipt.",
+      individual: "Individual",
+      individualHint: "Paying yourself",
+      company: "Company",
+      companyHint: "Your company pays",
+      individualNote: "Receipt details are optional — fill them in if you'd like the receipt in your name.",
+      companyNote:
+        "A company deducts 3% withholding tax at source, so you transfer 97% and send us the withholding tax certificate (50 ทวิ).",
+      fields: {
+        individual: {
+          name: "Full name on the receipt",
+          taxId: "National ID / passport no.",
+          address: "Address",
+        },
+        company: { name: "Company name", taxId: "Tax ID", address: "Registered address" },
+      },
+      preview: {
+        title: "What you'll transfer",
+        fee: "Course fee",
+        withholding: "3% withholding tax",
+        due: "Transfer",
+        pickFirst: "Pick a date above and the amount shows up here.",
+        onRequest: "Price on request — we'll sort payment out on LINE.",
+      },
+    },
+    /** Step 2: bank details, slip upload, and what to say when the slip doesn't pass. */
+    pay: {
+      eyebrow: "// Step 2 of 2",
+      title: "Transfer,",
+      highlight: "then upload the slip.",
+      intro:
+        "Transfer the amount below to our Kasikorn account, then upload the slip. We check it on the spot — it takes up to a minute.",
+      runs: "Your seats",
+      amount: "Amount to transfer",
+      withholdingNote: "3% withholding tax deducted",
+      bank: "Kasikorn Bank",
+      accountName: "Account name",
+      copy: "Copy",
+      copied: "Copied!",
+      slip: "Transfer slip",
+      slipHint: "A screenshot from your banking app. JPEG, PNG or WebP, up to 4 MB.",
+      choose: "Choose image",
+      change: "Change image",
+      submit: "Verify payment",
+      submitting: "Checking your slip…",
+      errors: {
+        missingSlip: "Add the slip image first",
+        unsupportedType: "JPEG, PNG or WebP only",
+        tooLarge: "That image is over 4 MB — a screenshot is plenty",
+        rateLimit: "Too many tries just now. Give it a few minutes, or send the slip on LINE.",
+        expired: "This payment link has gone stale. Send the form again — your answers are saved.",
+        server: "We couldn't check the slip just now. Try again, or send it on LINE.",
+      },
+      rejected: {
+        eyebrow: "// Hmm",
+        title: "That slip",
+        highlight: "didn't match",
+        // keyed by SlipIssue (src/lib/slip.ts)
+        issues: {
+          unreadable: "We couldn't read the image. Try a clearer screenshot — or send it on LINE.",
+          notSlip: "That doesn't look like a transfer slip. Upload the screenshot from your banking app.",
+          recipient: "The recipient isn't our account. Check it's Kasikorn 238-1-20282-0, บจก. ฮิวแมน น้อย.",
+          amount:
+            "The amount doesn't match what's due. If you paid a different figure, send the slip on LINE and we'll sort it out.",
+          suspicious:
+            "Something about that slip didn't look right to us. Send it on LINE and a human will check it properly.",
+          duplicate: "That slip has already been used for another seat. If that's a mistake, tell us on LINE.",
+        },
+        body: "If you did pay, your seat isn't lost — send us the slip on LINE and a human will sort it out.",
+        line: "Send slip on LINE",
+        retry: "Or try another image below.",
+      },
+    },
+    /** The end of the road: paid, invited, done. */
+    paid: {
+      eyebrow: "// You're in",
+      title: "Seat",
+      highlight: "confirmed.",
+      /** Wraps the email address: [before, after]. */
+      body: ["Payment received. We've emailed a calendar invite to", "— add us on LINE for updates before the day."],
+      runs: "Your bootcamp",
+      where: "Where",
+      map: "Open in Google Maps",
+      calendar: "Add to Google Calendar",
+      line: "Add LINE for updates",
+      qrLabel: "@humanoice",
+    },
+    /** How to get here. Shown on the paid panel, in the email, and as the calendar event's description. */
+    directions: {
+      title: "How to get to Humanoice",
+      steps: [
+        "BTS Phra Khanong (5-minute walk)",
+        "Driving (we have limited parking space — first come, first served)",
+      ],
+      landmark: "The Humanoice lab is next to the Chapter Optical glasses shop.",
+      laptop: "If you're coming to learn software, please bring your laptop.",
+      onTime: "Please arrive on time — we start on time.",
+      questions: "If you have any questions, reach us on LINE @humanoice.",
+    },
+    /** The confirmation email (src/lib/email.ts). */
+    email: {
+      subject: "You're in",
+      greeting: "Hi",
+      body: "Payment received — your seat is confirmed. Here's what's coming up:",
+      calendarLink: "Add to Google Calendar",
+      where: "Where",
+      map: "Open in Google Maps",
+      calendar: "The calendar invite is attached — accept it and the dates land in your calendar.",
+      lineCta: "Add LINE",
+      signoff: "See you at the workshop,",
+      team: "The Humanoice team",
     },
   },
 };
@@ -487,6 +603,7 @@ const th: ThaiDictionary = {
       about: "เกี่ยวกับคุณ",
       background: "พื้นฐานของคุณ",
       course: "เลือกรอบเรียน",
+      payer: "ใบเสร็จ & การชำระเงิน",
     },
     optional: "ไม่บังคับ",
     lookup: {
@@ -553,6 +670,7 @@ const th: ThaiDictionary = {
       full: "รอบนี้เพิ่งเต็ม กรุณาเลือกรอบอื่น",
       rateLimit: "ส่งคำสมัครบ่อยเกินไป รอสักครู่แล้วลองใหม่ หรือทักเราทางไลน์",
       server: "ระบบมีปัญหา ลองใหม่อีกครั้ง หรือทักเราทางไลน์",
+      payer: "กรุณาเลือก",
     },
     success: {
       eyebrow: "// ขอบคุณ",
@@ -562,6 +680,111 @@ const th: ThaiDictionary = {
       line: "จ่ายเงินใน LINE",
       qrLabel: "@humanoice",
     },
+    payer: {
+      hint: "ใครเป็นผู้ชำระเงิน? ส่วนนี้กำหนดยอดโอนและชื่อบนใบเสร็จ",
+      individual: "บุคคลธรรมดา",
+      individualHint: "ชำระเอง",
+      company: "นิติบุคคล",
+      companyHint: "บริษัทเป็นผู้ชำระ",
+      individualNote: "ข้อมูลใบเสร็จไม่บังคับ กรอกไว้ถ้าต้องการใบเสร็จในชื่อของคุณ",
+      companyNote:
+        "นิติบุคคลหักภาษี ณ ที่จ่าย 3% จึงโอนเพียง 97% ของค่าเรียน และรบกวนส่งหนังสือรับรองหัก ณ ที่จ่าย (50 ทวิ) ให้เราด้วยนะ",
+      fields: {
+        individual: {
+          name: "ชื่อ-นามสกุลบนใบเสร็จ",
+          taxId: "เลขบัตรประชาชน / พาสปอร์ต",
+          address: "ที่อยู่",
+        },
+        company: { name: "ชื่อบริษัท", taxId: "เลขประจำตัวผู้เสียภาษี", address: "ที่อยู่จดทะเบียน" },
+      },
+      preview: {
+        title: "ยอดที่ต้องโอน",
+        fee: "ค่าเรียน",
+        withholding: "หัก ณ ที่จ่าย 3%",
+        due: "ยอดโอน",
+        pickFirst: "เลือกรอบเรียนด้านบนก่อน แล้วยอดโอนจะแสดงตรงนี้",
+        onRequest: "ราคาตามตกลง เดี๋ยวคุยเรื่องชำระเงินกันทางไลน์",
+      },
+    },
+    pay: {
+      eyebrow: "// ขั้นตอนที่ 2 จาก 2",
+      title: "โอนเงิน",
+      highlight: "แล้วอัปโหลดสลิป",
+      intro:
+        "โอนยอดด้านล่างเข้าบัญชีกสิกรไทยของเรา แล้วอัปโหลดสลิป ระบบจะตรวจสอบให้ทันที ใช้เวลาไม่เกินหนึ่งนาที",
+      runs: "ที่นั่งของคุณ",
+      amount: "ยอดที่ต้องโอน",
+      withholdingNote: "หักภาษี ณ ที่จ่าย 3% แล้ว",
+      bank: "ธนาคารกสิกรไทย",
+      accountName: "ชื่อบัญชี",
+      copy: "คัดลอก",
+      copied: "คัดลอกแล้ว!",
+      slip: "สลิปโอนเงิน",
+      slipHint: "ภาพหน้าจอจากแอปธนาคาร ไฟล์ JPEG, PNG หรือ WebP ขนาดไม่เกิน 4 MB",
+      choose: "เลือกรูป",
+      change: "เปลี่ยนรูป",
+      submit: "ตรวจสอบการชำระเงิน",
+      submitting: "กำลังตรวจสลิป…",
+      errors: {
+        missingSlip: "กรุณาแนบรูปสลิปก่อน",
+        unsupportedType: "รองรับเฉพาะ JPEG, PNG หรือ WebP",
+        tooLarge: "รูปใหญ่เกิน 4 MB ใช้ภาพหน้าจอก็พอแล้ว",
+        rateLimit: "ลองบ่อยเกินไป รอสักครู่แล้วลองใหม่ หรือส่งสลิปมาทางไลน์",
+        expired: "ลิงก์ชำระเงินหมดอายุแล้ว กรุณาส่งใบสมัครอีกครั้ง ข้อมูลของคุณยังอยู่ครบ",
+        server: "ตรวจสลิปไม่สำเร็จในตอนนี้ ลองใหม่อีกครั้ง หรือส่งสลิปมาทางไลน์",
+      },
+      rejected: {
+        eyebrow: "// อืม",
+        title: "สลิปนี้",
+        highlight: "ไม่ตรงกัน",
+        issues: {
+          unreadable: "อ่านรูปไม่ออก ลองภาพหน้าจอที่ชัดกว่านี้ หรือส่งมาทางไลน์",
+          notSlip: "รูปนี้ไม่เหมือนสลิปโอนเงิน กรุณาอัปโหลดภาพหน้าจอจากแอปธนาคาร",
+          recipient: "บัญชีปลายทางไม่ใช่บัญชีของเรา เช็กว่าเป็นกสิกรไทย 238-1-20282-0 บจก. ฮิวแมน น้อย",
+          amount: "ยอดเงินไม่ตรงกับยอดที่ต้องโอน ถ้าโอนยอดอื่นไว้ ส่งสลิปมาทางไลน์ เดี๋ยวเราจัดการให้",
+          suspicious: "สลิปนี้ดูมีบางอย่างไม่ปกติ ส่งมาทางไลน์ให้ทีมงานตรวจอีกทีนะ",
+          duplicate: "สลิปนี้ถูกใช้ยืนยันที่นั่งอื่นไปแล้ว ถ้าคิดว่าผิดพลาด ทักเราทางไลน์ได้เลย",
+        },
+        body: "ถ้าโอนแล้วจริง ที่นั่งของคุณไม่หายไปไหน ส่งสลิปมาทางไลน์ แล้วทีมงานจะตรวจให้เอง",
+        line: "ส่งสลิปทางไลน์",
+        retry: "หรือลองรูปอื่นด้านล่าง",
+      },
+    },
+    paid: {
+      eyebrow: "// ยืนยันแล้ว",
+      title: "ที่นั่ง",
+      highlight: "ยืนยันเรียบร้อย",
+      body: ["ได้รับเงินแล้ว เราส่งคำเชิญปฏิทินไปที่", "แล้ว แอดไลน์ไว้เพื่อรับข่าวสารก่อนวันเรียนน้า"],
+      runs: "คอร์สของคุณ",
+      where: "สถานที่",
+      map: "เปิดใน Google Maps",
+      calendar: "เพิ่มลง Google Calendar",
+      line: "แอดไลน์รับข่าวสาร",
+      qrLabel: "@humanoice",
+    },
+    directions: {
+      title: "เดินทางมา Humanoice ยังไง",
+      steps: [
+        "BTS พระโขนง (เดินประมาณ 5 นาที)",
+        "ขับรถมา (ที่จอดรถมีจำกัด มาก่อนได้ก่อน)",
+      ],
+      landmark: "ร้าน Humanoice อยู่ติดกับร้านแว่น Chapter Optical",
+      laptop: "ถ้ามาเรียนคอร์สซอฟต์แวร์ กรุณานำแล็ปท็อปมาด้วย",
+      onTime: "กรุณามาให้ตรงเวลา เพราะเราจะเริ่มตรงเวลา",
+      questions: "มีคำถามทักเราได้ที่ LINE @humanoice",
+    },
+    email: {
+      subject: "ยืนยันที่นั่งแล้ว",
+      greeting: "สวัสดีคุณ",
+      body: "ได้รับเงินเรียบร้อย ที่นั่งของคุณยืนยันแล้ว รายละเอียดคอร์สมีดังนี้",
+      calendarLink: "เพิ่มลง Google Calendar",
+      where: "สถานที่",
+      map: "เปิดใน Google Maps",
+      calendar: "แนบคำเชิญปฏิทินมาด้วย กดตอบรับแล้ววันเรียนจะเข้าปฏิทินของคุณทันที",
+      lineCta: "แอดไลน์",
+      signoff: "แล้วเจอกันที่เวิร์กช็อป",
+      team: "ทีม Humanoice",
+    },
   },
 };
 
@@ -569,6 +792,8 @@ const dictionaries = { en, th };
 
 export function getDictionary(locale: "en"): typeof en;
 export function getDictionary(locale: "th"): ThaiDictionary;
+/** For callers that only know the locale at runtime (the apply actions) — `.apply` is `ApplyCopy` either way. */
+export function getDictionary(locale: Locale): typeof en | ThaiDictionary;
 export function getDictionary(locale: Locale): typeof en | ThaiDictionary {
   return dictionaries[locale];
 }

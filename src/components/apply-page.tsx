@@ -5,7 +5,6 @@ import { ApplyForm } from "@/components/apply-form";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { getUpcomingCourses, pickCourse } from "@/lib/courses";
 import { localePath, type ApplyCopy, type Locale } from "@/lib/i18n";
-import { siteConfig } from "@/lib/site";
 
 type ApplyPageProps = {
   locale: Locale;
@@ -81,10 +80,10 @@ async function Form({ locale, copy, course }: Pick<ApplyPageProps, "locale" | "c
 
   return (
     <ApplyForm
+      locale={locale}
       copy={copy}
       courses={courses}
       preselected={pickCourse(courses, course)}
-      lineUrl={siteConfig.lineAddUrl}
     />
   );
 }

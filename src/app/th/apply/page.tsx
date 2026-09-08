@@ -4,6 +4,13 @@ import { ApplyPage } from "@/components/apply-page";
 import { getDictionary } from "@/lib/i18n";
 import { siteConfig } from "@/lib/site";
 
+/**
+ * Applies to every server action posted from this page — including the slip
+ * check, which is two DeepSeek vision calls at worst (src/lib/slip.ts budgets
+ * itself to fit inside this). The platform default of 10s would cut it off.
+ */
+export const maxDuration = 60;
+
 const dictionary = getDictionary("th");
 const copy = dictionary.apply;
 

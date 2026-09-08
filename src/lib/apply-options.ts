@@ -18,6 +18,12 @@ export const PROGRAMMING_LANGUAGES = [
 ] as const;
 export const SKILLS = ["electronics", "mechanics", "cad", "ml"] as const;
 
+/**
+ * What counts as an address worth acting on. Shared so the rule that starts the
+ * form's lookup and the rule that rejects a submit can't drift apart.
+ */
+export const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export type Language = (typeof LANGUAGES)[number];
 export type ProgrammingLanguage = (typeof PROGRAMMING_LANGUAGES)[number];
 export type Skill = (typeof SKILLS)[number];

@@ -11,6 +11,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    serverActions: {
+      // The payment step posts a slip image through a server action. Default is
+      // 1 MB; MAX_IMAGE_BYTES in src/lib/slip-types.ts is 4 MB, plus multipart overhead.
+      bodySizeLimit: "5mb",
+    },
+  },
 };
 
 export default nextConfig;

@@ -23,6 +23,13 @@ export const SUBMIT: Budget = { burst: 5, hourly: 15 };
  */
 export const LOOKUP: Budget = { burst: 20, hourly: 60 };
 
+/**
+ * Checking a payment slip. The tightest budget here: every attempt is a vision
+ * call we pay for, and someone paying for a seat uploads one screenshot, maybe
+ * a second after a bad crop.
+ */
+export const SLIP: Budget = { burst: 5, hourly: 15 };
+
 /** Room for far more real callers than we'll see; past it, the coldest keys go. */
 const MAX_KEYS = 10_000;
 

@@ -1,8 +1,23 @@
 "use client";
 
-import Image from "next/image";
-import { useActionState, useCallback, useEffect, useRef, useState } from "react";
-import { track, TrackedAnchor } from "@/components/track";
+import { useActionState, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Arrow,
+  BusyNote,
+  CHIP,
+  CTA,
+  CTA_BUSY,
+  ERROR,
+  LABEL,
+  LineCta,
+  META,
+  OutcomePanel,
+  PILL,
+  Section,
+  TextField,
+} from "@/components/apply-ui";
+import { PaymentPanel } from "@/components/payment-panel";
+import { track } from "@/components/track";
 import {
   lookupApplicant,
   submitApplication,
@@ -11,35 +26,32 @@ import {
   type ApplyState,
   type ApplyValues,
 } from "@/app/apply/actions";
-import { LANGUAGES, PROGRAMMING_LANGUAGES, SKILLS } from "@/lib/apply-options";
+import { EMAIL, LANGUAGES, PROGRAMMING_LANGUAGES, SKILLS } from "@/lib/apply-options";
 import type { CourseOption } from "@/lib/courses";
-import type { ApplyCopy } from "@/lib/i18n";
-import { siteConfig } from "@/lib/site";
+import type { ApplyCopy, Locale } from "@/lib/i18n";
+import {
+  amountDueFor,
+  formatThb,
+  isPayerType,
+  PAYER_TYPES,
+  withholding,
+  type PayerType,
+} from "@/lib/payment";
 
 type ApplyFormProps = {
+  locale: Locale;
   copy: ApplyCopy;
   courses: CourseOption[];
   /** Course id to pre-tick, from `?course=` */
   preselected?: number;
-  lineUrl: string;
 };
-
-const LABEL =
-  "mb-2 flex items-baseline gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-ink/70";
-const INPUT =
-  "w-full rounded-xl border-2 border-ink bg-white px-4 py-3 text-base text-ink shadow-[3px_3px_0_0_var(--ink)] outline-none transition-all duration-200 placeholder:text-ink/30 focus-visible:-translate-y-0.5 focus-visible:ring-4 focus-visible:ring-yellow-main/60 aria-invalid:border-crimson aria-invalid:shadow-[3px_3px_0_0_var(--red)]";
-const ERROR = "mt-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-crimson";
-const CHIP =
-  "inline-flex cursor-pointer select-none items-center rounded-full border-2 border-ink bg-white px-3.5 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink shadow-[2px_2px_0_0_var(--ink)] transition-all duration-150 hover:-translate-y-0.5 has-[:checked]:bg-ink has-[:checked]:text-yellow-main has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-yellow-main/60";
-const CTA =
-  "group inline-flex items-center gap-2 rounded-full border-2 border-ink bg-yellow-main px-7 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.12em] text-ink shadow-[5px_5px_0_0_var(--ink)] transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[9px_9px_0_0_var(--ink)] active:translate-x-0 active:translate-y-0 active:shadow-[3px_3px_0_0_var(--ink)]";
 
 const INITIAL: ApplyState = { status: "idle" };
 
 /** Everything the applicant types. The runs they pick live in their own state — a lookup never touches those. */
 type FormValues = Omit<ApplyValues, "courses">;
 type ChipField = "languages" | "programmingLanguages" | "skills";
-type TextName = Exclude<keyof FormValues, ChipField>;
+type TextName = Exclude<keyof FormValues, ChipField | "payerType">;
 
 const EMPTY: FormValues = {
   firstName: "",
@@ -55,10 +67,11 @@ const EMPTY: FormValues = {
   programmingYears: "",
   programmingLanguages: [],
   skills: [],
+  payerType: "",
+  receiptName: "",
+  receiptTaxId: "",
+  receiptAddress: "",
 };
-
-/** Same shape the action validates with; here it only decides when an address is worth asking about. */
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /** Long enough that typing an address doesn't fire a query per keystroke. */
 const LOOKUP_DELAY = 500;
@@ -69,7 +82,7 @@ type Lookup =
   /** `offer`: we know them, but the form already had answers in it — filling it in is their call. */
   | { status: "found"; prefill: ApplyPrefill; offer: boolean };
 
-export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProps) {
+export function ApplyForm({ locale, copy, courses, preselected }: ApplyFormProps) {
   const [state, formAction, pending] = useActionState(submitApplication, INITIAL);
   // Seeded from the action's echo, so a submit that fails without JS comes back filled in.
   const [values, setValues] = useState<FormValues>(() =>
@@ -92,6 +105,20 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
   const touched = useRef(false);
   /** Last address the server answered for, so re-renders don't ask again. */
   const asked = useRef<string | null>(null);
+
+  // Depend only on props, so a keystroke in any of the ~17 text fields doesn't
+  // re-sort the runs and rebuild three option lists.
+  const groups = useMemo(() => groupByTrack(courses), [courses]);
+  const chipOptions = useMemo(
+    () => ({
+      languages: LANGUAGES.map((code) => [code, copy.languages[code]] as [string, string]),
+      programmingLanguages: PROGRAMMING_LANGUAGES.map(
+        (code) => [code, copy.programmingLanguages[code]] as [string, string],
+      ),
+      skills: SKILLS.map((code) => [code, copy.skills[code]] as [string, string]),
+    }),
+    [copy],
+  );
 
   const fill = useCallback((prefill: ApplyPrefill) => {
     setValues((current) => ({ ...current, ...prefill }));
@@ -170,14 +197,20 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
   };
 
   if (state.status === "success") {
-    return <SuccessPanel copy={copy.success} lineUrl={lineUrl} />;
+    return <SuccessPanel copy={copy.success} />;
+  }
+  if (state.status === "pay") {
+    return <PaymentPanel payment={state.payment} copy={copy} locale={locale} />;
   }
 
   const errors: ApplyErrors = state.status === "error" ? state.errors : {};
   const message = (key: keyof ApplyErrors) => (errors[key] ? copy.errors[errors[key]] : undefined);
+  const payer: PayerType | null = isPayerType(values.payerType) ? values.payerType : null;
 
   return (
     <form action={formAction} noValidate className="space-y-10">
+      <input type="hidden" name="locale" value={locale} />
+
       {/* ---------- 01 · About you ---------- */}
       <Section n="01" title={copy.sections.about} shadow="var(--yellow-main)">
         <div className="grid gap-5 sm:grid-cols-2">
@@ -269,7 +302,7 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
           className="mt-7"
           name="languages"
           legend={copy.fields.languages}
-          options={LANGUAGES.map((code) => [code, copy.languages[code]])}
+          options={chipOptions.languages}
           picked={values.languages}
           onToggle={toggle}
         />
@@ -311,7 +344,7 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
           className="mt-7"
           name="programmingLanguages"
           legend={copy.fields.programmingLanguages}
-          options={PROGRAMMING_LANGUAGES.map((code) => [code, copy.programmingLanguages[code]])}
+          options={chipOptions.programmingLanguages}
           picked={values.programmingLanguages}
           onToggle={toggle}
         />
@@ -319,7 +352,7 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
           className="mt-6"
           name="skills"
           legend={copy.fields.skills}
-          options={SKILLS.map((code) => [code, copy.skills[code]])}
+          options={chipOptions.skills}
           picked={values.skills}
           onToggle={toggle}
         />
@@ -335,22 +368,13 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
         {courses.length === 0 ? (
           <div className="rounded-2xl border-2 border-dashed border-ink/25 bg-cream/60 p-6 text-center">
             <p className="text-sm leading-relaxed text-ink/70">{copy.course.empty}</p>
-            <a
-              href={lineUrl}
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => track("line_click", { location: "apply_no_courses" })}
-              className={`${CTA} mt-5 px-6 py-3 text-xs shadow-[4px_4px_0_0_var(--ink)]`}
-            >
-              {copy.course.line}
-              <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-            </a>
+            <LineCta small className="mt-5" location="apply_no_courses" label={copy.course.line} />
           </div>
         ) : (
           <fieldset aria-invalid={errors.course ? true : undefined}>
             <legend className="sr-only">{copy.sections.course}</legend>
             <div className="space-y-5">
-              {groupByTrack(courses).map((group) => (
+              {groups.map((group) => (
                 <TrackGroup
                   key={group.trackNo ?? "other"}
                   group={group}
@@ -369,6 +393,81 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
           </fieldset>
         )}
       </Section>
+
+      {/* ---------- 04 · Receipt & payment ---------- */}
+      {courses.length > 0 && (
+        <Section n="04" title={copy.sections.payer} hint={copy.payer.hint} shadow="var(--orange-secondary)">
+          <fieldset aria-invalid={errors.payerType ? true : undefined}>
+            <legend className="sr-only">{copy.sections.payer}</legend>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {PAYER_TYPES.map((type) => (
+                <PayerCard
+                  key={type}
+                  type={type}
+                  label={copy.payer[type]}
+                  hint={copy.payer[`${type}Hint`]}
+                  checked={payer === type}
+                  onPick={() => setValues((current) => ({ ...current, payerType: type }))}
+                />
+              ))}
+            </div>
+            {errors.payerType && (
+              <p role="alert" className={ERROR}>
+                {message("payerType")}
+              </p>
+            )}
+          </fieldset>
+
+          {payer && (
+            <div className="mt-6">
+              <p className="text-sm leading-relaxed text-ink/60">
+                {payer === "company" ? copy.payer.companyNote : copy.payer.individualNote}
+              </p>
+              <div className="mt-5 grid gap-5 sm:grid-cols-2">
+                <TextField
+                  name="receiptName"
+                  label={copy.payer.fields[payer].name}
+                  optional={payer === "individual" ? copy.optional : undefined}
+                  autoComplete={payer === "company" ? "organization" : "name"}
+                  value={values.receiptName}
+                  onValueChange={set}
+                  error={message("receiptName")}
+                />
+                <TextField
+                  name="receiptTaxId"
+                  label={copy.payer.fields[payer].taxId}
+                  optional={payer === "individual" ? copy.optional : undefined}
+                  autoComplete="off"
+                  inputMode="numeric"
+                  value={values.receiptTaxId}
+                  onValueChange={set}
+                  error={message("receiptTaxId")}
+                />
+                <div className="sm:col-span-2">
+                  <TextField
+                    name="receiptAddress"
+                    label={copy.payer.fields[payer].address}
+                    optional={payer === "individual" ? copy.optional : undefined}
+                    autoComplete="street-address"
+                    multiline
+                    value={values.receiptAddress}
+                    onValueChange={set}
+                    error={message("receiptAddress")}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          <AmountPreview
+            copy={copy.payer.preview}
+            unit={copy.course.priceUnit}
+            picked={picked}
+            courses={courses}
+            payer={payer}
+          />
+        </Section>
+      )}
 
       {/* Honeypot — hidden from people, irresistible to bots */}
       <div className="hidden" aria-hidden>
@@ -393,10 +492,10 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
             type="submit"
             disabled={pending}
             onClick={() => track("apply_submit")}
-            className={`${CTA} disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[5px_5px_0_0_var(--ink)]`}
+            className={`${CTA} ${CTA_BUSY}`}
           >
             {pending ? copy.submitting : copy.submit}
-            <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
+            <Arrow />
           </button>
         </div>
       )}
@@ -405,81 +504,6 @@ export function ApplyForm({ copy, courses, preselected, lineUrl }: ApplyFormProp
 }
 
 /* ---------- Pieces ---------- */
-
-type SectionProps = {
-  n: string;
-  title: string;
-  hint?: string;
-  shadow: string;
-  children: React.ReactNode;
-};
-
-function Section({ n, title, hint, shadow, children }: SectionProps) {
-  return (
-    <section
-      className="rounded-3xl border-[3px] border-ink bg-white p-6 shadow-[8px_8px_0_0_var(--shadow)] sm:p-8"
-      style={{ "--shadow": shadow } as React.CSSProperties}
-    >
-      <div className="mb-7 flex items-center gap-3.5">
-        <span
-          className="grid size-10 shrink-0 place-items-center rounded-xl border-2 border-ink font-mono text-sm font-bold text-ink"
-          style={{ background: shadow }}
-        >
-          {n}
-        </span>
-        <div>
-          <h2 className="font-display text-lg font-extrabold uppercase leading-tight tracking-tight sm:text-xl">
-            {title}
-          </h2>
-          {hint && <p className="mt-1 text-sm text-ink/55">{hint}</p>}
-        </div>
-      </div>
-      {children}
-    </section>
-  );
-}
-
-type TextFieldProps = {
-  name: TextName;
-  label: string;
-  optional?: string;
-  error?: string;
-  /** Controlled, so a lookup can drop someone's saved answers straight into the form. */
-  value: string;
-  onValueChange: (name: TextName, value: string) => void;
-} & Pick<
-  React.ComponentProps<"input">,
-  "type" | "autoComplete" | "inputMode" | "placeholder" | "min" | "max" | "step"
->;
-
-function TextField({ name, label, optional, error, value, onValueChange, ...input }: TextFieldProps) {
-  const id = `apply-${name}`;
-  return (
-    <div>
-      <label htmlFor={id} className={LABEL}>
-        {label}
-        {optional && (
-          <span className="font-normal normal-case tracking-normal text-ink/40">({optional})</span>
-        )}
-      </label>
-      <input
-        id={id}
-        name={name}
-        className={INPUT}
-        value={value}
-        onChange={(event) => onValueChange(name, event.target.value)}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={error ? `${id}-error` : undefined}
-        {...input}
-      />
-      {error && (
-        <p id={`${id}-error`} className={ERROR}>
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
 
 type LookupNoteProps = {
   lookup: Lookup;
@@ -495,15 +519,7 @@ function LookupNote({ lookup, copy, onFill }: LookupNoteProps) {
   if (lookup.status === "idle") return null;
 
   if (lookup.status === "checking") {
-    return (
-      <p
-        aria-live="polite"
-        className="mt-2 flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink/45"
-      >
-        <span aria-hidden className="size-1.5 animate-pulse rounded-full bg-ink/50" />
-        {copy.checking}
-      </p>
-    );
+    return <BusyNote className="mt-2">{copy.checking}</BusyNote>;
   }
 
   return (
@@ -517,11 +533,7 @@ function LookupNote({ lookup, copy, onFill }: LookupNoteProps) {
       </p>
       {/* Only when they'd already typed something we'd be trampling. */}
       {lookup.offer && (
-        <button
-          type="button"
-          onClick={onFill}
-          className="shrink-0 rounded-full border-2 border-ink bg-white px-3.5 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink shadow-[2px_2px_0_0_var(--ink)] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_0_var(--ink)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-        >
+        <button type="button" onClick={onFill} className={PILL}>
           {copy.fill}
         </button>
       )}
@@ -558,6 +570,98 @@ function Chips({ name, legend, options, picked, onToggle, className = "" }: Chip
         ))}
       </div>
     </fieldset>
+  );
+}
+
+type PayerCardProps = {
+  type: PayerType;
+  label: string;
+  hint: string;
+  checked: boolean;
+  onPick: () => void;
+};
+
+/** A radio dressed like a run card: the same tick, the same lift when chosen. */
+function PayerCard({ type, label, hint, checked, onPick }: PayerCardProps) {
+  return (
+    <label className="group flex cursor-pointer items-center gap-3 rounded-xl border-2 border-ink bg-white p-4 transition-all duration-200 hover:-translate-y-0.5 has-[:checked]:-translate-x-0.5 has-[:checked]:-translate-y-0.5 has-[:checked]:bg-yellow-main has-[:checked]:shadow-[4px_4px_0_0_var(--ink)] has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-yellow-main/60">
+      <input
+        type="radio"
+        name="payerType"
+        value={type}
+        checked={checked}
+        onChange={onPick}
+        className="sr-only"
+      />
+      <span aria-hidden className="grid size-5 shrink-0 place-items-center rounded-full border-2 border-ink bg-white">
+        <span className="size-2 rounded-full bg-ink opacity-0 transition-opacity group-has-[:checked]:opacity-100" />
+      </span>
+      <span className="min-w-0">
+        <span className="block font-display text-sm font-extrabold uppercase leading-tight tracking-tight">
+          {label}
+        </span>
+        <span className="mt-0.5 block font-mono text-[11px] text-ink/55">{hint}</span>
+      </span>
+    </label>
+  );
+}
+
+type AmountPreviewProps = {
+  copy: ApplyCopy["payer"]["preview"];
+  unit: string;
+  picked: number[];
+  courses: CourseOption[];
+  payer: PayerType | null;
+};
+
+/**
+ * What the transfer will be, live, so nobody meets the number for the first
+ * time on the payment step. Same arithmetic the action stores (src/lib/payment.ts).
+ */
+function AmountPreview({ copy, unit, picked, courses, payer }: AmountPreviewProps) {
+  const prices = picked.map((id) => courses.find((course) => course.id === id)?.priceThb ?? null);
+  const note =
+    picked.length === 0 ? copy.pickFirst : prices.some((price) => price === null) ? copy.onRequest : null;
+
+  if (note) {
+    return (
+      <p className="mt-7 rounded-2xl border-2 border-dashed border-ink/25 bg-cream/60 px-4 py-3 text-center text-sm text-ink/60">
+        {note}
+      </p>
+    );
+  }
+
+  const fee = prices.reduce<number>((sum, price) => sum + (price ?? 0), 0);
+  const type = payer ?? "individual";
+  const held = withholding(fee, type);
+  const due = amountDueFor(fee, type);
+
+  return (
+    <div className="mt-7 rounded-2xl border-2 border-ink bg-cream p-4 shadow-[4px_4px_0_0_var(--ink)] sm:p-5">
+      <p className={`${META} text-ink/45`}>{copy.title}</p>
+      <dl className="mt-3 space-y-1.5 font-mono text-sm">
+        <div className="flex items-baseline justify-between gap-4 text-ink/70">
+          <dt>{copy.fee}</dt>
+          <dd>
+            {formatThb(fee)} {unit}
+          </dd>
+        </div>
+        {held > 0 && (
+          <div className="flex items-baseline justify-between gap-4 text-ink/70">
+            <dt>{copy.withholding}</dt>
+            <dd>
+              − {formatThb(held)} {unit}
+            </dd>
+          </div>
+        )}
+        <div className="flex items-baseline justify-between gap-4 border-t-2 border-ink/10 pt-2 text-base font-bold">
+          <dt>{copy.due}</dt>
+          <dd className="text-crimson">
+            {formatThb(due)} {unit}
+          </dd>
+        </div>
+      </dl>
+    </div>
   );
 }
 
@@ -606,7 +710,7 @@ function TrackGroup({ group, copy, picked, onPick, onClear }: TrackGroupProps) {
   const accent = TRACK_ACCENT[lead.trackNo ?? 0] ?? "var(--yellow-main)";
   // Whatever every run shares gets hoisted into the header, so the options
   // below are just dates. Anything that differs stays on its own row.
-  const sharedPrice = group.courses.every((course) => course.price === lead.price);
+  const sharedPrice = group.courses.every((course) => course.priceThb === lead.priceThb);
   const sharedDescription = group.courses.every((course) => course.description === lead.description);
   const chosen = group.courses.some((course) => picked.includes(course.id));
 
@@ -635,7 +739,7 @@ function TrackGroup({ group, copy, picked, onPick, onClear }: TrackGroupProps) {
         </div>
         {sharedPrice && (
           <span className="shrink-0 rounded-lg border-2 border-ink bg-crimson px-2.5 py-1 font-mono text-sm font-bold tracking-tight text-white shadow-[2px_2px_0_0_var(--ink)]">
-            {lead.price ? `${lead.price} ${copy.priceUnit}` : copy.priceTbd}
+            {lead.priceThb === null ? copy.priceTbd : `${formatThb(lead.priceThb)} ${copy.priceUnit}`}
           </span>
         )}
       </div>
@@ -644,7 +748,7 @@ function TrackGroup({ group, copy, picked, onPick, onClear }: TrackGroupProps) {
         <p className="mt-3 text-sm leading-snug text-ink/60">{lead.description}</p>
       )}
 
-      <p className="mb-2.5 mt-5 flex items-center gap-3 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-ink/45">
+      <p className={`${META} mb-2.5 mt-5 flex items-center gap-3 text-ink/45`}>
         {copy.pickDate}
         <span aria-hidden className="h-0.5 flex-1 bg-ink/10" />
         {chosen && (
@@ -752,16 +856,17 @@ function CourseOption({ course, copy, checked, onPick, showPrice, showDescriptio
             full ? "opacity-55" : ""
           }`}
         >
-          {course.price ? `${course.price} ${copy.priceUnit}` : copy.priceTbd}
+          {course.priceThb === null ? copy.priceTbd : `${formatThb(course.priceThb)} ${copy.priceUnit}`}
         </span>
       )}
     </label>
   );
 }
 
-type SuccessPanelProps = { copy: ApplyCopy["success"]; lineUrl: string };
+type SuccessPanelProps = { copy: ApplyCopy["success"] };
 
-function SuccessPanel({ copy, lineUrl }: SuccessPanelProps) {
+/** Saved, but nothing to pay for online — a B2B run, or seats already paid. LINE takes it from here. */
+function SuccessPanel({ copy }: SuccessPanelProps) {
   // The conversion. Fires on mount because this panel only renders once the
   // server action has actually written the application.
   useEffect(() => {
@@ -769,57 +874,17 @@ function SuccessPanel({ copy, lineUrl }: SuccessPanelProps) {
   }, []);
 
   return (
-    <section
-      className="pop-in rounded-3xl border-[3px] border-ink bg-crimson p-7 text-cream shadow-[10px_10px_0_0_var(--yellow-main)] sm:p-10"
-      style={{ "--rot": "0deg" } as React.CSSProperties}
-      aria-live="polite"
+    <OutcomePanel
+      eyebrow={copy.eyebrow}
+      title={copy.title}
+      highlight={copy.highlight}
+      qrLocation="apply_success_qr"
+      qrLabel={copy.qrLabel}
     >
-      <div className="grid gap-8 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-10">
-        <div>
-          <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-yellow-main">
-            <span className="inline-block h-px w-8 bg-yellow-main" />
-            {copy.eyebrow}
-          </p>
-          <h2 className="mt-5 font-display text-[clamp(2rem,6vw,3.5rem)] font-black uppercase leading-[0.95] tracking-tight">
-            {copy.title}
-            <br />
-            <span className="text-yellow-main">{copy.highlight}</span>
-          </h2>
-          <p className="mt-5 max-w-md leading-relaxed text-cream/80">{copy.body}</p>
-          <div className="mt-8">
-            <a
-              href={lineUrl}
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => track("line_click", { location: "apply_success" })}
-              className={CTA}
-            >
-              {copy.line}
-              <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-            </a>
-          </div>
-        </div>
-
-        {/* Same QR as the footer — on desktop it's the fastest way to add us. */}
-        <TrackedAnchor
-          event="line_click"
-          params={{ location: "apply_success_qr" }}
-          href={lineUrl}
-          target="_blank"
-          rel="noreferrer"
-          aria-label={copy.qrLabel}
-          className="block shrink-0 justify-self-start rounded-[1.35rem] bg-cream p-3 shadow-[6px_6px_0_0_var(--ink)] transition-transform duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[9px_9px_0_0_var(--ink)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-main sm:justify-self-end"
-        >
-          <Image
-            src={siteConfig.lineQrUrl}
-            alt={copy.qrLabel}
-            width={200}
-            height={200}
-            sizes="(max-width: 639px) 150px, 180px"
-            className="size-[150px] rounded-xl sm:size-[180px]"
-          />
-        </TrackedAnchor>
+      <p className="mt-5 max-w-md leading-relaxed text-cream/80">{copy.body}</p>
+      <div className="mt-8">
+        <LineCta location="apply_success" label={copy.line} />
       </div>
-    </section>
+    </OutcomePanel>
   );
 }

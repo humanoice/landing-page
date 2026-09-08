@@ -28,18 +28,58 @@ export type CourseOption = {
   /** e.g. "10:00–17:00" */
   hours: string;
   days: number;
-  /** e.g. "9,900"; null = price on request (B2B) */
-  price: string | null;
+  /** THB; null = price on request (B2B). Formatted with `formatThb` where it's shown. */
+  priceThb: number | null;
   /** limit_seat minus paid participations; null = no cap */
   seats: { left: number; total: number } | null;
 };
 
-const TIME_ZONE = "Asia/Bangkok";
-// Gregorian for Thai too — the rest of the site says "2026", not "2569".
-const DATE_LOCALE: Record<Locale, string> = {
-  en: "en-GB",
-  th: "th-TH-u-ca-gregory",
+/** When a run happens, in words. Shared with the payment step, which lists the same runs. */
+export type RunTiming = {
+  dates: string;
+  hours: string;
+  days: number;
 };
+
+/** A named run, in words — what the payment step, the confirmation and the email all list. */
+export type RunSummary = RunTiming & { name: string };
+
+const TIME_ZONE = "Asia/Bangkok";
+
+// Built once per locale: constructing an Intl formatter costs ~60x formatting
+// with it, and every run on the page goes through these.
+// Gregorian for Thai too — the rest of the site says "2026", not "2569".
+const DATE_FORMAT: Record<Locale, Intl.DateTimeFormat> = {
+  en: dateFormat("en-GB"),
+  th: dateFormat("th-TH-u-ca-gregory"),
+};
+const TIME_FORMAT = new Intl.DateTimeFormat("en-GB", {
+  timeZone: TIME_ZONE,
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+});
+
+function dateFormat(locale: string) {
+  return new Intl.DateTimeFormat(locale, {
+    timeZone: TIME_ZONE,
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+/**
+ * A run with no end_time is one working day — every run on the poster is
+ * 10:00–17:00. The one place that default lives; the calendar invite reads it too.
+ */
+const DEFAULT_RUN_MS = 7 * 3_600_000;
+
+/** When a run finishes, with the default filled in for a row that doesn't say. */
+export function runEnd(startTime: string | Date, endTime: string | Date | null): Date {
+  return endTime ? new Date(endTime) : new Date(new Date(startTime).getTime() + DEFAULT_RUN_MS);
+}
 
 /** Runs still open for applications: active and not started yet. TBD runs (null start) are hidden. */
 export async function getUpcomingCourses(locale: Locale): Promise<CourseOption[]> {
@@ -70,37 +110,35 @@ export function pickCourse(courses: CourseOption[], query: string | string[] | u
   )?.id;
 }
 
+/** "Sat 3 – Sun 4 Oct 2026", "10:00–17:00", 2 — from a run's start and end. */
+export function formatRun(
+  startTime: string | Date,
+  endTime: string | Date | null,
+  locale: Locale,
+): RunTiming {
+  const start = new Date(startTime);
+  const end = endTime ? new Date(endTime) : null;
+  const dates = DATE_FORMAT[locale];
+
+  return {
+    dates: end ? dates.formatRange(start, end) : dates.format(start),
+    hours: end
+      ? `${TIME_FORMAT.format(start)}–${TIME_FORMAT.format(end)}`
+      : TIME_FORMAT.format(start),
+    // Sat 10:00 → Sun 17:00 is 31h; ceil makes that the 2 days it is.
+    days: end ? Math.max(1, Math.ceil((end.getTime() - start.getTime()) / 86_400_000)) : 1,
+  };
+}
+
 function toOption(row: CourseRow, locale: Locale): CourseOption {
-  const start = new Date(row.start_time);
-  const end = row.end_time ? new Date(row.end_time) : null;
-
-  const dateFormat = new Intl.DateTimeFormat(DATE_LOCALE[locale], {
-    timeZone: TIME_ZONE,
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-  const timeFormat = new Intl.DateTimeFormat("en-GB", {
-    timeZone: TIME_ZONE,
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-
   return {
     id: row.id,
     slug: row.slug,
     name: row.name,
     trackNo: row.track_no,
     description: row.description,
-    dates: end ? dateFormat.formatRange(start, end) : dateFormat.format(start),
-    hours: end
-      ? `${timeFormat.format(start)}–${timeFormat.format(end)}`
-      : timeFormat.format(start),
-    // Sat 10:00 → Sun 17:00 is 31h; ceil makes that the 2 days it is.
-    days: end ? Math.max(1, Math.ceil((end.getTime() - start.getTime()) / 86_400_000)) : 1,
-    price: row.price_thb === null ? null : new Intl.NumberFormat("en-US").format(row.price_thb),
+    ...formatRun(row.start_time, row.end_time, locale),
+    priceThb: row.price_thb,
     // A seat is taken once it's paid for — applied/confirmed-but-unpaid doesn't hold one.
     seats:
       row.limit_seat === null
