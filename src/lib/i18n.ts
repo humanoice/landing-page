@@ -271,7 +271,7 @@ const en = {
       dayUnit: ["day", "days"],
       priceUnit: "THB",
       priceTbd: "Talk to us",
-      seatsLeft: "seats left",
+      seatsLeft: ["seat left", "seats left"],
       full: "Full",
       empty:
         "No runs are open right now. Add us on LINE and we'll ping you the moment the next one opens.",
@@ -653,7 +653,7 @@ const th: ThaiDictionary = {
       dayUnit: ["วัน", "วัน"],
       priceUnit: "บาท",
       priceTbd: "ทักมาคุยกัน",
-      seatsLeft: "ที่นั่งว่าง",
+      seatsLeft: ["ที่นั่งว่าง", "ที่นั่งว่าง"],
       full: "เต็มแล้ว",
       empty:
         "ตอนนี้ยังไม่มีรอบเปิดรับสมัคร แอดไลน์ไว้ แล้วเราจะแจ้งทันทีที่รอบใหม่เปิด",

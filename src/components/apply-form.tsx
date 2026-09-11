@@ -841,7 +841,7 @@ function CourseOption({ course, copy, checked, onPick, showPrice, showDescriptio
             <span
               className={`rounded-full border-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] ${seatsTone}`}
             >
-              {full ? copy.full : `${seats.left}/${seats.total} ${copy.seatsLeft}`}
+              {full ? copy.full : `${seats.left} ${copy.seatsLeft[seats.left === 1 ? 0 : 1]}`}
             </span>
           )}
         </span>

@@ -13,7 +13,7 @@ const BASE_URL = "https://api.deepseek.com";
  * (https://api-docs.deepseek.com/guides/vision). Anything reading a picture has
  * to use it; the text models will reject the request.
  */
-export const VISION_MODEL = "deepseek-v4-flash-vision-exp";
+export const VISION_MODEL = "deepseek-flash";
 
 let client: OpenAI | undefined;
 
