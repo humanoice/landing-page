@@ -6,6 +6,7 @@ import { buildIcs, googleCalendarUrl, type CalendarEvent } from "@/lib/calendar"
 import { formatRun, runEnd, type RunSummary } from "@/lib/courses";
 import { db } from "@/lib/db";
 import { directionsText, sendPaymentConfirmation, type ConfirmationRun } from "@/lib/email";
+import { recordRevenue } from "@/lib/flowaccount";
 import { getDictionary, type ApplyCopy, type Locale } from "@/lib/i18n";
 import { announceApplication, announceSlipVerdict } from "@/lib/notify";
 import { amountDue, isPayerType, withholding, type PayerType } from "@/lib/payment";
@@ -414,6 +415,7 @@ type PaidRun = { id: string; name: string; start_time: string; end_time: string 
 
 type PaymentRow = {
   id: string;
+  student_id: string;
   payer_type: PayerType;
   price_thb: number;
   /** numeric comes back as a string over HTTP. */
@@ -426,6 +428,9 @@ type PaymentRow = {
   phone: string | null;
   line_id: string | null;
   receipt_name: string | null;
+  /** What goes on the receipt — only the FlowAccount hand-off reads these two. */
+  receipt_tax_id: string | null;
+  receipt_address: string | null;
   runs: PaidRun[];
 };
 
@@ -463,7 +468,8 @@ export async function confirmPayment(_prev: PayState, formData: FormData): Promi
     const sql = db();
     const [payment] = (await sql`
       select
-        pay.id, pay.payer_type, pay.price_thb, pay.withholding_thb, pay.verified_at, pay.receipt_name,
+        pay.id, pay.student_id, pay.payer_type, pay.price_thb, pay.withholding_thb, pay.verified_at,
+        pay.receipt_name, pay.receipt_tax_id, pay.receipt_address,
         s.email, s.first_name, s.last_name, s.phone, s.line_id,
         coalesce(
           (
@@ -521,19 +527,40 @@ export async function confirmPayment(_prev: PayState, formData: FormData): Promi
     }
 
     // The payment and its seats flip together. `verified_at is null` makes a
-    // race between two uploads of the same slip a no-op for the loser.
-    await sql`
+    // race between two uploads of the same slip a no-op for the loser — and
+    // `saved` comes back empty for it, so it books no revenue and sends no
+    // second invite either. `seats` isn't read, but a data-modifying CTE runs regardless.
+    const saved = (await sql`
       with saved as (
         update payments
         set slip_reading = ${reading}::jsonb, verified_at = now()
         where id = ${payment.id}::uuid and verified_at is null
         returning id
+      ),
+      seats as (
+        update participations set paid_status = true
+        where payment_id in (select id from saved)
+        returning id
       )
-      update participations set paid_status = true
-      where payment_id in (select id from saved)
-    `;
+      select id from saved
+    `) as { id: string }[];
+    if (saved.length === 0) return { status: "paid", confirmation };
 
     notifyTeam(payment, confirmation.runs, due, verdict.slip, null);
+
+    // Book it as revenue: the Grok bot turns this row into a FlowAccount receipt.
+    // After the response, like the email — the seat doesn't wait on the books.
+    after(() =>
+      recordRevenue({
+        student_id: payment.student_id,
+        payer_type: payment.payer_type,
+        receipt_name: payment.receipt_name,
+        receipt_tax_id: payment.receipt_tax_id,
+        receipt_address: payment.receipt_address,
+        price_thb: payment.price_thb,
+        withholding_thb: Number(payment.withholding_thb),
+      }),
+    );
 
     // The seat is theirs whether or not the email lands, so it goes out after
     // the response — and a Resend failure is the team's problem, not the applicant's.
