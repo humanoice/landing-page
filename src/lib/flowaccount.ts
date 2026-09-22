@@ -25,8 +25,16 @@ export type RevenueRecord = {
   receipt_name: string | null;
   receipt_tax_id: string | null;
   receipt_address: string | null;
+  /**
+   * Net of any discount — what the receipt is for. (In the table, `price_thb`
+   * is the list total and `discount_thb` sits beside it; the bot predates
+   * discounts, so it gets the figure it always did and the split as extras.)
+   */
   price_thb: number;
-  /** 0 for an individual; 3% of the price for a company. The slip showed the difference. */
+  list_price_thb: number;
+  discount_thb: number;
+  discount_code: string | null;
+  /** 0 for an individual; 3% of the net for a company. The slip showed the difference. */
   withholding_thb: number;
 };
 

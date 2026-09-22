@@ -242,6 +242,7 @@ const en = {
       programmingYears: "Years programming",
       programmingLanguages: "Languages & tools you use",
       skills: "Hands-on skills",
+      discountCode: "Discount code",
     },
     backgroundHint:
       "Your answwer will increase the chance of acceptance",
@@ -289,6 +290,9 @@ const en = {
       rateLimit: "Too many tries just now. Give it a few minutes, or ping us on LINE.",
       server: "Something broke on our side. Try again, or ping us on LINE.",
       payer: "Pick one",
+      discountInvalid: "That code isn't one of ours",
+      discountExpired: "That code has expired",
+      discountExhausted: "That code has been used up",
     },
     success: {
       eyebrow: "// Thank you",
@@ -316,9 +320,21 @@ const en = {
         },
         company: { name: "Company name", taxId: "Tax ID", address: "Registered address" },
       },
+      /** The live check on a discount code; failures keyed by DiscountReason (src/lib/discount.ts). */
+      discount: {
+        checking: "Checking the code…",
+        /** Around the percent: "Code applied — 20% off" */
+        applied: ["Code applied —", "% off"],
+        failed: {
+          invalid: "That code isn't one of ours",
+          expired: "That code has expired",
+          exhausted: "That code has been used up",
+        },
+      },
       preview: {
         title: "What you'll transfer",
         fee: "Course fee",
+        discount: "Discount",
         withholding: "3% withholding tax",
         due: "Transfer",
         pickFirst: "Pick a date above and the amount shows up here.",
@@ -335,6 +351,7 @@ const en = {
       runs: "Your seats",
       amount: "Amount to transfer",
       withholdingNote: "3% withholding tax deducted",
+      discountNote: "discount code applied",
       bank: "Kasikorn Bank",
       accountName: "Account name",
       copy: "Copy",
@@ -626,6 +643,7 @@ const th: ThaiDictionary = {
       programmingYears: "ประสบการณ์เขียนโปรแกรม (ปี)",
       programmingLanguages: "ภาษาโปรแกรม / เครื่องมือที่ใช้",
       skills: "ทักษะที่ลงมือทำได้",
+      discountCode: "โค้ดส่วนลด",
     },
     backgroundHint:
       "คำตอบของคุณจะช่วยเพิ่มโอกาสในการได้รับการตอบรับ",
@@ -671,6 +689,9 @@ const th: ThaiDictionary = {
       rateLimit: "ส่งคำสมัครบ่อยเกินไป รอสักครู่แล้วลองใหม่ หรือทักเราทางไลน์",
       server: "ระบบมีปัญหา ลองใหม่อีกครั้ง หรือทักเราทางไลน์",
       payer: "กรุณาเลือก",
+      discountInvalid: "ไม่พบโค้ดนี้",
+      discountExpired: "โค้ดนี้หมดอายุแล้ว",
+      discountExhausted: "โค้ดนี้ถูกใช้ครบแล้ว",
     },
     success: {
       eyebrow: "// ขอบคุณ",
@@ -697,9 +718,19 @@ const th: ThaiDictionary = {
         },
         company: { name: "ชื่อบริษัท", taxId: "เลขประจำตัวผู้เสียภาษี", address: "ที่อยู่จดทะเบียน" },
       },
+      discount: {
+        checking: "กำลังตรวจสอบโค้ด…",
+        applied: ["ใช้โค้ดแล้ว ลด", "%"],
+        failed: {
+          invalid: "ไม่พบโค้ดนี้",
+          expired: "โค้ดนี้หมดอายุแล้ว",
+          exhausted: "โค้ดนี้ถูกใช้ครบแล้ว",
+        },
+      },
       preview: {
         title: "ยอดที่ต้องโอน",
         fee: "ค่าเรียน",
+        discount: "ส่วนลด",
         withholding: "หัก ณ ที่จ่าย 3%",
         due: "ยอดโอน",
         pickFirst: "เลือกรอบเรียนด้านบนก่อน แล้วยอดโอนจะแสดงตรงนี้",
@@ -715,6 +746,7 @@ const th: ThaiDictionary = {
       runs: "ที่นั่งของคุณ",
       amount: "ยอดที่ต้องโอน",
       withholdingNote: "หักภาษี ณ ที่จ่าย 3% แล้ว",
+      discountNote: "หักส่วนลดจากโค้ดแล้ว",
       bank: "ธนาคารกสิกรไทย",
       accountName: "ชื่อบัญชี",
       copy: "คัดลอก",

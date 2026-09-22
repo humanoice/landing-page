@@ -24,6 +24,13 @@ export const SUBMIT: Budget = { burst: 5, hourly: 15 };
 export const LOOKUP: Budget = { burst: 20, hourly: 60 };
 
 /**
+ * Checking a discount code while someone types it. The abuse is guessing:
+ * 60 an hour per address is nothing against a code of a few letters and
+ * digits, and plenty for a real applicant fixing a typo or two.
+ */
+export const DISCOUNT: Budget = { burst: 20, hourly: 60 };
+
+/**
  * Checking a payment slip. The tightest budget here: every attempt is a vision
  * call we pay for, and someone paying for a seat uploads one screenshot, maybe
  * a second after a bad crop.

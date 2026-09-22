@@ -29,19 +29,39 @@ const WITHHOLDING_RATE = 0.03;
 
 const satang = (amount: number) => Math.round(amount * 100) / 100;
 
-/** What a company holds back, to the satang. Nothing for an individual. */
-export function withholding(priceThb: number, payerType: PayerType): number {
-  return payerType === "company" ? satang(priceThb * WITHHOLDING_RATE) : 0;
+/**
+ * A discount code: what the owner hands a friend. Upper-case letters, digits
+ * and dashes, so it can be read out loud and typed on a phone.
+ */
+export const DISCOUNT_CODE = /^[A-Z0-9-]{2,32}$/;
+
+/** What was typed, as the row stores it — or "" when it can't be a code at all. */
+export function normalizeCode(raw: string): string {
+  const code = raw.trim().toUpperCase();
+  return DISCOUNT_CODE.test(code) ? code : "";
+}
+
+/** Whole baht off the fee — a percent of a price rounds to the baht, so the row stays an integer. */
+export function discountAmount(priceThb: number, percent: number): number {
+  return Math.round((priceThb * percent) / 100);
+}
+
+/**
+ * What a company holds back, to the satang. Nothing for an individual. Taken
+ * on the net fee — after any discount — since that is what's being paid for.
+ */
+export function withholding(netThb: number, payerType: PayerType): number {
+  return payerType === "company" ? satang(netThb * WITHHOLDING_RATE) : 0;
 }
 
 /** What has to land in the account. The one place this subtraction is done. */
-export function amountDue(priceThb: number, withholdingThb: number): number {
-  return satang(priceThb - withholdingThb);
+export function amountDue(priceThb: number, withholdingThb: number, discountThb = 0): number {
+  return satang(priceThb - discountThb - withholdingThb);
 }
 
 /** The same figure straight from a payer type — what the form's live preview needs. */
-export function amountDueFor(priceThb: number, payerType: PayerType): number {
-  return amountDue(priceThb, withholding(priceThb, payerType));
+export function amountDueFor(priceThb: number, payerType: PayerType, discountThb = 0): number {
+  return amountDue(priceThb, withholding(priceThb - discountThb, payerType), discountThb);
 }
 
 // Built once: constructing an Intl formatter costs ~60x formatting with it, and

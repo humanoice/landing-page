@@ -94,7 +94,7 @@ type TextFieldProps<N extends string> = {
   multiline?: boolean;
 } & Pick<
   React.ComponentProps<"input">,
-  "type" | "autoComplete" | "inputMode" | "placeholder" | "min" | "max" | "step"
+  "type" | "autoComplete" | "autoCapitalize" | "spellCheck" | "inputMode" | "placeholder" | "min" | "max" | "step"
 >;
 
 export function TextField<N extends string>({

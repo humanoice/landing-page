@@ -19,18 +19,21 @@ import {
 import { PaymentPanel } from "@/components/payment-panel";
 import { track } from "@/components/track";
 import {
+  checkDiscountCode,
   lookupApplicant,
   submitApplication,
   type ApplyErrors,
   type ApplyPrefill,
   type ApplyState,
   type ApplyValues,
+  type DiscountCheck,
 } from "@/app/apply/actions";
 import { EMAIL, LANGUAGES, PROGRAMMING_LANGUAGES, SKILLS } from "@/lib/apply-options";
 import type { CourseOption } from "@/lib/courses";
 import type { ApplyCopy, Locale } from "@/lib/i18n";
 import {
   amountDueFor,
+  discountAmount,
   formatThb,
   isPayerType,
   PAYER_TYPES,
@@ -71,6 +74,7 @@ const EMPTY: FormValues = {
   receiptName: "",
   receiptTaxId: "",
   receiptAddress: "",
+  discountCode: "",
 };
 
 /** Long enough that typing an address doesn't fire a query per keystroke. */
@@ -81,6 +85,13 @@ type Lookup =
   | { status: "checking" }
   /** `offer`: we know them, but the form already had answers in it — filling it in is their call. */
   | { status: "found"; prefill: ApplyPrefill; offer: boolean };
+
+/** The live check on the discount code. `idle` is also what an empty field, or a check that couldn't run, shows. */
+type DiscountState = { status: "idle" } | { status: "checking" } | { status: "checked"; result: DiscountCheck };
+
+/** The code as applied — what the amount preview needs. Null until the server has said yes. */
+const appliedDiscount = (discount: DiscountState) =>
+  discount.status === "checked" && discount.result.ok ? discount.result : null;
 
 export function ApplyForm({ locale, copy, courses, preselected }: ApplyFormProps) {
   const [state, formAction, pending] = useActionState(submitApplication, INITIAL);
@@ -101,10 +112,13 @@ export function ApplyForm({ locale, copy, courses, preselected }: ApplyFormProps
     return seeded.filter((id) => open.has(id));
   });
   const [lookup, setLookup] = useState<Lookup>({ status: "idle" });
+  const [discount, setDiscount] = useState<DiscountState>({ status: "idle" });
   /** Anything but the email touched by hand since the last fill? Then it isn't ours to overwrite. */
   const touched = useRef(false);
   /** Last address the server answered for, so re-renders don't ask again. */
   const asked = useRef<string | null>(null);
+  /** Same, for the discount code. */
+  const askedCode = useRef<string | null>(null);
 
   // Depend only on props, so a keystroke in any of the ~17 text fields doesn't
   // re-sort the runs and rebuild three option lists.
@@ -164,6 +178,52 @@ export function ApplyForm({ locale, copy, courses, preselected }: ApplyFormProps
       clearTimeout(timer);
     };
   }, [email, fill]);
+
+  const code = values.discountCode.trim().toUpperCase();
+
+  // Same shape as the email lookup: once they stop typing, ask whether the code
+  // is good, and let the total below answer. The submit checks again — this is
+  // so nobody meets "used up" for the first time after filling in the whole form.
+  useEffect(() => {
+    if (askedCode.current === code) return;
+    // Whatever the note says is about the code they just edited away from.
+    setDiscount((current) => (current.status === "idle" ? current : { status: "idle" }));
+    if (!code) {
+      askedCode.current = null;
+      return;
+    }
+
+    let live = true;
+    const timer = setTimeout(async () => {
+      setDiscount({ status: "checking" });
+      let result: DiscountCheck | null = null;
+      try {
+        result = await checkDiscountCode(code);
+      } catch {
+        // Offline, or the action never landed. Silent — the submit will say.
+      }
+      if (!live) return;
+
+      askedCode.current = code;
+      if (!result) {
+        setDiscount({ status: "idle" });
+        return;
+      }
+      if (result.ok) track("apply_discount");
+      setDiscount({ status: "checked", result });
+    }, LOOKUP_DELAY);
+
+    return () => {
+      live = false;
+      clearTimeout(timer);
+    };
+  }, [code]);
+
+  // The submit refused the code (the last use went while they were filling the
+  // form in). Its error outranks the live check's "applied" — but only while the
+  // field still holds that code; edit it and the live check speaks again.
+  const refused =
+    state.status === "error" && !!state.errors.discountCode && state.values.discountCode === code;
 
   const set = (name: TextName, value: string) => {
     // Typing the email is what starts a lookup, so it can't be what blocks one.
@@ -459,12 +519,31 @@ export function ApplyForm({ locale, copy, courses, preselected }: ApplyFormProps
             </div>
           )}
 
+          {/* A code the owner handed them. Optional, checked as they type. */}
+          <div className="mt-6 grid gap-5 sm:grid-cols-2">
+            <div>
+              <TextField
+                name="discountCode"
+                label={copy.fields.discountCode}
+                optional={copy.optional}
+                autoComplete="off"
+                autoCapitalize="characters"
+                spellCheck={false}
+                value={values.discountCode}
+                onValueChange={set}
+                error={refused ? message("discountCode") : undefined}
+              />
+              {!refused && <DiscountNote discount={discount} copy={copy.payer.discount} />}
+            </div>
+          </div>
+
           <AmountPreview
             copy={copy.payer.preview}
             unit={copy.course.priceUnit}
             picked={picked}
             courses={courses}
             payer={payer}
+            discount={refused ? null : appliedDiscount(discount)}
           />
         </Section>
       )}
@@ -541,6 +620,40 @@ function LookupNote({ lookup, copy, onFill }: LookupNoteProps) {
   );
 }
 
+type DiscountNoteProps = {
+  discount: DiscountState;
+  copy: ApplyCopy["payer"]["discount"];
+};
+
+/** What the live check said. Nothing while the field is empty or nothing could be said. */
+function DiscountNote({ discount, copy }: DiscountNoteProps) {
+  if (discount.status === "idle") return null;
+
+  if (discount.status === "checking") {
+    return <BusyNote className="mt-2">{copy.checking}</BusyNote>;
+  }
+
+  const { result } = discount;
+  if (!result.ok) {
+    return (
+      <p role="alert" className={ERROR}>
+        {copy.failed[result.reason]}
+      </p>
+    );
+  }
+
+  return (
+    <p
+      aria-live="polite"
+      className="pop-in mt-2.5 rounded-xl border-2 border-ink bg-yellow-main px-4 py-2.5 text-[13px] leading-snug text-ink shadow-[3px_3px_0_0_var(--ink)]"
+      style={{ "--rot": "0deg" } as React.CSSProperties}
+    >
+      {copy.applied[0]} <span className="font-bold">{result.percent}</span>
+      {copy.applied[1]}
+    </p>
+  );
+}
+
 type ChipsProps = {
   name: ChipField;
   legend: string;
@@ -612,13 +725,15 @@ type AmountPreviewProps = {
   picked: number[];
   courses: CourseOption[];
   payer: PayerType | null;
+  /** A code the server has accepted; null = none. */
+  discount: { code: string; percent: number } | null;
 };
 
 /**
  * What the transfer will be, live, so nobody meets the number for the first
  * time on the payment step. Same arithmetic the action stores (src/lib/payment.ts).
  */
-function AmountPreview({ copy, unit, picked, courses, payer }: AmountPreviewProps) {
+function AmountPreview({ copy, unit, picked, courses, payer, discount }: AmountPreviewProps) {
   const prices = picked.map((id) => courses.find((course) => course.id === id)?.priceThb ?? null);
   const note =
     picked.length === 0 ? copy.pickFirst : prices.some((price) => price === null) ? copy.onRequest : null;
@@ -633,8 +748,9 @@ function AmountPreview({ copy, unit, picked, courses, payer }: AmountPreviewProp
 
   const fee = prices.reduce<number>((sum, price) => sum + (price ?? 0), 0);
   const type = payer ?? "individual";
-  const held = withholding(fee, type);
-  const due = amountDueFor(fee, type);
+  const off = discount ? discountAmount(fee, discount.percent) : 0;
+  const held = withholding(fee - off, type);
+  const due = amountDueFor(fee, type, off);
 
   return (
     <div className="mt-7 rounded-2xl border-2 border-ink bg-cream p-4 shadow-[4px_4px_0_0_var(--ink)] sm:p-5">
@@ -646,6 +762,16 @@ function AmountPreview({ copy, unit, picked, courses, payer }: AmountPreviewProp
             {formatThb(fee)} {unit}
           </dd>
         </div>
+        {discount && off > 0 && (
+          <div className="flex items-baseline justify-between gap-4 text-ink/70">
+            <dt>
+              {copy.discount} ({discount.percent}%)
+            </dt>
+            <dd>
+              − {formatThb(off)} {unit}
+            </dd>
+          </div>
+        )}
         {held > 0 && (
           <div className="flex items-baseline justify-between gap-4 text-ink/70">
             <dt>{copy.withholding}</dt>

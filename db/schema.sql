@@ -1,8 +1,9 @@
 -- Humanoice — initial schema (v0)
 --
--- Four tables:
+-- Five tables:
 --   courses        — scheduled runs of the tracks on the landing page: one row per run, with its start/end date-time
 --   students       — people (one row per person, regardless of how many runs they join)
+--   discount_codes — a percentage off the fee, handed out by the owner, capped at N uses
 --   payments       — one bank transfer: who paid, what goes on the receipt, what the slip said
 --   participations — which student attends which course run, and where they are in the process
 --
@@ -56,6 +57,28 @@ create table if not exists students (
   updated_at    timestamptz not null default now()
 );
 
+-- There is no admin page: codes are typed in by hand, like courses.
+--   insert into discount_codes (code, percent, max_uses, note) values ('SON-FRIENDS', 20, 5, 'friends, Oct cohort');
+-- Uses left, per code:
+--   select d.code, d.max_uses - count(p.id) as uses_left
+--   from discount_codes d
+--   left join payments p on p.discount_code_id = d.id and p.verified_at is not null
+--   group by d.id;
+create table if not exists discount_codes (
+  id            integer generated always as identity primary key,
+  code          text        not null unique check (code = upper(code)),   -- 'SON-FRIENDS'; the form upper-cases what's typed
+  percent       smallint    not null check (percent between 1 and 100),    -- off the runs' summed price_thb, rounded to the baht
+  max_uses      integer     not null check (max_uses > 0),
+  -- A use is a VERIFIED payment carrying this code (payments.discount_code_id with
+  -- verified_at set). An application that never pays holds nothing, so two people
+  -- can apply with the last use and both pay — accepted, the team reconciles on LINE.
+  is_active     boolean     not null default true,
+  expires_at    timestamptz,                  -- null = never
+  note          text,                         -- who it's for
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now()
+);
+
 create table if not exists payments (
   -- Handed to the browser as the only key to the "upload your slip" step, so it
   -- has to be as unguessable as a student id.
@@ -68,8 +91,12 @@ create table if not exists payments (
   receipt_tax_id   text,                        -- individual: national ID     / company: tax ID
   receipt_address  text,
   price_thb        integer     not null,        -- the runs' price_thb summed, as it stood when they applied
+  discount_code_id integer     references discount_codes (id),
+  -- Whole baht taken off price_thb; net = price_thb - discount_thb, and withholding
+  -- is 3% of that net.
+  discount_thb     integer     not null default 0 check (discount_thb >= 0),
   withholding_thb  numeric(10,2) not null default 0,   -- 3% a company deducts at source; 0 for an individual
-  -- The slip has to show price_thb - withholding_thb.
+  -- The slip has to show price_thb - discount_thb - withholding_thb.
   --
   -- Last verdict on an uploaded slip, verbatim from src/lib/slip.ts (SlipVerdict): ok, issue,
   -- and the transcription under `slip` — amount, reference, transferred_at, sender_name, bank.
@@ -114,6 +141,10 @@ create index if not exists payments_slip_reference_idx
   on payments (((slip_reading #>> '{slip,reference}')))
   where verified_at is not null;
 
+-- The uses-left count on a discount code reads this.
+create index if not exists payments_discount_code_idx
+  on payments (discount_code_id) where verified_at is not null;
+
 -- Keep updated_at current on every UPDATE (Postgres has no ON UPDATE clause).
 create or replace function set_updated_at() returns trigger as $$
 begin
@@ -140,4 +171,9 @@ create trigger participations_set_updated_at
 drop trigger if exists payments_set_updated_at on payments;
 create trigger payments_set_updated_at
   before update on payments
+  for each row execute function set_updated_at();
+
+drop trigger if exists discount_codes_set_updated_at on discount_codes;
+create trigger discount_codes_set_updated_at
+  before update on discount_codes
   for each row execute function set_updated_at();

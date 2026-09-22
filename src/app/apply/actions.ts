@@ -5,12 +5,20 @@ import { EMAIL, LANGUAGES, PROGRAMMING_LANGUAGES, SKILLS } from "@/lib/apply-opt
 import { buildIcs, googleCalendarUrl, type CalendarEvent } from "@/lib/calendar";
 import { formatRun, runEnd, type RunSummary } from "@/lib/courses";
 import { db } from "@/lib/db";
+import { findDiscount, type Discount, type DiscountReason } from "@/lib/discount";
 import { directionsText, sendPaymentConfirmation, type ConfirmationRun } from "@/lib/email";
 import { recordRevenue } from "@/lib/flowaccount";
 import { getDictionary, type ApplyCopy, type Locale } from "@/lib/i18n";
-import { announceApplication, announceSlipVerdict } from "@/lib/notify";
-import { amountDue, isPayerType, withholding, type PayerType } from "@/lib/payment";
-import { clientKey, LOOKUP, SLIP, SUBMIT, take } from "@/lib/rate-limit";
+import { announceApplication, announceSlipVerdict, type DiscountNotice } from "@/lib/notify";
+import {
+  amountDue,
+  discountAmount,
+  isPayerType,
+  normalizeCode,
+  withholding,
+  type PayerType,
+} from "@/lib/payment";
+import { clientKey, DISCOUNT, LOOKUP, SLIP, SUBMIT, take } from "@/lib/rate-limit";
 import { siteConfig } from "@/lib/site";
 import { verifySlip } from "@/lib/slip";
 import {
@@ -40,6 +48,8 @@ export type ApplyValues = {
   receiptName: string;
   receiptTaxId: string;
   receiptAddress: string;
+  /** A discount code, as typed (upper-cased). "" = none. */
+  discountCode: string;
   /** Ids of the runs they picked — at most one per track, at least one in total. */
   courses: string[];
 };
@@ -47,11 +57,11 @@ export type ApplyValues = {
 /**
  * What a returning applicant gets handed back: everything they told us last time
  * except their email (they just typed it), the runs (they pick those fresh) and
- * the receipt details (those belong to a payment, not a person).
+ * the receipt details and discount code (those belong to a payment, not a person).
  */
 export type ApplyPrefill = Omit<
   ApplyValues,
-  "email" | "courses" | "payerType" | "receiptName" | "receiptTaxId" | "receiptAddress"
+  "email" | "courses" | "payerType" | "receiptName" | "receiptTaxId" | "receiptAddress" | "discountCode"
 >;
 
 /** Keys into i18n `apply.errors` — the action stays locale-agnostic. */
@@ -63,8 +73,18 @@ export type ApplyErrorCode =
   | "oneTrack"
   | "full"
   | "payer"
+  | "discountInvalid"
+  | "discountExpired"
+  | "discountExhausted"
   | "rateLimit"
   | "server";
+
+/** `DiscountReason` as the field error it becomes on submit. */
+const DISCOUNT_ERROR: Record<DiscountReason, ApplyErrorCode> = {
+  invalid: "discountInvalid",
+  expired: "discountExpired",
+  exhausted: "discountExhausted",
+};
 
 export type ApplyErrors = Partial<
   Record<
@@ -80,6 +100,7 @@ export type ApplyErrors = Partial<
     | "receiptName"
     | "receiptTaxId"
     | "receiptAddress"
+    | "discountCode"
     | "form",
     ApplyErrorCode
   >
@@ -89,7 +110,11 @@ export type ApplyErrors = Partial<
 export type PaymentSummary = {
   /** payments.id. Random, never listed anywhere: holding it is what proves you submitted the form. */
   id: string;
+  /** The runs' list prices summed; what was taken off it sits beside. */
   priceThb: number;
+  discountThb: number;
+  /** The code that earned the discount, for the breakdown. Null = none. */
+  discountCode: string | null;
   withholdingThb: number;
   runs: RunSummary[];
 };
@@ -172,6 +197,8 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
     receiptName: text(formData, "receiptName"),
     receiptTaxId: text(formData, "receiptTaxId"),
     receiptAddress: text(formData, "receiptAddress", MAX_ADDRESS),
+    // Upper-cased as typed, not normalized: a malformed code is echoed back and refused, not dropped.
+    discountCode: text(formData, "discountCode", 32).toUpperCase(),
     courses: courseIds(formData),
   };
   const locale = localeOf(formData);
@@ -229,6 +256,19 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
 
   try {
     const sql = db();
+
+    // A code is checked before anything is written: a bad one comes back as a
+    // field error with the form intact, the same as any other invalid field.
+    // The live check in the form asked this same question moments ago, but the
+    // last use may have gone in between — this is the answer that counts.
+    let discount: Discount | null = null;
+    if (values.discountCode) {
+      const lookup = await findDiscount(values.discountCode);
+      if (!lookup.ok) {
+        return { status: "error", errors: { discountCode: DISCOUNT_ERROR[lookup.reason] }, values };
+      }
+      discount = lookup.discount;
+    }
 
     // Same rule as the page's list: every run picked must still be open, with a
     // seat left. A stale tab, a filled-up run, or a hand-crafted POST stops here.
@@ -344,7 +384,9 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
     }
 
     const priceThb = unpaid.reduce((sum, run) => sum + (run.price_thb as number), 0);
-    const withholdingThb = withholding(priceThb, payerType);
+    // The discount comes off the list total; a company's 3% is then taken on what's left.
+    const discountThb = discount ? discountAmount(priceThb, discount.percent) : 0;
+    const withholdingThb = withholding(priceThb - discountThb, payerType);
 
     // The payment and the seats it covers, in one statement. A re-submit (page
     // refreshed mid-payment) points the same seats at a fresh payment; the old
@@ -352,7 +394,8 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
     const [payment] = (await sql`
       with pay as (
         insert into payments
-          (student_id, payer_type, receipt_name, receipt_tax_id, receipt_address, price_thb, withholding_thb)
+          (student_id, payer_type, receipt_name, receipt_tax_id, receipt_address,
+           price_thb, discount_code_id, discount_thb, withholding_thb)
         values (
           ${student.id}::uuid,
           ${payerType},
@@ -360,6 +403,8 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
           ${values.receiptTaxId || null},
           ${values.receiptAddress || null},
           ${priceThb},
+          ${discount?.id ?? null},
+          ${discountThb},
           ${withholdingThb}
         )
         returning id
@@ -370,14 +415,22 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
       returning pay.id
     `) as { id: string }[];
 
-    const dueThb = amountDue(priceThb, withholdingThb);
-    announceApplication(values, picked, { paymentId: payment.id, priceThb, withholdingThb, dueThb });
+    const dueThb = amountDue(priceThb, withholdingThb, discountThb);
+    announceApplication(values, picked, {
+      paymentId: payment.id,
+      priceThb,
+      discount: discount && { code: discount.code, percent: discount.percent, amountThb: discountThb },
+      withholdingThb,
+      dueThb,
+    });
 
     return {
       status: "pay",
       payment: {
         id: payment.id,
         priceThb,
+        discountThb,
+        discountCode: discount?.code ?? null,
         withholdingThb,
         runs: unpaid.map((run) => summarise(run, locale)),
       },
@@ -418,6 +471,10 @@ type PaymentRow = {
   student_id: string;
   payer_type: PayerType;
   price_thb: number;
+  discount_thb: number;
+  /** discount_codes.code / .percent, via the left join; null when no code was used. */
+  discount_code: string | null;
+  discount_percent: number | null;
   /** numeric comes back as a string over HTTP. */
   withholding_thb: string;
   verified_at: string | null;
@@ -468,8 +525,9 @@ export async function confirmPayment(_prev: PayState, formData: FormData): Promi
     const sql = db();
     const [payment] = (await sql`
       select
-        pay.id, pay.student_id, pay.payer_type, pay.price_thb, pay.withholding_thb, pay.verified_at,
-        pay.receipt_name, pay.receipt_tax_id, pay.receipt_address,
+        pay.id, pay.student_id, pay.payer_type, pay.price_thb, pay.discount_thb, pay.withholding_thb,
+        pay.verified_at, pay.receipt_name, pay.receipt_tax_id, pay.receipt_address,
+        d.code as discount_code, d.percent as discount_percent,
         s.email, s.first_name, s.last_name, s.phone, s.line_id,
         coalesce(
           (
@@ -485,6 +543,7 @@ export async function confirmPayment(_prev: PayState, formData: FormData): Promi
         ) as runs
       from payments pay
       join students s on s.id = pay.student_id
+      left join discount_codes d on d.id = pay.discount_code_id
       where pay.id = ${paymentId}::uuid
     `) as PaymentRow[];
     if (!payment || !payment.email || payment.runs.length === 0) {
@@ -493,7 +552,7 @@ export async function confirmPayment(_prev: PayState, formData: FormData): Promi
 
     const copy = getDictionary(locale).apply;
     const runs = runsOf(payment, locale, copy);
-    const due = amountDue(payment.price_thb, Number(payment.withholding_thb));
+    const due = amountDue(payment.price_thb, Number(payment.withholding_thb), payment.discount_thb);
     const confirmation: Confirmation = {
       email: payment.email,
       amountThb: due,
@@ -557,7 +616,10 @@ export async function confirmPayment(_prev: PayState, formData: FormData): Promi
         receipt_name: payment.receipt_name,
         receipt_tax_id: payment.receipt_tax_id,
         receipt_address: payment.receipt_address,
-        price_thb: payment.price_thb,
+        price_thb: payment.price_thb - payment.discount_thb,
+        list_price_thb: payment.price_thb,
+        discount_thb: payment.discount_thb,
+        discount_code: payment.discount_code,
         withholding_thb: Number(payment.withholding_thb),
       }),
     );
@@ -627,9 +689,17 @@ function notifyTeam(
     },
     runs,
     dueThb,
+    discount: discountOf(payment),
     slip,
     issue,
   });
+}
+
+/** The discount on a payment row, in the words the Lark notice wants — null when none was used. */
+function discountOf(payment: PaymentRow): DiscountNotice | null {
+  return payment.discount_code && payment.discount_percent !== null && payment.discount_thb > 0
+    ? { code: payment.discount_code, percent: payment.discount_percent, amountThb: payment.discount_thb }
+    : null;
 }
 
 /** A run in the words the applicant saw it in. */
@@ -737,6 +807,44 @@ export async function lookupApplicant(rawEmail: unknown): Promise<ApplyPrefill |
   } catch (error) {
     // Quietly — a lookup that fails just means the applicant types it all out.
     console.error("[apply] lookup failed", error);
+    return null;
+  }
+}
+
+/* ---------- Checking a discount code ---------- */
+
+/** What the form's live check gets back. The row id stays on the server. */
+export type DiscountCheck =
+  | { ok: true; code: string; percent: number }
+  | { ok: false; reason: DiscountReason };
+
+/**
+ * Whether a code someone is typing can still be used, so the total on the form
+ * can change before they submit. Advisory: `submitApplication` asks again and
+ * its answer is the one that's stored. Public and unauthenticated, like the
+ * email lookup; the DISCOUNT budget is what stops a guessing loop.
+ *
+ * Null when nothing could be said (rate limited, or the read failed) — the form
+ * shows nothing and the submit sorts it out.
+ */
+export async function checkDiscountCode(raw: unknown): Promise<DiscountCheck | null> {
+  const code = typeof raw === "string" ? normalizeCode(raw) : "";
+  // Malformed input can't be a code; no need to spend a query or a budget slot to say so.
+  if (!code) return { ok: false, reason: "invalid" };
+
+  const key = await clientKey();
+  if (!take(`discount:${key}`, DISCOUNT)) {
+    console.warn("[apply] discount check rate limited", key);
+    return null;
+  }
+
+  try {
+    const lookup = await findDiscount(code);
+    return lookup.ok
+      ? { ok: true, code: lookup.discount.code, percent: lookup.discount.percent }
+      : lookup;
+  } catch (error) {
+    console.error("[apply] discount check failed", error);
     return null;
   }
 }

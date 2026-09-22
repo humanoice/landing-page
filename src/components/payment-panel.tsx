@@ -41,7 +41,9 @@ const INITIAL: PayState = { status: "idle" };
  */
 export function PaymentPanel({ payment, copy, locale }: PaymentPanelProps) {
   const [state, formAction, pending] = useActionState(confirmPayment, INITIAL);
-  const dueThb = amountDue(payment.priceThb, payment.withholdingThb);
+  const dueThb = amountDue(payment.priceThb, payment.withholdingThb, payment.discountThb);
+  const discounted = payment.discountThb > 0;
+  const withheld = payment.withholdingThb > 0;
 
   // They've committed to paying — the step GA calls checkout.
   useEffect(() => {
@@ -80,11 +82,19 @@ export function PaymentPanel({ payment, copy, locale }: PaymentPanelProps) {
               {formatThb(dueThb)}
               <span className="ml-2 font-mono text-base font-bold tracking-[0.12em] text-ink/60">{unit}</span>
             </p>
-            {payment.withholdingThb > 0 && (
+            {/* How the number came about, when it isn't just the list price. */}
+            {(discounted || withheld) && (
               <p className="font-mono text-[11px] leading-relaxed text-ink/55">
-                {formatThb(payment.priceThb)} − {formatThb(payment.withholdingThb)} {unit}
+                {formatThb(payment.priceThb)}
+                {discounted && ` − ${formatThb(payment.discountThb)}`}
+                {withheld && ` − ${formatThb(payment.withholdingThb)}`} {unit}
                 <br />
-                {pay.withholdingNote}
+                {[
+                  discounted && `${payment.discountCode} ${pay.discountNote}`,
+                  withheld && pay.withholdingNote,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
               </p>
             )}
           </div>
