@@ -59,6 +59,7 @@ export function Partners({ copy }: PartnersProps) {
             </article>
           </Reveal>
 
+          {/* Asimov — hidden for now
           <Reveal delay={130}>
             <article className="group flex h-full flex-col rounded-3xl border-[3px] border-cream/15 bg-cream p-7 text-ink shadow-[8px_8px_0_0_var(--orange-secondary)] transition-all duration-200 hover:-translate-y-1.5 hover:shadow-[12px_12px_0_0_var(--orange-secondary)]">
               <div className="flex items-center justify-between">
@@ -78,6 +79,7 @@ export function Partners({ copy }: PartnersProps) {
               </p>
             </article>
           </Reveal>
+          */}
 
           {/* Become a partner CTA */}
           <Reveal delay={260}>
