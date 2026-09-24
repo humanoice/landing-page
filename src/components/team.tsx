@@ -8,7 +8,7 @@ import type { HomeDictionary } from "@/lib/i18n";
 const MEMBERS = [
   {
     name: "Son",
-    role: "Main Instructor",
+    role: "CEO",
     photo: "/team/son.jpg",
     color: "var(--yellow-main)",
     linkedin: "https://www.linkedin.com/in/sitthaveet/",
@@ -26,7 +26,7 @@ const MEMBERS = [
   },
   {
     name: "Mild",
-    role: "Head of AI",
+    role: "Physical AI Engineer",
     photo: "/team/mild.jpg",
     color: "var(--red)",
     linkedin: "https://www.linkedin.com/in/punthira-chinotaikul-15163a100/",

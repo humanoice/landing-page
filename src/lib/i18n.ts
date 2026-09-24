@@ -113,7 +113,7 @@ const en = {
     eyebrow: "// Team",
     title: "Meet your",
     highlight: "instructors",
-    roles: ["Main Instructor", "Senior Robotic Engineer", "Head of AI"],
+    roles: ["CEO", "Senior Robotic Engineer", "Physical AI Engineer"],
     blurbs: [
       "On a mission to make Thailand the Shenzhen of Southeast Asia",
       "Robot enthusiast with intensive background in the automation industry",
@@ -547,7 +547,7 @@ const th: ThaiDictionary = {
     eyebrow: "// ทีมเรา",
     title: "มารู้จัก",
     highlight: "ทีมผู้สอน",
-    roles: ["ผู้สอนหลัก", "วิศวกรหุ่นยนต์อาวุโส", "หัวหน้าทีม AI"],
+    roles: ["CEO", "วิศวกรหุ่นยนต์อาวุโส", "Physical AI Engineer"],
     blurbs: [
       "ตั้งใจเปลี่ยนประเทศไทยให้เป็น Shenzhen แห่ง Southeast Asia",
       "สายหุ่นยนต์ตัวจริง พร้อมประสบการณ์แน่นในวงการระบบอัตโนมัติ",
