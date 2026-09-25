@@ -39,6 +39,13 @@ export const siteConfig = {
   // `mapsUrl` goes in the calendar invite; `label` is the LOCATION line, since a
   // maps short link on its own tells a calendar nothing.
   venue: { ...venue, label: `${venue.name}, ${venue.area}` },
+  // The registered company behind the brand. Printed on certificates, where the
+  // legal name and registration number are what make them checkable.
+  company: {
+    legalName: "Human Noy Co., Ltd.",
+    registrationNo: "0105569143652",
+    ceo: { name: "Sitthavee Teerakulchon", title: "Chief Executive Officer" },
+  },
   // The cream paper canvas (globals.css --cream) — drives theme-color + manifest.
   themeColor: "#fbf3e2",
   // public/opengraph.jpg — dimensions are the real file size so platforms don't reflow it.

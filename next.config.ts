@@ -11,6 +11,16 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // The certificate PDF reads its fonts and images off disk at request time, which
+  // the tracer can't see — ship them with that route (src/components/certificate-pdf.tsx).
+  outputFileTracingIncludes: {
+    "/certificate/*/pdf": [
+      "./src/assets/fonts/**/*",
+      "./public/logo.png",
+      "./public/logo/logo_horizontal_with_text.png",
+      "./public/son-signature.png",
+    ],
+  },
   experimental: {
     serverActions: {
       // The payment step posts a slip image through a server action. Default is

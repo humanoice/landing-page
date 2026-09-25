@@ -39,7 +39,7 @@ const AI_CRAWLERS = [
 ];
 
 // A certificate URL carries a student's name, so it stays out of every index.
-// The route 404s today; the rule is here so shipping the page can't leak them.
+// The page and its PDF also send noindex, for links crawlers find elsewhere.
 const PRIVATE = ["/certificate/"];
 
 export default function robots(): MetadataRoute.Robots {
