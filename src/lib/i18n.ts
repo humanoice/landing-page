@@ -38,7 +38,7 @@ const en = {
         name: "Hardware in Humanoid 101",
         tag: "Hardware",
         duration: "2 days",
-        price: "12,900 THB",
+        price: "9,900 THB",
         blurb:
           "It's like IKEA but for humanoids - assemble from ground up yourself",
         cta: "Apply",
@@ -65,7 +65,7 @@ const en = {
         name: "Humanoid Programming 101",
         tag: "Software",
         duration: "1 day",
-        price: "8,900 THB",
+        price: "5,900 THB",
         blurb:
           "Modern software for humanoids: From modeling to simulate for policy.",
         cta: "Apply",
@@ -472,7 +472,7 @@ const th: ThaiDictionary = {
         name: "Hardware in Humanoid 101",
         tag: "ฮาร์ดแวร์",
         duration: "2 วัน",
-        price: "12,900 บาท",
+        price: "9,900 บาท",
         blurb:
           "เหมือน IKEA แต่เป็นฮิวแมนนอยด์ — ประกอบเองตั้งแต่ชิ้นแรกจนครบทั้งตัว",
         cta: "สมัคร",
@@ -499,7 +499,7 @@ const th: ThaiDictionary = {
         name: "Humanoid Programming 101",
         tag: "ซอฟต์แวร์",
         duration: "1 วัน",
-        price: "8,900 บาท",
+        price: "5,900 บาท",
         blurb:
           "สายซอฟต์แวร์ของฮิวแมนนอยด์ — สร้างโมเดล จำลอง แล้วเทรนให้มันเดินได้",
         cta: "สมัคร",
