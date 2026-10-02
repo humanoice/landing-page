@@ -86,6 +86,7 @@ change — read them live at ${url("/apply")}.
 - Facebook: ${siteConfig.socialUrls.facebook}
 - Instagram: ${siteConfig.socialUrls.instagram}
 - X: ${siteConfig.socialUrls.x}
+- TikTok: ${siteConfig.socialUrls.tiktok}
 
 ## Optional
 

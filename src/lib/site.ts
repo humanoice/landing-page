@@ -28,6 +28,7 @@ export const siteConfig = {
     facebook: "https://www.facebook.com/profile.php?id=61593979432903",
     instagram: "https://www.instagram.com/humanoicebot/",
     x: "https://x.com/humanoicebot",
+    tiktok: "https://www.tiktok.com/@humanoicebot",
   },
   // Transactional mail (payment confirmations) goes out from here via Resend.
   // The domain has to be verified in the Resend dashboard or every send fails.

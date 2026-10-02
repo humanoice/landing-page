@@ -17,7 +17,7 @@ export function SiteFooter({ locale, copy }: SiteFooterProps) {
   // Every mark in public/social is a solid black badge on transparent, so `invert`
   // flips it to a white badge with the glyph knocked out — no chrome needed around
   // it. The LINE bubble carries built-in padding the circular marks don't, hence
-  // the per-icon `size` nudge so all four read at the same optical weight.
+  // the per-icon `size` nudge so every mark reads at the same optical weight.
   const socials = [
     {
       name: "LINE",
@@ -51,6 +51,14 @@ export function SiteFooter({ locale, copy }: SiteFooterProps) {
       size: "size-7",
       event: "social_click",
       params: { network: "x", location: "footer_social" },
+    },
+    {
+      name: "TikTok",
+      href: siteConfig.socialUrls.tiktok,
+      icon: "/social/tiktok-logo.webp",
+      size: "size-7",
+      event: "social_click",
+      params: { network: "tiktok", location: "footer_social" },
     },
   ];
 
