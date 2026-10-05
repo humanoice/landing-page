@@ -24,7 +24,7 @@ Database is Neon
 
 ## Design language — "Build Joyfully"
 
-Industrial-playful brutalism, deliberately not robotics-blue: `border-2 border-ink`, hard offset shadows (`shadow-[3px_3px_0_0_var(--ink)]`), warm cream paper canvas with a fixed grain overlay, yellow / coral / crimson accents. Fonts: `font-display` Unbounded (headlines), `font-mono` Space Mono (spec-sheet labels), `font-sans` Prompt (body + Thai). Animation is CSS classes in `globals.css` (`.reveal`, `.marquee`, `.float`, `.pop-in`, `.wave`), all neutralized under `prefers-reduced-motion`; scroll-in uses the `Reveal` client wrapper, with a `<noscript>` fallback in `layout.tsx`. Reuse this vocabulary for anything new.
+@DESIGN.md
 
 ## Database
 
