@@ -12,10 +12,12 @@ import { getDictionary, type ApplyCopy, type Locale } from "@/lib/i18n";
 import { announceApplication, announceSlipVerdict, type DiscountNotice } from "@/lib/notify";
 import {
   amountDue,
+  bill,
+  BUNDLE_PERCENT,
   discountAmount,
+  isBundle,
   isPayerType,
   normalizeCode,
-  withholding,
   type PayerType,
 } from "@/lib/payment";
 import { clientKey, DISCOUNT, LOOKUP, SLIP, SUBMIT, take } from "@/lib/rate-limit";
@@ -112,6 +114,8 @@ export type PaymentSummary = {
   id: string;
   /** The runs' list prices summed; what was taken off it sits beside. */
   priceThb: number;
+  /** Off for picking both tracks; taken before the code. */
+  bundleThb: number;
   discountThb: number;
   /** The code that earned the discount, for the breakdown. Null = none. */
   discountCode: string | null;
@@ -172,6 +176,7 @@ function parseYears(raw: string): number | undefined | "invalid" {
 /** An unpaid seat of theirs on a run they just picked, priced. */
 type UnpaidRow = {
   id: string;
+  track_no: number | null;
   name: string;
   start_time: string;
   end_time: string | null;
@@ -366,7 +371,7 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
     // What's left to pay for. A run they already paid for isn't billed twice; a
     // run with no price (B2B) can't be billed at all — either way, LINE takes over.
     const unpaid = (await sql`
-      select p.id, c.name, c.start_time, c.end_time, c.price_thb
+      select p.id, c.track_no, c.name, c.start_time, c.end_time, c.price_thb
       from participations p
       join courses c on c.id = p.course_id
       where p.student_id = ${student.id}::uuid
@@ -383,10 +388,13 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
       return { status: "success" };
     }
 
-    const priceThb = unpaid.reduce((sum, run) => sum + (run.price_thb as number), 0);
-    // The discount comes off the list total; a company's 3% is then taken on what's left.
-    const discountThb = discount ? discountAmount(priceThb, discount.percent) : 0;
-    const withholdingThb = withholding(priceThb - discountThb, payerType);
+    // The bundle is earned by what this payment covers: a track paid for on an
+    // earlier application was paid in full then, and isn't re-priced now.
+    const { priceThb, bundleThb, discountThb, withholdingThb, dueThb } = bill(
+      unpaid.reduce((sum, run) => sum + (run.price_thb as number), 0),
+      payerType,
+      { bundle: isBundle(unpaid.map((run) => run.track_no)), codePercent: discount?.percent ?? null },
+    );
 
     // The payment and the seats it covers, in one statement. A re-submit (page
     // refreshed mid-payment) points the same seats at a fresh payment; the old
@@ -404,7 +412,8 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
           ${values.receiptAddress || null},
           ${priceThb},
           ${discount?.id ?? null},
-          ${discountThb},
+          -- The bundle and the code together: no column of its own, see splitDiscount().
+          ${bundleThb + discountThb},
           ${withholdingThb}
         )
         returning id
@@ -415,10 +424,10 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
       returning pay.id
     `) as { id: string }[];
 
-    const dueThb = amountDue(priceThb, withholdingThb, discountThb);
     announceApplication(values, picked, {
       paymentId: payment.id,
       priceThb,
+      bundleThb,
       discount: discount && { code: discount.code, percent: discount.percent, amountThb: discountThb },
       withholdingThb,
       dueThb,
@@ -429,6 +438,7 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
       payment: {
         id: payment.id,
         priceThb,
+        bundleThb,
         discountThb,
         discountCode: discount?.code ?? null,
         withholdingThb,
@@ -464,13 +474,14 @@ export type PayState =
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-type PaidRun = { id: string; name: string; start_time: string; end_time: string | null };
+type PaidRun = { id: string; track_no: number | null; name: string; start_time: string; end_time: string | null };
 
 type PaymentRow = {
   id: string;
   student_id: string;
   payer_type: PayerType;
   price_thb: number;
+  /** The bundle and the code together — splitDiscount() takes them apart. */
   discount_thb: number;
   /** discount_codes.code / .percent, via the left join; null when no code was used. */
   discount_code: string | null;
@@ -532,7 +543,7 @@ export async function confirmPayment(_prev: PayState, formData: FormData): Promi
         coalesce(
           (
             select json_agg(
-              json_build_object('id', p.id, 'name', c.name, 'start_time', c.start_time, 'end_time', c.end_time)
+              json_build_object('id', p.id, 'track_no', c.track_no, 'name', c.name, 'start_time', c.start_time, 'end_time', c.end_time)
               order by c.start_time, c.id
             )
             from participations p
@@ -553,6 +564,7 @@ export async function confirmPayment(_prev: PayState, formData: FormData): Promi
     const copy = getDictionary(locale).apply;
     const runs = runsOf(payment, locale, copy);
     const due = amountDue(payment.price_thb, Number(payment.withholding_thb), payment.discount_thb);
+    const { bundleThb, codeThb } = splitDiscount(payment);
     const confirmation: Confirmation = {
       email: payment.email,
       amountThb: due,
@@ -618,7 +630,8 @@ export async function confirmPayment(_prev: PayState, formData: FormData): Promi
         receipt_address: payment.receipt_address,
         price_thb: payment.price_thb - payment.discount_thb,
         list_price_thb: payment.price_thb,
-        discount_thb: payment.discount_thb,
+        bundle_discount_thb: bundleThb,
+        discount_thb: codeThb,
         discount_code: payment.discount_code,
         withholding_thb: Number(payment.withholding_thb),
       }),
@@ -689,16 +702,31 @@ function notifyTeam(
     },
     runs,
     dueThb,
+    bundleThb: splitDiscount(payment).bundleThb,
     discount: discountOf(payment),
     slip,
     issue,
   });
 }
 
-/** The discount on a payment row, in the words the Lark notice wants — null when none was used. */
+/**
+ * `discount_thb` holds the bundle and the code together; the bundle has no
+ * column of its own, so it's worked back out from the runs the payment covers,
+ * the same way `bill()` worked it out going in. Capped at the stored total, so
+ * a row from before the bundle existed never shows more off than it got.
+ */
+function splitDiscount(payment: PaymentRow): { bundleThb: number; codeThb: number } {
+  const bundleThb = isBundle(payment.runs.map((run) => run.track_no))
+    ? Math.min(discountAmount(payment.price_thb, BUNDLE_PERCENT), payment.discount_thb)
+    : 0;
+  return { bundleThb, codeThb: payment.discount_thb - bundleThb };
+}
+
+/** The code's share of a payment row's discount, in the words the Lark notice wants — null when none was used. */
 function discountOf(payment: PaymentRow): DiscountNotice | null {
-  return payment.discount_code && payment.discount_percent !== null && payment.discount_thb > 0
-    ? { code: payment.discount_code, percent: payment.discount_percent, amountThb: payment.discount_thb }
+  const { codeThb } = splitDiscount(payment);
+  return payment.discount_code && payment.discount_percent !== null && codeThb > 0
+    ? { code: payment.discount_code, percent: payment.discount_percent, amountThb: codeThb }
     : null;
 }
 

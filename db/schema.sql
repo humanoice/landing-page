@@ -93,7 +93,8 @@ create table if not exists payments (
   price_thb        integer     not null,        -- the runs' price_thb summed, as it stood when they applied
   discount_code_id integer     references discount_codes (id),
   -- Whole baht taken off price_thb; net = price_thb - discount_thb, and withholding
-  -- is 3% of that net.
+  -- is 3% of that net. Includes the two-track bundle (src/lib/payment.ts, BUNDLE_PERCENT)
+  -- when the payment covers both tracks; the code's percent applies after it.
   discount_thb     integer     not null default 0 check (discount_thb >= 0),
   withholding_thb  numeric(10,2) not null default 0,   -- 3% a company deducts at source; 0 for an individual
   -- The slip has to show price_thb - discount_thb - withholding_thb.

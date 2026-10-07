@@ -23,7 +23,7 @@ import {
 } from "@/app/apply/actions";
 import type { RunSummary } from "@/lib/courses";
 import type { ApplyCopy, Locale } from "@/lib/i18n";
-import { amountDue, BANK, formatThb } from "@/lib/payment";
+import { amountDue, BANK, BUNDLE_PERCENT, formatThb } from "@/lib/payment";
 import { siteConfig } from "@/lib/site";
 import { ACCEPTED_IMAGE_TYPES, type SlipIssue } from "@/lib/slip-types";
 
@@ -41,7 +41,8 @@ const INITIAL: PayState = { status: "idle" };
  */
 export function PaymentPanel({ payment, copy, locale }: PaymentPanelProps) {
   const [state, formAction, pending] = useActionState(confirmPayment, INITIAL);
-  const dueThb = amountDue(payment.priceThb, payment.withholdingThb, payment.discountThb);
+  const dueThb = amountDue(payment.priceThb, payment.withholdingThb, payment.bundleThb + payment.discountThb);
+  const bundled = payment.bundleThb > 0;
   const discounted = payment.discountThb > 0;
   const withheld = payment.withholdingThb > 0;
 
@@ -83,13 +84,15 @@ export function PaymentPanel({ payment, copy, locale }: PaymentPanelProps) {
               <span className="ml-2 font-mono text-base font-bold tracking-[0.12em] text-ink/60">{unit}</span>
             </p>
             {/* How the number came about, when it isn't just the list price. */}
-            {(discounted || withheld) && (
+            {(bundled || discounted || withheld) && (
               <p className="font-mono text-[11px] leading-relaxed text-ink/55">
                 {formatThb(payment.priceThb)}
+                {bundled && ` − ${formatThb(payment.bundleThb)}`}
                 {discounted && ` − ${formatThb(payment.discountThb)}`}
                 {withheld && ` − ${formatThb(payment.withholdingThb)}`} {unit}
                 <br />
                 {[
+                  bundled && `${pay.bundleNote[0]}${BUNDLE_PERCENT}${pay.bundleNote[1]}`,
                   discounted && `${payment.discountCode} ${pay.discountNote}`,
                   withheld && pay.withholdingNote,
                 ]

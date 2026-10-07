@@ -32,12 +32,12 @@ import { EMAIL, LANGUAGES, PROGRAMMING_LANGUAGES, SKILLS } from "@/lib/apply-opt
 import type { CourseOption } from "@/lib/courses";
 import type { ApplyCopy, Locale } from "@/lib/i18n";
 import {
-  amountDueFor,
-  discountAmount,
+  bill,
+  BUNDLE_PERCENT,
   formatThb,
+  isBundle,
   isPayerType,
   PAYER_TYPES,
-  withholding,
   type PayerType,
 } from "@/lib/payment";
 
@@ -123,6 +123,11 @@ export function ApplyForm({ locale, copy, courses, preselected }: ApplyFormProps
   // Depend only on props, so a keystroke in any of the ~17 text fields doesn't
   // re-sort the runs and rebuild three option lists.
   const groups = useMemo(() => groupByTrack(courses), [courses]);
+  // Only advertise the bundle when it can actually be had: a priced, open run in both tracks.
+  const bundleOpen = useMemo(
+    () => isBundle(courses.filter((course) => !isFull(course) && course.priceThb !== null).map((c) => c.trackNo)),
+    [courses],
+  );
   const chipOptions = useMemo(
     () => ({
       languages: LANGUAGES.map((code) => [code, copy.languages[code]] as [string, string]),
@@ -271,8 +276,50 @@ export function ApplyForm({ locale, copy, courses, preselected }: ApplyFormProps
     <form action={formAction} noValidate className="space-y-10">
       <input type="hidden" name="locale" value={locale} />
 
-      {/* ---------- 01 · About you ---------- */}
-      <Section n="01" title={copy.sections.about} shadow="var(--yellow-main)">
+      {/* ---------- 01 · Pick your track ---------- */}
+      <Section
+        n="01"
+        title={copy.sections.course}
+        hint={courses.length > 0 ? copy.courseHint : undefined}
+        shadow="var(--yellow-main)"
+      >
+        {courses.length === 0 ? (
+          <div className="rounded-2xl border-2 border-dashed border-ink/25 bg-cream/60 p-6 text-center">
+            <p className="text-sm leading-relaxed text-ink/70">{copy.course.empty}</p>
+            <LineCta small className="mt-5" location="apply_no_courses" label={copy.course.line} />
+          </div>
+        ) : (
+          <fieldset aria-invalid={errors.course ? true : undefined}>
+            <legend className="sr-only">{copy.sections.course}</legend>
+            <div className="space-y-5">
+              {groups.map((group) => (
+                <TrackGroup
+                  key={group.trackNo ?? "other"}
+                  group={group}
+                  copy={copy.course}
+                  picked={picked}
+                  onPick={pick}
+                  onClear={() => clearTrack(group.trackNo)}
+                />
+              ))}
+            </div>
+            {/* Said before anyone picks, so it can change what they pick. */}
+            {bundleOpen && (
+              <p className="mt-5 text-[13px] leading-snug text-ink/70 sm:text-sm">
+                <span className="text-crimson">★</span> {around(copy.course.bundle, BUNDLE_PERCENT)}
+              </p>
+            )}
+            {errors.course && (
+              <p role="alert" className={ERROR}>
+                {message("course")}
+              </p>
+            )}
+          </fieldset>
+        )}
+      </Section>
+
+      {/* ---------- 02 · About you ---------- */}
+      <Section n="02" title={copy.sections.about} shadow="var(--orange-secondary)">
         <div className="grid gap-5 sm:grid-cols-2">
           {/* First, and on its own row: it's the key we look everything else up by. */}
           <div className="sm:col-span-2">
@@ -368,8 +415,8 @@ export function ApplyForm({ locale, copy, courses, preselected }: ApplyFormProps
         />
       </Section>
 
-      {/* ---------- 02 · Background ---------- */}
-      <Section n="02" title={copy.sections.background} hint={copy.backgroundHint} shadow="var(--orange-secondary)">
+      {/* ---------- 03 · Background ---------- */}
+      <Section n="03" title={copy.sections.background} hint={copy.backgroundHint} shadow="var(--yellow-main)">
         <div className="grid gap-5 sm:grid-cols-2">
           <TextField
             name="roboticsYears"
@@ -416,42 +463,6 @@ export function ApplyForm({ locale, copy, courses, preselected }: ApplyFormProps
           picked={values.skills}
           onToggle={toggle}
         />
-      </Section>
-
-      {/* ---------- 03 · Pick your track ---------- */}
-      <Section
-        n="03"
-        title={copy.sections.course}
-        hint={courses.length > 0 ? copy.courseHint : undefined}
-        shadow="var(--yellow-main)"
-      >
-        {courses.length === 0 ? (
-          <div className="rounded-2xl border-2 border-dashed border-ink/25 bg-cream/60 p-6 text-center">
-            <p className="text-sm leading-relaxed text-ink/70">{copy.course.empty}</p>
-            <LineCta small className="mt-5" location="apply_no_courses" label={copy.course.line} />
-          </div>
-        ) : (
-          <fieldset aria-invalid={errors.course ? true : undefined}>
-            <legend className="sr-only">{copy.sections.course}</legend>
-            <div className="space-y-5">
-              {groups.map((group) => (
-                <TrackGroup
-                  key={group.trackNo ?? "other"}
-                  group={group}
-                  copy={copy.course}
-                  picked={picked}
-                  onPick={pick}
-                  onClear={() => clearTrack(group.trackNo)}
-                />
-              ))}
-            </div>
-            {errors.course && (
-              <p role="alert" className={ERROR}>
-                {message("course")}
-              </p>
-            )}
-          </fieldset>
-        )}
       </Section>
 
       {/* ---------- 04 · Receipt & payment ---------- */}
@@ -583,6 +594,9 @@ export function ApplyForm({ locale, copy, courses, preselected }: ApplyFormProps
 }
 
 /* ---------- Pieces ---------- */
+
+/** Copy split around a number — `["Pick both and ", "% off"]` + 10 → "Pick both and 10% off". */
+const around = ([before, after]: string[], value: number) => `${before}${value}${after}`;
 
 type LookupNoteProps = {
   lookup: Lookup;
@@ -746,11 +760,14 @@ function AmountPreview({ copy, unit, picked, courses, payer, discount }: AmountP
     );
   }
 
-  const fee = prices.reduce<number>((sum, price) => sum + (price ?? 0), 0);
-  const type = payer ?? "individual";
-  const off = discount ? discountAmount(fee, discount.percent) : 0;
-  const held = withholding(fee - off, type);
-  const due = amountDueFor(fee, type, off);
+  const { priceThb, bundleThb, discountThb, withholdingThb, dueThb } = bill(
+    prices.reduce<number>((sum, price) => sum + (price ?? 0), 0),
+    payer ?? "individual",
+    {
+      bundle: isBundle(picked.map((id) => courses.find((course) => course.id === id)?.trackNo ?? null)),
+      codePercent: discount?.percent ?? null,
+    },
+  );
 
   return (
     <div className="mt-7 rounded-2xl border-2 border-ink bg-cream p-4 shadow-[4px_4px_0_0_var(--ink)] sm:p-5">
@@ -759,31 +776,41 @@ function AmountPreview({ copy, unit, picked, courses, payer, discount }: AmountP
         <div className="flex items-baseline justify-between gap-4 text-ink/70">
           <dt>{copy.fee}</dt>
           <dd>
-            {formatThb(fee)} {unit}
+            {formatThb(priceThb)} {unit}
           </dd>
         </div>
-        {discount && off > 0 && (
+        {bundleThb > 0 && (
+          <div className="flex items-baseline justify-between gap-4 font-bold text-crimson">
+            <dt>
+              ★ {copy.bundle} ({BUNDLE_PERCENT}%)
+            </dt>
+            <dd>
+              − {formatThb(bundleThb)} {unit}
+            </dd>
+          </div>
+        )}
+        {discount && discountThb > 0 && (
           <div className="flex items-baseline justify-between gap-4 text-ink/70">
             <dt>
               {copy.discount} ({discount.percent}%)
             </dt>
             <dd>
-              − {formatThb(off)} {unit}
+              − {formatThb(discountThb)} {unit}
             </dd>
           </div>
         )}
-        {held > 0 && (
+        {withholdingThb > 0 && (
           <div className="flex items-baseline justify-between gap-4 text-ink/70">
             <dt>{copy.withholding}</dt>
             <dd>
-              − {formatThb(held)} {unit}
+              − {formatThb(withholdingThb)} {unit}
             </dd>
           </div>
         )}
         <div className="flex items-baseline justify-between gap-4 border-t-2 border-ink/10 pt-2 text-base font-bold">
           <dt>{copy.due}</dt>
           <dd className="text-crimson">
-            {formatThb(due)} {unit}
+            {formatThb(dueThb)} {unit}
           </dd>
         </div>
       </dl>

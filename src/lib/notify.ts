@@ -2,7 +2,7 @@ import "server-only";
 import { after } from "next/server";
 import type { RunSummary } from "@/lib/courses";
 import { notifyLark } from "@/lib/lark";
-import { formatThb } from "@/lib/payment";
+import { BUNDLE_PERCENT, formatThb } from "@/lib/payment";
 import type { SlipIssue, SlipReading } from "@/lib/slip-types";
 
 /**
@@ -43,6 +43,8 @@ export type DiscountNotice = { code: string; percent: number; amountThb: number 
 export type Billing = {
   paymentId: string;
   priceThb: number;
+  /** Off for picking both tracks; 0 when they didn't. */
+  bundleThb: number;
   discount: DiscountNotice | null;
   withholdingThb: number;
   dueThb: number;
@@ -53,6 +55,10 @@ const fullName = (first: string, last?: string | null) => [first, last].filter(B
 /** "2,580 THB (SON-FRIENDS · 20%)" — one row, whichever notice it's on. */
 const discountWords = (discount: DiscountNotice | null) =>
   discount && `${formatThb(discount.amountThb)} THB (${discount.code} · ${discount.percent}%)`;
+
+/** "1,000 THB (both tracks · 10%)" — or nothing, so the row drops out. */
+const bundleWords = (bundleThb: number) =>
+  bundleThb > 0 ? `${formatThb(bundleThb)} THB (both tracks · ${BUNDLE_PERCENT}%)` : null;
 
 /**
  * A new application, the moment it's saved. Everything they typed goes in —
@@ -77,11 +83,12 @@ export function announceApplication(who: Applicant, runs: RunSummary[], billing:
         ? ["To pay", `${formatThb(billing.dueThb)} THB`]
         : // No transfer step: a B2B run with no price, or seats they'd already paid for.
           ["To pay", "nothing — LINE takes it from here"],
+      ["Bundle", bundleWords(billing?.bundleThb ?? 0)],
       ["Discount", discountWords(billing?.discount ?? null)],
       billing && billing.withholdingThb > 0
         ? [
             "Of which",
-            `${formatThb(billing.priceThb - (billing.discount?.amountThb ?? 0))} less ${formatThb(billing.withholdingThb)} withholding`,
+            `${formatThb(billing.priceThb - billing.bundleThb - (billing.discount?.amountThb ?? 0))} less ${formatThb(billing.withholdingThb)} withholding`,
           ]
         : null,
       ["Receipt to", who.receiptName],
@@ -118,6 +125,7 @@ export type SlipVerdictNotice = {
   who: Applicant;
   runs: RunSummary[];
   dueThb: number;
+  bundleThb: number;
   discount: DiscountNotice | null;
   slip: SlipReading | null;
   /** Null means it passed. */
@@ -134,7 +142,16 @@ export type SlipVerdictNotice = {
  * is the only warning that something about an accepted slip was odd. That is why
  * a note flags the title of a pass — otherwise nobody scrolls to it.
  */
-export function announceSlipVerdict({ paymentId, who, runs, dueThb, discount, slip, issue }: SlipVerdictNotice) {
+export function announceSlipVerdict({
+  paymentId,
+  who,
+  runs,
+  dueThb,
+  bundleThb,
+  discount,
+  slip,
+  issue,
+}: SlipVerdictNotice) {
   const paid = issue === null;
   const name = fullName(who.firstName, who.lastName);
 
@@ -149,6 +166,7 @@ export function announceSlipVerdict({ paymentId, who, runs, dueThb, discount, sl
         null,
         ...runs.map((run) => ["Run", `${run.name} — ${run.dates}`] as const),
         [paid ? "Paid" : "Owed", `${formatThb(dueThb)} THB`],
+        ["Bundle", bundleWords(bundleThb)],
         ["Discount", discountWords(discount)],
         ["Paying as", who.payerType],
         ["Receipt to", who.receiptName],

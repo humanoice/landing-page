@@ -277,6 +277,8 @@ const en = {
       empty:
         "No runs are open right now. Add us on LINE and we'll ping you the moment the next one opens.",
       line: "Add LINE",
+      /** The two-track bundle line: the words either side of BUNDLE_PERCENT (src/lib/payment.ts). */
+      bundle: ["Pick both tracks and ", "% comes off the total."],
     },
     submit: "Send application",
     submitting: "Sending…",
@@ -334,6 +336,7 @@ const en = {
       preview: {
         title: "What you'll transfer",
         fee: "Course fee",
+        bundle: "Both-tracks bundle",
         discount: "Discount",
         withholding: "3% withholding tax",
         due: "Transfer",
@@ -352,6 +355,8 @@ const en = {
       amount: "Amount to transfer",
       withholdingNote: "3% withholding tax deducted",
       discountNote: "discount code applied",
+      /** Around the percent: "10% off for both tracks" */
+      bundleNote: ["", "% off for both tracks"],
       bank: "Kasikorn Bank",
       accountName: "Account name",
       copy: "Copy",
@@ -676,6 +681,7 @@ const th: ThaiDictionary = {
       empty:
         "ตอนนี้ยังไม่มีรอบเปิดรับสมัคร แอดไลน์ไว้ แล้วเราจะแจ้งทันทีที่รอบใหม่เปิด",
       line: "แอดไลน์",
+      bundle: ["สมัครสองคอร์สพร้อมกัน ลดทันที ", "% จากยอดรวม"],
     },
     submit: "ส่งใบสมัคร",
     submitting: "กำลังส่ง…",
@@ -730,6 +736,7 @@ const th: ThaiDictionary = {
       preview: {
         title: "ยอดที่ต้องโอน",
         fee: "ค่าเรียน",
+        bundle: "ส่วนลดเรียนคู่",
         discount: "ส่วนลด",
         withholding: "หัก ณ ที่จ่าย 3%",
         due: "ยอดโอน",
@@ -747,6 +754,7 @@ const th: ThaiDictionary = {
       amount: "ยอดที่ต้องโอน",
       withholdingNote: "หักภาษี ณ ที่จ่าย 3% แล้ว",
       discountNote: "หักส่วนลดจากโค้ดแล้ว",
+      bundleNote: ["ส่วนลดเรียนคู่ ", "%"],
       bank: "ธนาคารกสิกรไทย",
       accountName: "ชื่อบัญชี",
       copy: "คัดลอก",

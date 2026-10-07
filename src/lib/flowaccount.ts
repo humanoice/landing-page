@@ -26,12 +26,15 @@ export type RevenueRecord = {
   receipt_tax_id: string | null;
   receipt_address: string | null;
   /**
-   * Net of any discount — what the receipt is for. (In the table, `price_thb`
-   * is the list total and `discount_thb` sits beside it; the bot predates
-   * discounts, so it gets the figure it always did and the split as extras.)
+   * Net of the bundle and any code — what the receipt is for. (In the table,
+   * `price_thb` is the list total and the discounts sit beside it; the bot
+   * predates discounts, so it gets the figure it always did and the split as extras.)
    */
   price_thb: number;
   list_price_thb: number;
+  /** Off for picking both tracks, taken first. Not a column: split out of the row's discount_thb. */
+  bundle_discount_thb: number;
+  /** Off for the code, on what the bundle left — the row's discount_thb less the bundle. */
   discount_thb: number;
   discount_code: string | null;
   /** 0 for an individual; 3% of the net for a company. The slip showed the difference. */

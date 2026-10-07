@@ -41,7 +41,7 @@ export function normalizeCode(raw: string): string {
   return DISCOUNT_CODE.test(code) ? code : "";
 }
 
-/** Whole baht off the fee — a percent of a price rounds to the baht, so the row stays an integer. */
+/** Whole baht off a price — a percent of a price rounds to the baht, so the row stays an integer. */
 export function discountAmount(priceThb: number, percent: number): number {
   return Math.round((priceThb * percent) / 100);
 }
@@ -54,14 +54,56 @@ export function withholding(netThb: number, payerType: PayerType): number {
   return payerType === "company" ? satang(netThb * WITHHOLDING_RATE) : 0;
 }
 
-/** What has to land in the account. The one place this subtraction is done. */
-export function amountDue(priceThb: number, withholdingThb: number, discountThb = 0): number {
-  return satang(priceThb - discountThb - withholdingThb);
+/**
+ * What has to land in the account. The one place this subtraction is done.
+ * `offThb` is everything taken off the list price: the bundle plus any code.
+ */
+export function amountDue(priceThb: number, withholdingThb: number, offThb = 0): number {
+  return satang(priceThb - offThb - withholdingThb);
 }
 
-/** The same figure straight from a payer type — what the form's live preview needs. */
-export function amountDueFor(priceThb: number, payerType: PayerType, discountThb = 0): number {
-  return amountDue(priceThb, withholding(priceThb - discountThb, payerType), discountThb);
+/**
+ * The two-track bundle: a hardware run and a software run on one application
+ * take 10% off the total, no code needed. A code, if there is one, then takes
+ * its percent off what's left — the two stack, the bundle first.
+ */
+export const BUNDLE_PERCENT = 10;
+/** courses.track_no of the tracks that make the bundle — 1 Hardware, 2 Software. */
+export const BUNDLE_TRACKS = [1, 2] as const;
+
+/** Do these runs' tracks earn the bundle? */
+export function isBundle(trackNos: (number | null)[]): boolean {
+  return BUNDLE_TRACKS.every((trackNo) => trackNos.includes(trackNo));
+}
+
+/** A price, taken apart: what comes off it, and what's left to transfer. */
+export type Bill = {
+  priceThb: number;
+  bundleThb: number;
+  discountThb: number;
+  withholdingThb: number;
+  dueThb: number;
+};
+
+/**
+ * The whole sum, in order: bundle off the list, code off the rest, withholding
+ * on the net. The form's live preview and the stored payment both come from here.
+ */
+export function bill(
+  priceThb: number,
+  payerType: PayerType,
+  { bundle, codePercent }: { bundle: boolean; codePercent: number | null },
+): Bill {
+  const bundleThb = bundle ? discountAmount(priceThb, BUNDLE_PERCENT) : 0;
+  const discountThb = codePercent ? discountAmount(priceThb - bundleThb, codePercent) : 0;
+  const withholdingThb = withholding(priceThb - bundleThb - discountThb, payerType);
+  return {
+    priceThb,
+    bundleThb,
+    discountThb,
+    withholdingThb,
+    dueThb: amountDue(priceThb, withholdingThb, bundleThb + discountThb),
+  };
 }
 
 // Built once: constructing an Intl formatter costs ~60x formatting with it, and
