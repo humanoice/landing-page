@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { Reveal } from "@/components/reveal";
-import { TrackedLink } from "@/components/track";
 import type { HomeDictionary } from "@/lib/i18n";
 
 type PartnersProps = { copy: HomeDictionary["partners"] };
@@ -59,6 +58,26 @@ export function Partners({ copy }: PartnersProps) {
             </article>
           </Reveal>
 
+          <Reveal delay={130}>
+            <article className="group flex h-full flex-col rounded-3xl border-[3px] border-cream/15 bg-cream p-7 text-ink shadow-[8px_8px_0_0_var(--orange-secondary)] transition-all duration-200 hover:-translate-y-1.5 hover:shadow-[12px_12px_0_0_var(--orange-secondary)]">
+              <div className="flex items-center justify-between">
+                <Image
+                  src="/partners/lerobot.png"
+                  alt="LeRobot — SO-ARM 101 open-source robot arm"
+                  width={72}
+                  height={72}
+                  className="size-16 rounded-2xl object-contain transition-transform duration-200 group-hover:rotate-[-6deg]"
+                />
+              </div>
+              <h3 className="mt-6 font-display text-2xl font-extrabold tracking-tight">
+                LeRobot
+              </h3>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-ink/70">
+                {copy.lerobot}
+              </p>
+            </article>
+          </Reveal>
+
           {/* Asimov — hidden for now
           <Reveal delay={130}>
             <article className="group flex h-full flex-col rounded-3xl border-[3px] border-cream/15 bg-cream p-7 text-ink shadow-[8px_8px_0_0_var(--orange-secondary)] transition-all duration-200 hover:-translate-y-1.5 hover:shadow-[12px_12px_0_0_var(--orange-secondary)]">
@@ -80,34 +99,6 @@ export function Partners({ copy }: PartnersProps) {
             </article>
           </Reveal>
           */}
-
-          {/* Become a partner CTA */}
-          <Reveal delay={260}>
-            <TrackedLink
-              event="partner_click"
-              params={{ location: "partners" }}
-              href="https://airtable.com/appUH4Cp6jG720uUL/pagoe00CRjfglXwch/form"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex h-full min-h-[15rem] flex-col justify-between rounded-3xl border-[3px] border-ink bg-crimson p-7 shadow-[8px_8px_0_0_var(--yellow-main)] transition-all duration-200 hover:-translate-y-1.5 hover:shadow-[12px_12px_0_0_var(--yellow-main)]"
-            >
-              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-yellow-main">
-                {copy.label}
-              </span>
-              <span className="font-display text-2xl font-extrabold uppercase leading-tight tracking-tight text-cream">
-                {copy.callout[0]}
-                <br />
-                {copy.callout[1]}
-                <br />
-                <span className="inline-flex items-center gap-2 text-yellow-main">
-                  {copy.callout[2]}
-                  <span className="transition-transform duration-200 group-hover:translate-x-1">
-                    →
-                  </span>
-                </span>
-              </span>
-            </TrackedLink>
-          </Reveal>
         </div>
       </div>
     </section>

@@ -79,6 +79,7 @@ change — read them live at ${url("/apply")}.
 
 - ${partners.asimov}
 - ${partners.roboparty}
+- ${partners.lerobot}
 
 ## Contact
 

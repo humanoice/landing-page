@@ -66,7 +66,7 @@ In classes use the Tailwind names (`bg-crimson`, `text-ink/70`). In inline style
 - **Section rhythm:** sections alternate so the page reads as stacked paper. Home runs crimson hero → yellow ticker → cream curriculum → cream-deep team → ink partners → cream FAQ → footer (ink ticker → photo CTA on ink → crimson bottom bar).
 - **At most two background colours** per screen region.
 - **Accent rotation:** rows rotate their shadow colour **yellow → coral → crimson** (team cards, FAQ rows). Curriculum runs yellow → coral → featured crimson card on a yellow shadow. Form sections run yellow → coral → yellow.
-- **Featured content inverts:** crimson fill, cream type, yellow accents, yellow shadow (track 03, "Become a partner", outcome panels).
+- **Featured content inverts:** crimson fill, cream type, yellow accents, yellow shadow (track 03, outcome panels).
 - On ink grounds a cream card takes a `border-cream/15` border and a coral shadow (partner card).
 
 ---
@@ -102,7 +102,6 @@ Fonts are self-hosted through `next/font/google` in `src/app/layout.tsx` — don
 | `0.32em` / `0.28em` | 10px | `HUMANOICE` kicker (navbar / footer) |
 | `0.28em` | 12px `text-xs` | Section eyebrows |
 | `0.22em` | 10px | Spec-bar captions |
-| `0.2em` | 10px | Partner callout label |
 | `0.18em` | 11px | Field labels, card kickers, FAQ index; nav links at 12px; `META` captions at 10px |
 | `0.16em` | 12px / 10–11px | Footer nav, team roles, photo number chips, "★ combined" line |
 | `0.14em` | 11–12px | Meta pills, nav CTA, apply sticker, copyright |
@@ -253,7 +252,7 @@ Everything neutralises under `prefers-reduced-motion`: animations and transition
 
 Production components live in `src/components/`. The shared primitives are exported from `apply-ui.tsx`: class strings `CTA`, `CTA_SMALL`, `CTA_BUSY`, `PILL`, `CHIP`, `INPUT`, `LABEL`, `ERROR`, `META`, and components `Arrow`, `BusyNote`, `Section`, `TextField`, `OutcomePanel`, `LineCta`, `LineQr`. The hero, navbar and curriculum inline their own CTA strings; keep them in step with `CTA` when changing the button.
 
-Every CTA that leads to `/apply`, LINE or a partner form goes through `TrackedLink` / `TrackedAnchor` (`track.tsx`) with a GA event and a `location` param.
+Every CTA that leads to `/apply` or LINE goes through `TrackedLink` / `TrackedAnchor` (`track.tsx`) with a GA event and a `location` param.
 
 ### Actions
 - **CTA.** Pill, 2px ink border, yellow fill. Mono 14px bold uppercase at `.12em`, `px-7 py-3.5`, 5px ink shadow, trailing `<Arrow />`.
@@ -302,7 +301,7 @@ Every CTA that leads to `/apply`, LINE or a partner form goes through `TrackedLi
 - **Hero:** eyebrow, three-line masked headline, lead, CTA; bench window on the right; spec bar along the bottom.
 - **Track card:** price sticker, icon badge, kicker, name, MetaPill, blurb, dashed rule, item list, CTA pinned to the bottom. Track 03 is the featured crimson card whose list items reference tracks 01 and 02.
 - **Team card:** square photo Card with a numbered accent chip, LinkedIn IconButton, name, mono role in crimson, blurb.
-- **Partner cards:** cream partner Card on ink, plus the crimson "Become a partner" callout Card.
+- **Partner cards:** cream partner Card on ink.
 - **Footer:** mission ticker, photo CTA (scrim, LINE QR, location eyebrow, closer headline), bottom bar (lockup, nav, social marks, copyright).
 - **Apply flow:** form Sections with run picker and order summary; payment panel; OutcomePanel endings; skeleton cards (`border-ink/15`, `animate-pulse`) while courses stream in.
 - **Master Plan:** prose page — eyebrow, h1, mono date, `text-lg` paragraphs at `ink/80`, a 2px `ink/15` rule, then numbered steps with large crimson display numerals.

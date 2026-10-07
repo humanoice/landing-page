@@ -128,8 +128,8 @@ const en = {
       "Asimov 1, Here Be Dragons Edition — open-source humanoid robot by Menlo Research.",
     roboparty:
       "ROBOTO ORIGIN, open-source humanoid robot by a Shanghai-based company.",
-    label: "Build with us",
-    callout: ["Open-source", "a humanoid?", "Partner up"],
+    lerobot:
+      "SO-ARM 101, open-source robot arm from Hugging Face's LeRobot project.",
   },
   faq: {
     eyebrow: "// FAQ",
@@ -566,8 +566,7 @@ const th: ThaiDictionary = {
     asimov:
       "Asimov 1, Here Be Dragons Edition — ฮิวแมนนอยด์โอเพนซอร์สจาก Menlo Research",
     roboparty: "ROBOTO ORIGIN — ฮิวแมนนอยด์โอเพนซอร์สจากบริษัทในเซี่ยงไฮ้",
-    label: "มาสร้างด้วยกัน",
-    callout: ["มีฮิวแมนนอยด์", "โอเพนซอร์สเหรอ?", "มาเป็นพาร์ตเนอร์กัน"],
+    lerobot: "SO-ARM 101 — แขนหุ่นยนต์โอเพนซอร์สจากโปรเจกต์ LeRobot ของ Hugging Face",
   },
   faq: {
     eyebrow: "// คำถามที่พบบ่อย",
