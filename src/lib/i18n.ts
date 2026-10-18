@@ -138,7 +138,7 @@ const en = {
     items: [
       {
         q: "No background at all — can I still join?",
-        a: "Yes. Hardware in Humanoid 101 is beginner-friendly. Humanoid Programming 101 requires programming basics: if you can write simple Python or use a command line, that's enough.",
+        a: "Yes. Both Hardware in Humanoid 101 and Humanoid Programming 101 start from zero, so you don't need any coding background. We walk you through every step on the day.",
       },
       {
         q: "How many days is it, and what time?",
@@ -575,7 +575,7 @@ const th: ThaiDictionary = {
     items: [
       {
         q: "ถ้าไม่มีความรู้พื้นฐานเลย เรียนได้ไหม",
-        a: "คุณสามารถเรียน Hardware in Humanoid 101 ได้ ไม่ต้องมีพื้นฐานอะไรมาก่อน ส่วน Humanoid Programming 101 ขอพื้นฐานการเขียนโปรแกรมนิดหน่อย ถ้าเขียน Python ง่าย ๆ ได้ หรือใช้ command line เป็น ก็พอแล้ว",
+        a: "ได้เลย ทั้ง Hardware in Humanoid 101 และ Humanoid Programming 101 เริ่มจากศูนย์ได้ ไม่ต้องมีพื้นฐานเขียนโปรแกรมมาก่อน เราพาทำไปทีละขั้นในห้องเรียน",
       },
       {
         q: "เรียนกี่วัน กี่โมง",
