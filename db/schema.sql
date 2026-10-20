@@ -104,7 +104,9 @@ create table if not exists payments (
   -- Overwritten on every attempt and kept on a failed one too, so whoever answers LINE can
   -- see what went wrong. The image itself is never stored.
   slip_reading     jsonb       check (slip_reading is null or jsonb_typeof(slip_reading) = 'object'),
-  verified_at      timestamptz,                 -- when a slip was accepted; null = not paid yet
+  -- When a slip was accepted; null = not paid yet. A 100% code leaves nothing due,
+  -- so there's no slip: the payment is verified when it's created, slip_reading null.
+  verified_at      timestamptz,
   created_at       timestamptz not null default now(),
   updated_at       timestamptz not null default now()
 );

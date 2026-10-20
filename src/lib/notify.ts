@@ -48,6 +48,8 @@ export type Billing = {
   discount: DiscountNotice | null;
   withholdingThb: number;
   dueThb: number;
+  /** A code covered the whole fee and the seat is already confirmed — no transfer is coming. */
+  free: boolean;
 };
 
 const fullName = (first: string, last?: string | null) => [first, last].filter(Boolean).join(" ");
@@ -69,7 +71,7 @@ export function announceApplication(who: Applicant, runs: RunSummary[], billing:
   const name = fullName(who.firstName, who.lastName);
 
   after(() =>
-    notifyLark(`🤖 New application · ${name || who.email}`, [
+    notifyLark(`${billing?.free ? "✅ Free seat" : "🤖 New application"} · ${name || who.email}`, [
       ["Name", who.nickname ? `${name} (${who.nickname})` : name],
       ["Email", who.email],
       ["Phone", who.phone],
@@ -79,7 +81,9 @@ export function announceApplication(who: Applicant, runs: RunSummary[], billing:
       ...runs.map((run) => ["Run", `${run.name} — ${run.dates}, ${run.hours}`] as const),
       null,
       ["Paying as", who.payerType],
-      billing
+      billing?.free
+        ? ["To pay", "nothing — the code covers it all, seat confirmed"]
+        : billing
         ? ["To pay", `${formatThb(billing.dueThb)} THB`]
         : // No transfer step: a B2B run with no price, or seats they'd already paid for.
           ["To pay", "nothing — LINE takes it from here"],

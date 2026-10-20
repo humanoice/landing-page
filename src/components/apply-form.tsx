@@ -16,7 +16,7 @@ import {
   Section,
   TextField,
 } from "@/components/apply-ui";
-import { PaymentPanel } from "@/components/payment-panel";
+import { PaidPanel, PaymentPanel } from "@/components/payment-panel";
 import { track } from "@/components/track";
 import {
   checkDiscountCode,
@@ -266,6 +266,10 @@ export function ApplyForm({ locale, copy, courses, preselected }: ApplyFormProps
   }
   if (state.status === "pay") {
     return <PaymentPanel payment={state.payment} copy={copy} locale={locale} />;
+  }
+  // A code covered the whole fee: no transfer step, straight to the seat.
+  if (state.status === "paid") {
+    return <PaidPanel confirmation={state.confirmation} copy={copy.paid} directions={copy.directions} />;
   }
 
   const errors: ApplyErrors = state.status === "error" ? state.errors : {};

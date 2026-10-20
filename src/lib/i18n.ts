@@ -402,6 +402,8 @@ const en = {
       highlight: "confirmed.",
       /** Wraps the email address: [before, after]. */
       body: ["Payment received. We've emailed a calendar invite to", "— add us on LINE for updates before the day."],
+      /** Same shape, for a seat a discount code covered in full. */
+      bodyFree: ["Your code covers the whole fee, so there's nothing to transfer. We've emailed a calendar invite to", "— add us on LINE for updates before the day."],
       runs: "Your bootcamp",
       where: "Where",
       map: "Open in Google Maps",
@@ -426,6 +428,8 @@ const en = {
       subject: "You're in",
       greeting: "Hi",
       body: "Payment received — your seat is confirmed. Here's what's coming up:",
+      /** For a seat a discount code covered in full. */
+      bodyFree: "Your code covers the whole fee — your seat is confirmed. Here's what's coming up:",
       calendarLink: "Add to Google Calendar",
       where: "Where",
       map: "Open in Google Maps",
@@ -794,6 +798,7 @@ const th: ThaiDictionary = {
       title: "ที่นั่ง",
       highlight: "ยืนยันเรียบร้อย",
       body: ["ได้รับเงินแล้ว เราส่งคำเชิญปฏิทินไปที่", "แล้ว แอดไลน์ไว้เพื่อรับข่าวสารก่อนวันเรียนน้า"],
+      bodyFree: ["โค้ดของคุณครอบคลุมค่าเรียนทั้งหมด ไม่ต้องโอนเงิน เราส่งคำเชิญปฏิทินไปที่", "แล้ว แอดไลน์ไว้เพื่อรับข่าวสารก่อนวันเรียนน้า"],
       runs: "คอร์สของคุณ",
       where: "สถานที่",
       map: "เปิดใน Google Maps",
@@ -816,6 +821,7 @@ const th: ThaiDictionary = {
       subject: "ยืนยันที่นั่งแล้ว",
       greeting: "สวัสดีคุณ",
       body: "ได้รับเงินเรียบร้อย ที่นั่งของคุณยืนยันแล้ว รายละเอียดคอร์สมีดังนี้",
+      bodyFree: "โค้ดของคุณครอบคลุมค่าเรียนทั้งหมด ที่นั่งของคุณยืนยันแล้ว รายละเอียดคอร์สมีดังนี้",
       calendarLink: "เพิ่มลง Google Calendar",
       where: "สถานที่",
       map: "เปิดใน Google Maps",

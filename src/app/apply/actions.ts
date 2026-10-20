@@ -129,7 +129,9 @@ export type ApplyState =
   /** Saved, but nothing to pay for here: a B2B run, or seats they'd already paid for. LINE takes it from there. */
   | { status: "success" }
   /** Saved and priced — step 2 is the transfer. */
-  | { status: "pay"; payment: PaymentSummary };
+  | { status: "pay"; payment: PaymentSummary }
+  /** Saved, and a code took the whole fee: no transfer, no slip — the seat is already theirs. */
+  | { status: "paid"; confirmation: Confirmation };
 
 const MAX_LENGTH = 200;
 /** Thai addresses run long: building, soi, khwaeng, khet, province, postcode. */
@@ -421,8 +423,32 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
       update participations p set payment_id = pay.id
       from pay
       where p.id = any(${unpaid.map((run) => run.id)}::uuid[])
+        -- A seat paid for since \`unpaid\` was read (another submit of this same
+        -- form, settled first) stays on the payment that paid for it.
+        and not p.paid_status
       returning pay.id
     `) as { id: string }[];
+    // Every seat went that way: this payment covers nothing and stays behind as
+    // an attempt, and there's nothing left to pay for here.
+    if (!payment) {
+      announceApplication(values, picked, null);
+      return { status: "success" };
+    }
+
+    // A code that covers the whole fee leaves nothing to transfer, so there's no
+    // slip to check: the payment is verified here, the same way a passing slip
+    // verifies it — which is also what counts it as one of the code's uses.
+    // Only with a code: a run priced at 0 isn't a giveaway the site can sign off.
+    let confirmed: Confirmation | null = null;
+    if (discount && dueThb === 0) {
+      const free = await loadPayment(payment.id);
+      // No runs means a second submit of this form has since moved the seats
+      // onto its own payment, and that one settles them.
+      if (free?.email && free.runs.length > 0) {
+        const paid = confirmationOf(free, locale);
+        if (await settle(free, paid, null, null)) confirmed = paid.confirmation;
+      }
+    }
 
     announceApplication(values, picked, {
       paymentId: payment.id,
@@ -431,7 +457,13 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
       discount: discount && { code: discount.code, percent: discount.percent, amountThb: discountThb },
       withholdingThb,
       dueThb,
+      free: confirmed !== null,
     });
+
+    if (confirmed) return { status: "paid", confirmation: confirmed };
+    // Nothing to transfer, yet nothing settled here: a run priced at 0 with no
+    // code, or a free seat another submit got to first. Either way, LINE's.
+    if (dueThb === 0) return { status: "success" };
 
     return {
       status: "pay",
@@ -533,43 +565,13 @@ export async function confirmPayment(_prev: PayState, formData: FormData): Promi
   }
 
   try {
-    const sql = db();
-    const [payment] = (await sql`
-      select
-        pay.id, pay.student_id, pay.payer_type, pay.price_thb, pay.discount_thb, pay.withholding_thb,
-        pay.verified_at, pay.receipt_name, pay.receipt_tax_id, pay.receipt_address,
-        d.code as discount_code, d.percent as discount_percent,
-        s.email, s.first_name, s.last_name, s.phone, s.line_id,
-        coalesce(
-          (
-            select json_agg(
-              json_build_object('id', p.id, 'track_no', c.track_no, 'name', c.name, 'start_time', c.start_time, 'end_time', c.end_time)
-              order by c.start_time, c.id
-            )
-            from participations p
-            join courses c on c.id = p.course_id
-            where p.payment_id = pay.id
-          ),
-          '[]'::json
-        ) as runs
-      from payments pay
-      join students s on s.id = pay.student_id
-      left join discount_codes d on d.id = pay.discount_code_id
-      where pay.id = ${paymentId}::uuid
-    `) as PaymentRow[];
+    const payment = await loadPayment(paymentId);
     if (!payment || !payment.email || payment.runs.length === 0) {
       return { status: "error", error: "expired" };
     }
 
-    const copy = getDictionary(locale).apply;
-    const runs = runsOf(payment, locale, copy);
-    const due = amountDue(payment.price_thb, Number(payment.withholding_thb), payment.discount_thb);
-    const { bundleThb, codeThb } = splitDiscount(payment);
-    const confirmation: Confirmation = {
-      email: payment.email,
-      amountThb: due,
-      runs: runs.map((run) => ({ ...run.summary, calendarUrl: googleCalendarUrl(run.event) })),
-    };
+    const paid = confirmationOf(payment, locale);
+    const { due, confirmation } = paid;
 
     // Already through — a double-click, or a resend of the same form. Nothing to redo.
     if (payment.verified_at) return { status: "paid", confirmation };
@@ -592,35 +594,111 @@ export async function confirmPayment(_prev: PayState, formData: FormData): Promi
     console.info("[pay] verdict", { key, paymentId: payment.id, due, issue });
 
     if (issue) {
-      await sql`update payments set slip_reading = ${reading}::jsonb where id = ${payment.id}::uuid`;
+      await db()`update payments set slip_reading = ${reading}::jsonb where id = ${payment.id}::uuid`;
       notifyTeam(payment, confirmation.runs, due, verdict.slip, issue);
       return { status: "rejected", issue };
     }
 
-    // The payment and its seats flip together. `verified_at is null` makes a
-    // race between two uploads of the same slip a no-op for the loser — and
-    // `saved` comes back empty for it, so it books no revenue and sends no
-    // second invite either. `seats` isn't read, but a data-modifying CTE runs regardless.
-    const saved = (await sql`
-      with saved as (
-        update payments
-        set slip_reading = ${reading}::jsonb, verified_at = now()
-        where id = ${payment.id}::uuid and verified_at is null
-        returning id
-      ),
-      seats as (
-        update participations set paid_status = true
-        where payment_id in (select id from saved)
-        returning id
-      )
-      select id from saved
-    `) as { id: string }[];
-    if (saved.length === 0) return { status: "paid", confirmation };
+    await settle(payment, paid, reading, verdict.slip);
+    return { status: "paid", confirmation };
+  } catch (error) {
+    console.error("[pay] failed", error);
+    return { status: "error", error: "server" };
+  }
+}
 
-    notifyTeam(payment, confirmation.runs, due, verdict.slip, null);
+/** A payment with its student, its code and the runs it covers — everything settling it reads. */
+async function loadPayment(paymentId: string): Promise<PaymentRow | undefined> {
+  const [payment] = (await db()`
+    select
+      pay.id, pay.student_id, pay.payer_type, pay.price_thb, pay.discount_thb, pay.withholding_thb,
+      pay.verified_at, pay.receipt_name, pay.receipt_tax_id, pay.receipt_address,
+      d.code as discount_code, d.percent as discount_percent,
+      s.email, s.first_name, s.last_name, s.phone, s.line_id,
+      coalesce(
+        (
+          select json_agg(
+            json_build_object('id', p.id, 'track_no', c.track_no, 'name', c.name, 'start_time', c.start_time, 'end_time', c.end_time)
+            order by c.start_time, c.id
+          )
+          from participations p
+          join courses c on c.id = p.course_id
+          where p.payment_id = pay.id
+        ),
+        '[]'::json
+      ) as runs
+    from payments pay
+    join students s on s.id = pay.student_id
+    left join discount_codes d on d.id = pay.discount_code_id
+    where pay.id = ${paymentId}::uuid
+  `) as PaymentRow[];
+  return payment;
+}
 
-    // Book it as revenue: the Grok bot turns this row into a FlowAccount receipt.
-    // After the response, like the email — the seat doesn't wait on the books.
+/** What the paid panel shows, what had to land in the account, and the runs the invite is built from. */
+type Paid = { copy: ApplyCopy; runs: ReturnType<typeof runsOf>; due: number; confirmation: Confirmation };
+
+function confirmationOf(payment: PaymentRow, locale: Locale): Paid {
+  const copy = getDictionary(locale).apply;
+  const runs = runsOf(payment, locale, copy);
+  const due = amountDue(payment.price_thb, Number(payment.withholding_thb), payment.discount_thb);
+  return {
+    copy,
+    runs,
+    due,
+    confirmation: {
+      email: payment.email ?? "",
+      amountThb: due,
+      runs: runs.map((run) => ({ ...run.summary, calendarUrl: googleCalendarUrl(run.event) })),
+    },
+  };
+}
+
+/**
+ * Marks a payment and its seats paid, then tells the team, books the revenue
+ * and sends the invite. Reached from a passing slip, or straight from the form
+ * when a code took the whole fee — then `reading` and `slip` are null. False
+ * when there was nothing left to settle.
+ */
+async function settle(
+  payment: PaymentRow,
+  { copy, runs, due, confirmation }: Paid,
+  reading: string | null,
+  slip: SlipReading | null,
+): Promise<boolean> {
+  // The seats and the payment flip together, and the payment is only verified
+  // if it still holds seats to flip. That makes two races a no-op for the
+  // loser: two uploads of the same slip (`verified_at` is already set), and two
+  // submits of the same free form (the seats have moved to the other payment —
+  // the row lock makes `payment_id` re-checked once the other side commits).
+  // `saved` comes back empty for the loser, so it books no revenue and sends no
+  // second invite either.
+  const saved = (await db()`
+    with seats as (
+      update participations set paid_status = true
+      where payment_id = ${payment.id}::uuid
+        and exists (select 1 from payments where id = ${payment.id}::uuid and verified_at is null)
+      returning id
+    ),
+    saved as (
+      update payments
+      set slip_reading = ${reading}::jsonb, verified_at = now()
+      where id = ${payment.id}::uuid and verified_at is null and exists (select 1 from seats)
+      returning id
+    )
+    select id from saved
+  `) as { id: string }[];
+  if (saved.length === 0) return false;
+
+  // A free seat has no verdict to report: the application notice says it's confirmed.
+  if (reading !== null) notifyTeam(payment, confirmation.runs, due, slip, null);
+
+  // Book it as revenue: the Grok bot turns this row into a FlowAccount receipt.
+  // After the response, like the email — the seat doesn't wait on the books.
+  // A seat a code paid for in full earned nothing, so there's no receipt to cut.
+  const { bundleThb, codeThb } = splitDiscount(payment);
+  const netThb = payment.price_thb - payment.discount_thb;
+  if (netThb > 0) {
     after(() =>
       recordRevenue({
         student_id: payment.student_id,
@@ -628,7 +706,7 @@ export async function confirmPayment(_prev: PayState, formData: FormData): Promi
         receipt_name: payment.receipt_name,
         receipt_tax_id: payment.receipt_tax_id,
         receipt_address: payment.receipt_address,
-        price_thb: payment.price_thb - payment.discount_thb,
+        price_thb: netThb,
         list_price_thb: payment.price_thb,
         bundle_discount_thb: bundleThb,
         discount_thb: codeThb,
@@ -636,36 +714,34 @@ export async function confirmPayment(_prev: PayState, formData: FormData): Promi
         withholding_thb: Number(payment.withholding_thb),
       }),
     );
-
-    // The seat is theirs whether or not the email lands, so it goes out after
-    // the response — and a Resend failure is the team's problem, not the applicant's.
-    const email = payment.email;
-    after(async () => {
-      try {
-        await sendPaymentConfirmation({
-          to: email,
-          firstName: payment.first_name,
-          copy: copy.email,
-          directions: copy.directions,
-          runs: confirmation.runs,
-          ics: buildIcs(
-            runs.map((run) => run.event),
-            {
-              organizer: { name: siteConfig.name, email: siteConfig.email.address },
-              attendee: { name: payment.first_name, email },
-            },
-          ),
-        });
-      } catch (error) {
-        console.error("[pay] confirmation email failed", { paymentId: payment.id }, error);
-      }
-    });
-
-    return { status: "paid", confirmation };
-  } catch (error) {
-    console.error("[pay] failed", error);
-    return { status: "error", error: "server" };
   }
+
+  // The seat is theirs whether or not the email lands, so it goes out after
+  // the response — and a Resend failure is the team's problem, not the applicant's.
+  const email = confirmation.email;
+  after(async () => {
+    try {
+      await sendPaymentConfirmation({
+        to: email,
+        firstName: payment.first_name,
+        // "Payment received" isn't true of a seat that cost nothing.
+        copy: due === 0 ? { ...copy.email, body: copy.email.bodyFree } : copy.email,
+        directions: copy.directions,
+        runs: confirmation.runs,
+        ics: buildIcs(
+          runs.map((run) => run.event),
+          {
+            organizer: { name: siteConfig.name, email: siteConfig.email.address },
+            attendee: { name: payment.first_name, email },
+          },
+        ),
+      });
+    } catch (error) {
+      console.error("[pay] confirmation email failed", { paymentId: payment.id }, error);
+    }
+  });
+
+  return true;
 }
 
 async function slipReused(paymentId: string, reference: string): Promise<boolean> {

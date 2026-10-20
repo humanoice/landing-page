@@ -331,12 +331,14 @@ type PaidPanelProps = {
 };
 
 /** The end of the road: paid, invited, and pointed at LINE for everything after. */
-function PaidPanel({ confirmation, copy, directions }: PaidPanelProps) {
+export function PaidPanel({ confirmation, copy, directions }: PaidPanelProps) {
   // The conversion. Fires on mount because this panel only renders once the
-  // server has marked the seats paid.
+  // server has marked the seats paid — at 0 when a code covered the lot.
   useEffect(() => {
     track("purchase", { value: confirmation.amountThb, currency: "THB" });
   }, [confirmation.amountThb]);
+
+  const body = confirmation.amountThb === 0 ? copy.bodyFree : copy.body;
 
   return (
     <OutcomePanel
@@ -347,7 +349,7 @@ function PaidPanel({ confirmation, copy, directions }: PaidPanelProps) {
       qrLabel={copy.qrLabel}
     >
       <p className="mt-5 max-w-md leading-relaxed text-cream/80">
-        {copy.body[0]} <strong className="font-semibold text-cream">{confirmation.email}</strong> {copy.body[1]}
+        {body[0]} <strong className="font-semibold text-cream">{confirmation.email}</strong> {body[1]}
       </p>
 
       <p className={`${META} mb-2.5 mt-8 flex items-center gap-3 text-yellow-main`}>
