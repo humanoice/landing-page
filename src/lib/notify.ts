@@ -58,7 +58,7 @@ const fullName = (first: string, last?: string | null) => [first, last].filter(B
 const discountWords = (discount: DiscountNotice | null) =>
   discount && `${formatThb(discount.amountThb)} THB (${discount.code} · ${discount.percent}%)`;
 
-/** "1,000 THB (both tracks · 10%)" — or nothing, so the row drops out. */
+/** "2,000 THB (both tracks · 20%)" — or nothing, so the row drops out. */
 const bundleWords = (bundleThb: number) =>
   bundleThb > 0 ? `${formatThb(bundleThb)} THB (both tracks · ${BUNDLE_PERCENT}%)` : null;
 

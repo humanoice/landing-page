@@ -355,7 +355,7 @@ const en = {
       amount: "Amount to transfer",
       withholdingNote: "3% withholding tax deducted",
       discountNote: "discount code applied",
-      /** Around the percent: "10% off for both tracks" */
+      /** Around the percent: "20% off for both tracks" */
       bundleNote: ["", "% off for both tracks"],
       bank: "Kasikorn Bank",
       accountName: "Account name",

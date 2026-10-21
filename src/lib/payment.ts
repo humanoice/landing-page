@@ -64,10 +64,10 @@ export function amountDue(priceThb: number, withholdingThb: number, offThb = 0):
 
 /**
  * The two-track bundle: a hardware run and a software run on one application
- * take 10% off the total, no code needed. A code, if there is one, then takes
+ * take 20% off the total, no code needed. A code, if there is one, then takes
  * its percent off what's left — the two stack, the bundle first.
  */
-export const BUNDLE_PERCENT = 10;
+export const BUNDLE_PERCENT = 20;
 /** courses.track_no of the tracks that make the bundle — 1 Hardware, 2 Software. */
 export const BUNDLE_TRACKS = [1, 2] as const;
 

@@ -599,7 +599,7 @@ export function ApplyForm({ locale, copy, courses, preselected }: ApplyFormProps
 
 /* ---------- Pieces ---------- */
 
-/** Copy split around a number — `["Pick both and ", "% off"]` + 10 → "Pick both and 10% off". */
+/** Copy split around a number — `["Pick both and ", "% off"]` + 20 → "Pick both and 20% off". */
 const around = ([before, after]: string[], value: number) => `${before}${value}${after}`;
 
 type LookupNoteProps = {
