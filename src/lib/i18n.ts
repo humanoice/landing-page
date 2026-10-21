@@ -65,7 +65,7 @@ const en = {
         name: "Humanoid Programming 101",
         tag: "Software",
         duration: "1 day",
-        price: "5,900 THB",
+        price: "3,900 THB",
         blurb:
           "Modern software for humanoids: From modeling to simulate for policy.",
         cta: "Apply",
@@ -172,6 +172,18 @@ const en = {
     title: "Add LINE",
     highlight: "for details",
     qrLabel: "@humanoice",
+  },
+  /** Flash Sale popup, 21–26 Oct 2026 — temporary. */
+  flashSale: {
+    label: "Flash sale",
+    alt: "Flash sale: 50% off when you apply between 21 and 26 Oct 2026",
+    close: "Close",
+    /** Before the code, on home: "Code FLASHSALE" */
+    note: "// Code",
+    /** Before the code, on /apply: "Already in your form: FLASHSALE" */
+    applied: "// Already in your form:",
+    cta: "Claim 50% off",
+    ok: "Got it",
   },
   plan: {
     title: "The Master Plan",
@@ -508,7 +520,7 @@ const th: ThaiDictionary = {
         name: "Humanoid Programming 101",
         tag: "ซอฟต์แวร์",
         duration: "1 วัน",
-        price: "5,900 บาท",
+        price: "3,900 บาท",
         blurb:
           "สายซอฟต์แวร์ของฮิวแมนนอยด์ — สร้างโมเดล จำลอง แล้วเทรนให้มันเดินได้",
         cta: "สมัคร",
@@ -532,13 +544,13 @@ const th: ThaiDictionary = {
         ],
       },
       {
-        name: "Full Bootcamp",
-        tag: "B2B",
+        name: "B2B",
+        tag: "ครบวงจร",
         duration: "n วัน",
-        price: "xx,xxx บาท",
+        price: "xxx,xxx บาท",
         blurb:
-          "หลักสูตรแบบเอ็กซ์คลูซีฟที่ปรับแต่งได้สำหรับบริษัท — ตั้งแต่การประกอบไปจนถึงการเขียนโปรแกรม humanoid",
-        cta: "ทักมาคุยกันทางไลน์",
+          "ซื้อชุดคิทหุ่นไปเลย แล้วเราสอนตั้งแต่ประกอบจนเขียนโปรแกรม เหมาะกับแล็บหรือบริษัท",
+        cta: "คุยกับเรา",
         items: [
           [
             "ฮาร์ดแวร์ — ประกอบ",
@@ -613,6 +625,15 @@ const th: ThaiDictionary = {
     title: "แอดไลน์",
     highlight: "เพื่อขอรายละเอียด",
     qrLabel: "@humanoice",
+  },
+  flashSale: {
+    label: "Flash sale",
+    alt: "Flash sale ลด 50% เมื่อสมัครเรียนภายใน 21–26 ต.ค. 2026",
+    close: "ปิด",
+    note: "// โค้ด",
+    applied: "// ใส่โค้ดในฟอร์มให้แล้ว:",
+    cta: "รับส่วนลด 50%",
+    ok: "เข้าใจแล้ว",
   },
   apply: {
     title: "สมัครเรียน",

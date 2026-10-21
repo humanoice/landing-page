@@ -39,6 +39,8 @@ export default async function ApplyRoute({ searchParams }: ApplyRouteProps) {
   const { course } = await searchParams;
 
   return (
-    <ApplyPage locale="en" copy={copy} languageLabel={dictionary.nav.language} course={course} />
+    <ApplyPage locale="en" copy={copy} languageLabel={dictionary.nav.language}
+      flashSale={dictionary.flashSale}
+      course={course} />
   );
 }

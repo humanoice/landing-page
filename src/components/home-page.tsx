@@ -1,12 +1,13 @@
 import { Curriculum } from "@/components/curriculum";
 import { Faq } from "@/components/faq";
+import { FlashSalePopup } from "@/components/flash-sale-popup";
 import { Hero } from "@/components/hero";
 import { Marquee } from "@/components/marquee";
 import { Navbar } from "@/components/navbar";
 import { Partners } from "@/components/partners";
 import { SiteFooter } from "@/components/site-footer";
 import { Team } from "@/components/team";
-import type { HomeDictionary, Locale } from "@/lib/i18n";
+import { applyPath, type HomeDictionary, type Locale } from "@/lib/i18n";
 
 type HomePageProps = {
   locale: Locale;
@@ -34,6 +35,7 @@ export function HomePage({ locale, copy, ticker }: HomePageProps) {
         <Faq copy={copy.faq} />
       </main>
       <SiteFooter locale={locale} copy={copy} />
+      <FlashSalePopup copy={copy.flashSale} applyHref={applyPath(locale)} />
     </>
   );
 }

@@ -40,7 +40,9 @@ export default async function ThaiApplyRoute({ searchParams }: ApplyRouteProps) 
 
   return (
     <div lang="th">
-      <ApplyPage locale="th" copy={copy} languageLabel={dictionary.nav.language} course={course} />
+      <ApplyPage locale="th" copy={copy} languageLabel={dictionary.nav.language}
+      flashSale={dictionary.flashSale}
+      course={course} />
     </div>
   );
 }
