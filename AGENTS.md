@@ -17,10 +17,15 @@ Database is Neon
 ## Folder Structure
 
 - `src/app/` — routes only
-- `src/components/` — every section; `home-page.tsx` composes them in order (Navbar → Hero → Marquee → Curriculum → Team → Partners → Footer).
+- `src/components/` — every section; `home-page.tsx` composes them in order (Navbar → Hero → Marquee → Curriculum → Education → Partners → FAQ → Footer). Other pages: `education-page.tsx` (`/education/[factory|school|kids]`), `about-page.tsx` (`/about`, holds Team), `apply-page.tsx`.
 - `src/lib/site.ts` — single source of SEO truth (name, url, ogImage, themeColor, `lineAddUrl`). Metadata, sitemap, robots, manifest all read from it.
 - `src/lib/i18n.ts` — every user-facing string, `en` + `th`. Marked `server-only`.
 - `db/` — Neon Postgres. `schema.sql` = database schema
+
+## Offer structure
+
+- **B2C** — the two public courses, *Humanoid Building* (track 1, hardware) and *Physical AI Basic* (track 2, software). The only offers with a price on the site; CTA goes to `/apply`. Run names and prices on `/apply` come from the `courses` rows, so keep them in step with `curriculum` in i18n.
+- **B2B** — private training for Factory / Uni-School / Kids, plus the humanoid kit and maintenance. Never show a price; every CTA is LINE.
 
 ## Design language — "Build Joyfully"
 

@@ -3,13 +3,35 @@ import type { Language, ProgrammingLanguage, Skill } from "@/lib/apply-options";
 
 export type Locale = "en" | "th";
 
+/** The 2-day hardware + programming course — same content for factories and uni / school. */
+const B2B_PROGRAM_EN = [
+  {
+    name: "Hardware",
+    blurb: "Build it with your own hands.",
+    items: [
+      ["Mechanical build", "Legs, arms, and body, assembled from parts."],
+      ["Wiring & controller board", "Power and signal to every joint, run by one board."],
+      ["Motors & IMU", "How a humanoid moves, and how it knows which way is up."],
+    ],
+  },
+  {
+    name: "Software",
+    blurb: "Then make it move.",
+    items: [
+      ["ROS 2 & URDF", "Model the body and drive every joint from code."],
+      ["MuJoCo simulation", "Rehearse motion in real physics before it touches hardware."],
+      ["Reinforcement learning", "Train the policy that makes it walk."],
+    ],
+  },
+];
+
 const en = {
   nav: {
-    curriculum: "Curriculum",
-    team: "Team",
-    partners: "Partners",
+    education: "Education",
+    about: "About us",
     apply: "Apply",
     language: "Language",
+    menu: "Menu",
   },
   hero: {
     eyebrow: "Humanoid School · Bangkok",
@@ -23,51 +45,50 @@ const en = {
     },
     facts: [
       ["Location", "Phra Khanong, Bangkok"],
-      ["Program", "2 Tracks"],
+      ["Courses", "2 · Monthly"],
     ],
   },
   curriculum: {
-    eyebrow: "// The Tracks",
+    eyebrow: "// Public courses",
     title: "Pick your",
-    highlight: "track",
+    highlight: "course",
     track: "Track",
-    combined: "Track 01 + Track 02, end to end",
-    note: "The curriculum can change based on the pace of learners.",
+    note: "Each course runs once a month and goes ahead with 2 or more people.",
     tracks: [
       {
-        name: "Hardware in Humanoid 101",
+        name: "Humanoid Building",
         tag: "Hardware",
-        duration: "2 days",
-        price: "9,900 THB",
+        duration: "8 hours",
+        price: "4,900 THB",
         blurb:
-          "It's like IKEA but for humanoids - assemble from ground up yourself",
+          "It's like IKEA but for humanoids — build the legs, arms, and body yourself, then wire it up.",
         cta: "Apply",
         items: [
           [
-            "Leg assembly",
-            "Hips, knees, and ankles — build the joints that carry all the weight.",
+            "Mechanical build",
+            "Legs, arms, and body — build the joints that carry all the weight.",
           ],
           [
-            "Body assembly",
-            "The torso and spine that every other part hangs off.",
+            "Wiring",
+            "Run power and signal to every joint, neatly enough to debug later.",
           ],
           [
-            "Arm assembly",
-            "Shoulders to wrists — linkages, actuators, and range of motion.",
+            "Controller board",
+            "The board that turns commands into motion, and how it talks to each motor.",
           ],
           [
-            "Electronics in humanoid",
-            "Actuators, IMU, and CAN buses that wire every joint together.",
+            "Motors & IMU",
+            "How a humanoid moves, and how it knows which way is up.",
           ],
         ],
       },
       {
-        name: "Humanoid Programming 101",
+        name: "Physical AI Basic",
         tag: "Software",
-        duration: "1 day",
-        price: "3,900 THB",
+        duration: "6 hours",
+        price: "2,900 THB",
         blurb:
-          "Modern software for humanoids: From modeling to simulate for policy.",
+          "Modern software for humanoids: model the body, simulate it, and train it to walk.",
         cta: "Apply",
         items: [
           [
@@ -79,31 +100,12 @@ const en = {
             "Model a humanoid's body so your code knows every link and joint.",
           ],
           [
-            "Simulation",
-            "Gazebo and MuJoCo — rehearse every motion in real physics before it touches hardware.",
+            "MuJoCo",
+            "Rehearse every motion in real physics before it touches hardware.",
           ],
           [
-            "Policy",
-            "Deploy the RL model that make the robot walk.",
-          ],
-        ],
-      },
-      {
-        name: "B2B",
-        tag: "Full Scope",
-        duration: "n days",
-        price: "xxx,xxx THB",
-        blurb:
-          "Buy the robot kit. We teach you from assemble to programming. Suitable for labs or companies.",
-        cta: "Talk to us",
-        items: [
-          [
-            "Hardware — Assemble",
-            "The complete build: legs, body, arms, and every wire in between.",
-          ],
-          [
-            "Software — Make it walk",
-            "ROS 2, simulation, URDF, and locomotion policies — until it takes real steps.",
+            "Reinforcement learning",
+            "Train the policy that makes the robot walk.",
           ],
         ],
       },
@@ -138,11 +140,11 @@ const en = {
     items: [
       {
         q: "No background at all — can I still join?",
-        a: "Yes. Both Hardware in Humanoid 101 and Humanoid Programming 101 start from zero, so you don't need any coding background. We walk you through every step on the day.",
+        a: "Yes. Humanoid Building and Physical AI Basic both start from zero, so you don't need any coding background. We walk you through every step on the day.",
       },
       {
-        q: "How many days is it, and what time?",
-        a: "Hardware in Humanoid 101 runs 2 days; Humanoid Programming 101 is 1 day. Both run 10:00–17:00.",
+        q: "How long is each course, and how often does it run?",
+        a: "Humanoid Building is 8 hours; Physical AI Basic is 6 hours. Each runs once a month and goes ahead with 2 or more people — dates and times are on the application page.",
       },
       {
         q: "Why learn to build a humanoid?",
@@ -158,12 +160,211 @@ const en = {
       },
       {
         q: "How old do I need to be to join?",
-        a: "15+ years old. This is real mechanical and electrical work — it can be dangerous if you’re careless.",
+        a: "15+ for the public courses. This is real mechanical and electrical work — it can be dangerous if you’re careless. For ages 12–18, book a private Kids session.",
+      },
+      {
+        q: "Can you train my team, class, or kids privately?",
+        a: "Yes. Factories, universities, schools, and families book private sessions at their place or our lab. Pick yours under Education, then chat with us on LINE for a quote.",
       },
       {
         q: "What language do you teach in?",
         a: "Thai or English — whichever the room needs.",
       },
+    ],
+  },
+  /** Private (B2B) training: the home teaser, the nav dropdown, and /education/[segment]. No prices — every CTA is LINE. */
+  education: {
+    eyebrow: "// Education",
+    title: "Private training for",
+    highlight: "your team",
+    intro: "We bring the humanoid to your factory, campus, or home — or you come to our lab.",
+    more: "See the program",
+    line: "Chat on LINE",
+    programEyebrow: "// The program",
+    whyEyebrow: "// Why it works",
+    /** Indexed by EducationSegment — see EDUCATION_SEGMENTS below. */
+    segments: {
+      factory: {
+        nav: "Factory",
+        hint: "Physical AI for your floor",
+        who: "Managers & engineers",
+        meta: "2 days · 2–8 people",
+        title: "Humanoid training for factories",
+        description:
+          "A private 2-day humanoid course for your team: build a real humanoid, then program it with ROS 2, MuJoCo, and reinforcement learning. At your factory or our Bangkok lab.",
+        eyebrow: "Education · Factory",
+        heading: ["Humanoids for", "your factory."],
+        lead: "Before you bet on physical AI, build one. Your team assembles a real humanoid and programs it in two days.",
+        facts: [
+          ["Team", "2–8 people"],
+          ["Length", "2 days"],
+          ["Where", "Your factory or our lab"],
+          ["Price", "Quote on LINE"],
+        ],
+        programTitle: "What your team",
+        programHighlight: "builds",
+        program: B2B_PROGRAM_EN,
+        whyTitle: "What you",
+        whyHighlight: "walk away with",
+        why: [
+          [
+            "Judgement, not hype",
+            "You'll know what a humanoid can and can't do yet — from building one, not from a demo video.",
+          ],
+          [
+            "A shared language",
+            "Your engineers learn the stack behind physical AI: ROS 2, simulation, and RL.",
+          ],
+          [
+            "A path to a pilot",
+            "Keep a kit on site and keep testing ideas on your own line.",
+          ],
+        ],
+        kit: true,
+      },
+      school: {
+        nav: "Uni / School",
+        hint: "A research platform for your students",
+        who: "Professors & robotics clubs",
+        meta: "2 days · 2–8 students",
+        title: "Humanoid training for universities and schools",
+        description:
+          "A private 2-day humanoid course for students: build a real open-source humanoid, then program it with ROS 2, MuJoCo, and reinforcement learning. On campus or at our Bangkok lab.",
+        eyebrow: "Education · Uni / School",
+        heading: ["Humanoids for", "your campus."],
+        lead: "Give your students a real humanoid to build, program, and research on — then keep it as your lab's platform.",
+        facts: [
+          ["Group", "2–8 students"],
+          ["Length", "2 days"],
+          ["Where", "Your campus or our lab"],
+          ["Price", "Quote on LINE"],
+        ],
+        programTitle: "What your students",
+        programHighlight: "build",
+        program: B2B_PROGRAM_EN,
+        whyTitle: "What your lab",
+        whyHighlight: "gets",
+        why: [
+          [
+            "A lab that looks ahead",
+            "A walking humanoid on campus shows your program teaches what's next.",
+          ],
+          [
+            "An open research platform",
+            "Open-source hardware and software, so students can take it apart, change it, and publish.",
+          ],
+          [
+            "Builders who can fix it",
+            "The students who assembled it know every joint, so the robot keeps working after we leave.",
+          ],
+        ],
+        kit: true,
+      },
+      kids: {
+        nav: "Kids",
+        hint: "Build a real humanoid, ages 12–18",
+        who: "Ages 12–18",
+        meta: "8 hours · 1–6 kids",
+        title: "Humanoid building for kids",
+        description:
+          "A private 8-hour humanoid build for kids aged 12–18: assemble a real humanoid's legs, arms, and body, then drive it with a joystick. At your home or our Bangkok lab.",
+        eyebrow: "Education · Kids",
+        heading: ["Build a", "real humanoid."],
+        lead: "No theory, no slides. Your kids assemble a real humanoid in one day, then take the joystick and make it walk.",
+        facts: [
+          ["Age", "12–18"],
+          ["Group", "1–2 or 3–6 kids"],
+          ["Length", "8 hours"],
+          ["Where", "Your home or our lab"],
+        ],
+        programTitle: "What they",
+        programHighlight: "build",
+        program: [
+          {
+            name: "Build it",
+            blurb: "A real humanoid, assembled with their own hands.",
+            items: [
+              ["Legs", "Hips, knees, and ankles — the joints that carry all the weight."],
+              ["Body", "The torso every other part hangs off."],
+              ["Arms", "Shoulders to wrists, joint by joint."],
+            ],
+          },
+          {
+            name: "Drive it",
+            blurb: "Then the fun part.",
+            items: [
+              ["Joystick control", "Take the controller and make the robot move."],
+              ["First steps", "Walk the humanoid they just built."],
+            ],
+          },
+        ],
+        whyTitle: "What they",
+        whyHighlight: "take home",
+        why: [
+          [
+            "A portfolio piece",
+            "A Humanoice certificate, and a robot they can say they built themselves.",
+          ],
+          [
+            "A real test of interest",
+            "One day at the bench shows whether robotics is their thing.",
+          ],
+          [
+            "Close supervision",
+            "Small groups, with instructors at the bench the whole time.",
+          ],
+        ],
+        kit: false,
+      },
+    },
+    /** "Own one" block on the factory and uni/school pages. */
+    kit: {
+      eyebrow: "// Own one",
+      title: "Keep a humanoid",
+      highlight: "on site",
+      intro: "Buy the same humanoid we teach on, and we'll keep it running.",
+      offers: [
+        {
+          name: "Humanoid kit",
+          tag: "Buy",
+          items: [
+            "The humanoid we teach on",
+            "The tools to build and service it",
+            "A crane to hang it from while it learns to walk",
+          ],
+        },
+        {
+          name: "Maintenance support",
+          tag: "12 months",
+          items: [
+            "Two on-site check-ups",
+            "Free repairs and replacements for wear and tear",
+            "Damage from misuse is billed separately",
+          ],
+        },
+      ],
+      cta: "Ask about a kit",
+    },
+  },
+  about: {
+    title: "About us",
+    description:
+      "Humanoice is a hands-on humanoid robotics lab in Phra Khanong, Bangkok — public courses, private training, and humanoid kits.",
+    eyebrow: "// About us",
+    heading: ["We build", "humanoids."],
+    lead: "Humanoice (ฮิวแมนน้อย) is a humanoid robotics lab in Phra Khanong, Bangkok. We teach people to build real open-source humanoids, and we sell and service the robots too.",
+    mission: {
+      eyebrow: "// Our mission",
+      text: "Make Thailand the Shenzhen of Southeast Asia.",
+      link: "Read the master plan",
+    },
+    whatEyebrow: "// What we do",
+    whatTitle: "Three ways",
+    whatHighlight: "in",
+    what: [
+      ["Public courses", "Humanoid Building and Physical AI Basic, once a month at our lab. Book a seat online."],
+      ["Private training", "For factories, universities, schools, and kids — at your place or ours."],
+      ["Humanoid kits", "Buy the robot we teach on, with a year of maintenance support."],
     ],
   },
   footer: {
@@ -454,17 +655,40 @@ const en = {
 };
 
 export type HomeDictionary = Omit<typeof en, "plan" | "apply">;
+export type EducationCopy = typeof en.education;
+export type AboutCopy = typeof en.about;
 export type MasterPlanCopy = typeof en.plan;
 export type ApplyCopy = typeof en.apply;
 type ThaiDictionary = HomeDictionary & { apply: ApplyCopy };
 
+const B2B_PROGRAM_TH: typeof B2B_PROGRAM_EN = [
+  {
+    name: "ฮาร์ดแวร์",
+    blurb: "ประกอบด้วยมือตัวเอง",
+    items: [
+      ["ประกอบกลไก", "ขา แขน และลำตัว ประกอบจากชิ้นส่วน"],
+      ["สายไฟ & บอร์ดควบคุม", "ไฟและสัญญาณไปถึงทุกข้อต่อ ควบคุมด้วยบอร์ดเดียว"],
+      ["มอเตอร์ & IMU", "ฮิวแมนนอยด์ขยับได้ยังไง และรู้ได้ยังไงว่าทางไหนคือข้างบน"],
+    ],
+  },
+  {
+    name: "ซอฟต์แวร์",
+    blurb: "แล้วทำให้มันขยับ",
+    items: [
+      ["ROS 2 & URDF", "สร้างโมเดลร่างกาย แล้วสั่งทุกข้อต่อด้วย code"],
+      ["จำลองใน MuJoCo", "ซ้อมการเคลื่อนไหวในฟิสิกส์จำลองก่อนลงหุ่นจริง"],
+      ["Reinforcement learning", "เทรน policy ที่ทำให้มันเดินได้"],
+    ],
+  },
+];
+
 const th: ThaiDictionary = {
   nav: {
-    curriculum: "หลักสูตร",
-    team: "ทีม",
-    partners: "Partner",
+    education: "การศึกษา",
+    about: "เกี่ยวกับเรา",
     apply: "สมัคร",
     language: "ภาษา",
+    menu: "เมนู",
   },
   hero: {
     eyebrow: "โรงเรียนสอนฮิวแมนนอยด์ · กรุงเทพฯ",
@@ -478,49 +702,48 @@ const th: ThaiDictionary = {
     },
     facts: [
       ["สถานที่", "พระโขนง, กรุงเทพฯ"],
-      ["รูปแบบ", "2 คอร์ส"],
+      ["คอร์ส", "2 คอร์ส · ทุกเดือน"],
     ],
   },
   curriculum: {
-    eyebrow: "// คอร์สการเรียน",
+    eyebrow: "// คอร์สทั่วไป",
     title: "เลือกคอร์ส",
     highlight: "ของคุณ",
     track: "คอร์ส",
-    combined: "คอร์ส 01 + คอร์ส 02 แบบครบจบ",
-    note: "เนื้อหาอาจปรับตามจังหวะการเรียนของแต่ละรุ่น",
+    note: "แต่ละคอร์สเปิดเดือนละรอบ และเปิดเรียนเมื่อมีผู้เรียนตั้งแต่ 2 คนขึ้นไป",
     tracks: [
       {
-        name: "Hardware in Humanoid 101",
+        name: "Humanoid Building",
         tag: "ฮาร์ดแวร์",
-        duration: "2 วัน",
-        price: "9,900 บาท",
+        duration: "8 ชั่วโมง",
+        price: "4,900 บาท",
         blurb:
-          "เหมือน IKEA แต่เป็นฮิวแมนนอยด์ — ประกอบเองตั้งแต่ชิ้นแรกจนครบทั้งตัว",
+          "เหมือน IKEA แต่เป็นฮิวแมนนอยด์ — ประกอบขา แขน ลำตัวเอง แล้วเดินสายไฟให้ครบ",
         cta: "สมัคร",
         items: [
           [
-            "ประกอบขา",
-            "สะโพก เข่า และข้อเท้า — ประกอบข้อต่อที่รับน้ำหนักทั้งตัว",
+            "ประกอบกลไก",
+            "ขา แขน และลำตัว — ประกอบข้อต่อที่รับน้ำหนักทั้งตัว",
           ],
           [
-            "ประกอบลำตัว",
-            "โครงลำตัวและกระดูกสันหลังที่ทุกชิ้นส่วนมายึดเกาะ",
+            "เดินสายไฟ",
+            "ต่อไฟและสัญญาณไปทุกข้อต่อ ให้เป็นระเบียบพอจะแก้ปัญหาทีหลังได้",
           ],
           [
-            "ประกอบแขน",
-            "จากหัวไหล่ถึงข้อมือ — กลไก แอคชูเอเตอร์ และองศาการเคลื่อนไหว",
+            "บอร์ดควบคุม",
+            "บอร์ดที่แปลงคำสั่งเป็นการเคลื่อนไหว และคุยกับมอเตอร์แต่ละตัวยังไง",
           ],
           [
-            "อิเล็กทรอนิกส์ในฮิวแมนนอยด์",
-            "actuator, IMU, และ CAN bus ที่เชื่อมทุกข้อต่อเข้าด้วยกัน",
+            "มอเตอร์ & IMU",
+            "ฮิวแมนนอยด์ขยับได้ยังไง และรู้ได้ยังไงว่าทางไหนคือข้างบน",
           ],
         ],
       },
       {
-        name: "Humanoid Programming 101",
+        name: "Physical AI Basic",
         tag: "ซอฟต์แวร์",
-        duration: "1 วัน",
-        price: "3,900 บาท",
+        duration: "6 ชั่วโมง",
+        price: "2,900 บาท",
         blurb:
           "สายซอฟต์แวร์ของฮิวแมนนอยด์ — สร้างโมเดล จำลอง แล้วเทรนให้มันเดินได้",
         cta: "สมัคร",
@@ -530,35 +753,16 @@ const th: ThaiDictionary = {
             "framework ที่หุ่นยนต์สมัยใหม่ใช้ — node, topic, และ control loop",
           ],
           [
-            "simulation",
-            "Gazebo และ MuJoCo — รัน simulation ทุกการเคลื่อนไหวในฟิสิกส์",
-          ],
-          [
             "URDF",
             "สร้างโมเดลร่างกายฮิวแมนนอยด์ให้ code รู้จักทุกชิ้นส่วนและทุกข้อต่อ",
           ],
           [
-            "Deployment",
-            "deploy policy ลงไปควบคุมหุ่นจริงจนมันเดินได้",
-          ],
-        ],
-      },
-      {
-        name: "B2B",
-        tag: "ครบวงจร",
-        duration: "n วัน",
-        price: "xxx,xxx บาท",
-        blurb:
-          "ซื้อชุดคิทหุ่นไปเลย แล้วเราสอนตั้งแต่ประกอบจนเขียนโปรแกรม เหมาะกับแล็บหรือบริษัท",
-        cta: "คุยกับเรา",
-        items: [
-          [
-            "ฮาร์ดแวร์ — ประกอบ",
-            "สร้างครบทั้งตัว ขา ลำตัว แขน และสายไฟทุกเส้น",
+            "MuJoCo",
+            "ซ้อมทุกการเคลื่อนไหวในฟิสิกส์จำลองก่อนลงหุ่นจริง",
           ],
           [
-            "ซอฟต์แวร์ — ทำให้มันเดิน",
-            "ROS 2 simulation URDF และ locomotion policies จนหุ่นก้าวเดินได้จริง",
+            "Reinforcement learning",
+            "เทรน policy ที่ทำให้หุ่นเดินได้",
           ],
         ],
       },
@@ -591,11 +795,11 @@ const th: ThaiDictionary = {
     items: [
       {
         q: "ถ้าไม่มีความรู้พื้นฐานเลย เรียนได้ไหม",
-        a: "ได้เลย ทั้ง Hardware in Humanoid 101 และ Humanoid Programming 101 เริ่มจากศูนย์ได้ ไม่ต้องมีพื้นฐานเขียนโปรแกรมมาก่อน เราพาทำไปทีละขั้นในห้องเรียน",
+        a: "ได้เลย ทั้ง Humanoid Building และ Physical AI Basic เริ่มจากศูนย์ได้ ไม่ต้องมีพื้นฐานเขียนโปรแกรมมาก่อน เราพาทำไปทีละขั้นในห้องเรียน",
       },
       {
-        q: "เรียนกี่วัน กี่โมง",
-        a: "Hardware in Humanoid 101 เรียน 2 วัน และ Humanoid Programming 101 เรียน 1 วัน เวลา 10:00–17:00 น.",
+        q: "แต่ละคอร์สเรียนนานแค่ไหน เปิดบ่อยแค่ไหน",
+        a: "Humanoid Building เรียน 8 ชั่วโมง ส่วน Physical AI Basic เรียน 6 ชั่วโมง แต่ละคอร์สเปิดเดือนละรอบ และเปิดเรียนเมื่อมีผู้เรียนตั้งแต่ 2 คน ดูวันและเวลาได้ในหน้าสมัคร",
       },
       {
         q: "ทำไมต้องเรียนประกอบฮิวแมนนอยด์",
@@ -611,12 +815,208 @@ const th: ThaiDictionary = {
       },
       {
         q: "ต้องอายุเท่าไหร่ถึงจะเรียนได้",
-        a: "อายุ 15+ ปี เพราะเป็นงาน mechanic และไฟฟ้าของจริง ถ้าไม่ระวังก็อาจเกิดอันตรายได้",
+        a: "คอร์สทั่วไปรับอายุ 15 ปีขึ้นไป เพราะเป็นงาน mechanic และไฟฟ้าของจริง ถ้าไม่ระวังก็อาจเกิดอันตรายได้ ถ้าอายุ 12–18 ปี จองคลาสส่วนตัวสำหรับเด็กได้",
+      },
+      {
+        q: "สอนแบบส่วนตัวให้ทีม ห้องเรียน หรือลูกได้ไหม",
+        a: "ได้ โรงงาน มหาวิทยาลัย โรงเรียน และครอบครัวจองคลาสส่วนตัวได้ ที่สถานที่ของคุณหรือที่แล็บเรา เลือกแบบที่ใช่ในเมนูการศึกษา แล้วทักไลน์มาขอใบเสนอราคา",
       },
       {
         q: "สอนเป็นภาษาอะไร",
         a: "ได้ทั้งภาษาไทยและอังกฤษ แล้วแต่ผู้เรียนในรอบนั้นถนัดภาษาไหน",
       },
+    ],
+  },
+  education: {
+    eyebrow: "// การศึกษา",
+    title: "คลาสส่วนตัวสำหรับ",
+    highlight: "ทีมของคุณ",
+    intro: "เราขนฮิวแมนนอยด์ไปสอนถึงโรงงาน มหาวิทยาลัย หรือบ้านคุณ หรือจะมาเรียนที่แล็บเราก็ได้",
+    more: "ดูหลักสูตร",
+    line: "ทักไลน์คุยกัน",
+    programEyebrow: "// หลักสูตร",
+    whyEyebrow: "// ได้อะไร",
+    segments: {
+      factory: {
+        nav: "โรงงาน",
+        hint: "Physical AI สำหรับสายการผลิต",
+        who: "ผู้จัดการและวิศวกร",
+        meta: "2 วัน · 2–8 คน",
+        title: "คอร์สฮิวแมนนอยด์สำหรับโรงงาน",
+        description:
+          "คอร์สฮิวแมนนอยด์ส่วนตัว 2 วันสำหรับทีมของคุณ ประกอบหุ่นจริง แล้วเขียนโปรแกรมด้วย ROS 2, MuJoCo และ reinforcement learning ที่โรงงานของคุณหรือแล็บเราในกรุงเทพฯ",
+        eyebrow: "การศึกษา · โรงงาน",
+        heading: ["ฮิวแมนนอยด์", "สำหรับโรงงาน"],
+        lead: "ก่อนลงทุนกับ physical AI ลองสร้างเองสักตัว ทีมของคุณจะได้ประกอบฮิวแมนนอยด์จริงและเขียนโปรแกรมให้มันใน 2 วัน",
+        facts: [
+          ["ทีม", "2–8 คน"],
+          ["ระยะเวลา", "2 วัน"],
+          ["สถานที่", "โรงงานคุณหรือแล็บเรา"],
+          ["ราคา", "ขอใบเสนอราคาทางไลน์"],
+        ],
+        programTitle: "สิ่งที่ทีมคุณ",
+        programHighlight: "จะได้สร้าง",
+        program: B2B_PROGRAM_TH,
+        whyTitle: "สิ่งที่คุณ",
+        whyHighlight: "จะได้กลับไป",
+        why: [
+          [
+            "รู้จริง ไม่ใช่แค่กระแส",
+            "รู้ว่าฮิวแมนนอยด์ทำอะไรได้แล้วและยังทำอะไรไม่ได้ จากการสร้างเอง ไม่ใช่จากวิดีโอเดโม",
+          ],
+          [
+            "ภาษาเดียวกันทั้งทีม",
+            "วิศวกรของคุณได้เรียนเทคโนโลยีเบื้องหลัง physical AI ทั้ง ROS 2 การจำลอง และ RL",
+          ],
+          [
+            "ทางไปสู่โปรเจกต์นำร่อง",
+            "มีหุ่นไว้ที่โรงงาน แล้วทดลองไอเดียกับสายการผลิตของคุณต่อได้เลย",
+          ],
+        ],
+        kit: true,
+      },
+      school: {
+        nav: "มหาลัย / โรงเรียน",
+        hint: "แพลตฟอร์มวิจัยสำหรับนักศึกษา",
+        who: "อาจารย์และชมรมหุ่นยนต์",
+        meta: "2 วัน · 2–8 คน",
+        title: "คอร์สฮิวแมนนอยด์สำหรับมหาวิทยาลัยและโรงเรียน",
+        description:
+          "คอร์สฮิวแมนนอยด์ส่วนตัว 2 วันสำหรับนักเรียนนักศึกษา ประกอบฮิวแมนนอยด์โอเพนซอร์สของจริง แล้วเขียนโปรแกรมด้วย ROS 2, MuJoCo และ reinforcement learning ที่สถานศึกษาหรือแล็บเราในกรุงเทพฯ",
+        eyebrow: "การศึกษา · มหาลัย / โรงเรียน",
+        heading: ["ฮิวแมนนอยด์", "สำหรับสถานศึกษา"],
+        lead: "ให้นักเรียนได้ประกอบ เขียนโปรแกรม และทำวิจัยกับฮิวแมนนอยด์ตัวจริง แล้วเก็บไว้เป็นแพลตฟอร์มของแล็บต่อได้",
+        facts: [
+          ["กลุ่ม", "2–8 คน"],
+          ["ระยะเวลา", "2 วัน"],
+          ["สถานที่", "สถานศึกษาหรือแล็บเรา"],
+          ["ราคา", "ขอใบเสนอราคาทางไลน์"],
+        ],
+        programTitle: "สิ่งที่นักเรียน",
+        programHighlight: "จะได้สร้าง",
+        program: B2B_PROGRAM_TH,
+        whyTitle: "สิ่งที่แล็บคุณ",
+        whyHighlight: "จะได้",
+        why: [
+          [
+            "แล็บที่มองไปข้างหน้า",
+            "ฮิวแมนนอยด์ที่เดินได้ในสถานศึกษา บอกว่าหลักสูตรของคุณสอนเรื่องที่กำลังจะมา",
+          ],
+          [
+            "แพลตฟอร์มวิจัยแบบเปิด",
+            "ฮาร์ดแวร์และซอฟต์แวร์โอเพนซอร์ส นักศึกษาแกะ แก้ และตีพิมพ์ผลงานได้",
+          ],
+          [
+            "คนสร้างเองก็ซ่อมเองได้",
+            "นักเรียนที่ประกอบหุ่นมากับมือรู้จักทุกข้อต่อ หุ่นจึงใช้งานต่อได้แม้เรากลับไปแล้ว",
+          ],
+        ],
+        kit: true,
+      },
+      kids: {
+        nav: "เด็ก",
+        hint: "ประกอบฮิวแมนนอยด์จริง อายุ 12–18 ปี",
+        who: "อายุ 12–18 ปี",
+        meta: "8 ชั่วโมง · 1–6 คน",
+        title: "คลาสประกอบฮิวแมนนอยด์สำหรับเด็ก",
+        description:
+          "คลาสส่วนตัว 8 ชั่วโมงสำหรับเด็กอายุ 12–18 ปี ประกอบขา แขน และลำตัวของฮิวแมนนอยด์จริง แล้วบังคับด้วยจอยสติ๊ก ที่บ้านคุณหรือแล็บเราในกรุงเทพฯ",
+        eyebrow: "การศึกษา · เด็ก",
+        heading: ["ประกอบ", "ฮิวแมนนอยด์จริง"],
+        lead: "ไม่มีทฤษฎี ไม่มีสไลด์ ลูกของคุณจะได้ประกอบฮิวแมนนอยด์จริงในหนึ่งวัน แล้วจับจอยบังคับให้มันเดิน",
+        facts: [
+          ["อายุ", "12–18 ปี"],
+          ["กลุ่ม", "1–2 หรือ 3–6 คน"],
+          ["ระยะเวลา", "8 ชั่วโมง"],
+          ["สถานที่", "บ้านคุณหรือแล็บเรา"],
+        ],
+        programTitle: "สิ่งที่เด็กๆ",
+        programHighlight: "จะได้สร้าง",
+        program: [
+          {
+            name: "ประกอบ",
+            blurb: "ฮิวแมนนอยด์ตัวจริง ประกอบด้วยมือตัวเอง",
+            items: [
+              ["ขา", "สะโพก เข่า และข้อเท้า — ข้อต่อที่รับน้ำหนักทั้งตัว"],
+              ["ลำตัว", "โครงที่ทุกชิ้นส่วนมายึดเกาะ"],
+              ["แขน", "จากหัวไหล่ถึงข้อมือ ทีละข้อต่อ"],
+            ],
+          },
+          {
+            name: "บังคับ",
+            blurb: "แล้วก็ถึงช่วงสนุก",
+            items: [
+              ["บังคับด้วยจอย", "จับคอนโทรลเลอร์แล้วสั่งให้หุ่นขยับ"],
+              ["ก้าวแรก", "พาหุ่นที่เพิ่งประกอบเสร็จออกเดิน"],
+            ],
+          },
+        ],
+        whyTitle: "สิ่งที่เด็กๆ",
+        whyHighlight: "จะได้กลับไป",
+        why: [
+          [
+            "ผลงานใส่พอร์ต",
+            "ใบประกาศนียบัตรจาก Humanoice และหุ่นที่บอกได้เต็มปากว่าประกอบเอง",
+          ],
+          [
+            "ได้รู้ว่าชอบจริงไหม",
+            "ลงมือหนึ่งวันเต็มก็รู้แล้วว่าหุ่นยนต์ใช่ทางของเขาหรือเปล่า",
+          ],
+          [
+            "ดูแลใกล้ชิด",
+            "กลุ่มเล็ก มีผู้สอนอยู่ข้างโต๊ะตลอดเวลา",
+          ],
+        ],
+        kit: false,
+      },
+    },
+    kit: {
+      eyebrow: "// มีหุ่นเป็นของตัวเอง",
+      title: "มีฮิวแมนนอยด์",
+      highlight: "ไว้ใช้เอง",
+      intro: "ซื้อฮิวแมนนอยด์รุ่นเดียวกับที่เราใช้สอน แล้วเราดูแลให้มันใช้งานได้ต่อเนื่อง",
+      offers: [
+        {
+          name: "ชุดคิทฮิวแมนนอยด์",
+          tag: "ซื้อ",
+          items: [
+            "ฮิวแมนนอยด์รุ่นที่เราใช้สอน",
+            "เครื่องมือสำหรับประกอบและซ่อมบำรุง",
+            "เครนสำหรับแขวนหุ่นระหว่างหัดเดิน",
+          ],
+        },
+        {
+          name: "บริการดูแลรักษา",
+          tag: "12 เดือน",
+          items: [
+            "ตรวจเช็กถึงที่ 2 ครั้ง",
+            "ซ่อมและเปลี่ยนชิ้นส่วนที่เสื่อมตามการใช้งานฟรี",
+            "ความเสียหายจากการใช้งานผิดวิธีคิดค่าใช้จ่ายแยก",
+          ],
+        },
+      ],
+      cta: "สอบถามเรื่องชุดคิท",
+    },
+  },
+  about: {
+    title: "เกี่ยวกับเรา",
+    description:
+      "Humanoice คือแล็บหุ่นยนต์ฮิวแมนนอยด์แบบลงมือทำที่พระโขนง กรุงเทพฯ มีทั้งคอร์สทั่วไป คลาสส่วนตัว และชุดคิทฮิวแมนนอยด์",
+    eyebrow: "// เกี่ยวกับเรา",
+    heading: ["เราสร้าง", "ฮิวแมนนอยด์"],
+    lead: "ฮิวแมนน้อย (Humanoice) คือแล็บหุ่นยนต์ฮิวแมนนอยด์ที่พระโขนง กรุงเทพฯ เราสอนคนให้ประกอบฮิวแมนนอยด์โอเพนซอร์สของจริง และขายพร้อมดูแลหุ่นด้วย",
+    mission: {
+      eyebrow: "// พันธกิจ",
+      text: "เปลี่ยนประเทศไทยให้เป็น Shenzhen แห่ง Southeast Asia",
+      link: "อ่าน Master Plan",
+    },
+    whatEyebrow: "// สิ่งที่เราทำ",
+    whatTitle: "สามทาง",
+    whatHighlight: "ที่จะเริ่ม",
+    what: [
+      ["คอร์สทั่วไป", "Humanoid Building และ Physical AI Basic เปิดเดือนละรอบที่แล็บเรา จองที่นั่งออนไลน์ได้เลย"],
+      ["คลาสส่วนตัว", "สำหรับโรงงาน มหาวิทยาลัย โรงเรียน และเด็ก ที่สถานที่ของคุณหรือของเรา"],
+      ["ชุดคิทฮิวแมนนอยด์", "ซื้อหุ่นรุ่นที่เราใช้สอน พร้อมบริการดูแลรักษา 1 ปี"],
     ],
   },
   footer: {
@@ -867,6 +1267,18 @@ export function getDictionary(locale: Locale): typeof en | ThaiDictionary {
 /** The application page, optionally pre-ticking a run: /apply?course=hardware, /th/apply?course=software */
 export function applyPath(locale: Locale, course?: string) {
   return `${localePath(locale, "/apply")}${course ? `?course=${course}` : ""}`;
+}
+
+/** The private-training pages, in nav order: /education/factory, /th/education/kids… */
+export const EDUCATION_SEGMENTS = ["factory", "school", "kids"] as const;
+export type EducationSegment = (typeof EDUCATION_SEGMENTS)[number];
+
+export function isEducationSegment(value: string): value is EducationSegment {
+  return (EDUCATION_SEGMENTS as readonly string[]).includes(value);
+}
+
+export function educationPath(locale: Locale, segment: EducationSegment) {
+  return localePath(locale, `/education/${segment}`);
 }
 
 export function localePath(locale: Locale, path = "/") {

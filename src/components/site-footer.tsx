@@ -1,7 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Marquee } from "@/components/marquee";
-import { localePath, type HomeDictionary, type Locale } from "@/lib/i18n";
+import {
+  EDUCATION_SEGMENTS,
+  educationPath,
+  localePath,
+  type HomeDictionary,
+  type Locale,
+} from "@/lib/i18n";
 import { TrackedAnchor } from "@/components/track";
 import { siteConfig } from "@/lib/site";
 
@@ -9,9 +15,11 @@ type SiteFooterProps = { locale: Locale; copy: HomeDictionary };
 
 export function SiteFooter({ locale, copy }: SiteFooterProps) {
   const nav = [
-    { label: copy.nav.curriculum, href: "#curriculum" },
-    { label: copy.nav.team, href: "#team" },
-    { label: copy.nav.partners, href: "#partners" },
+    ...EDUCATION_SEGMENTS.map((segment) => ({
+      label: copy.education.segments[segment].nav,
+      href: educationPath(locale, segment),
+    })),
+    { label: copy.nav.about, href: localePath(locale, "/about") },
   ];
 
   // Every mark in public/social is a solid black badge on transparent, so `invert`

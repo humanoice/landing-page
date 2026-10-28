@@ -6,7 +6,7 @@ The design language is called **"Build Joyfully"**: industrial-playful brutalism
 - **This codebase wins.** `src/app/globals.css` holds the colour and font tokens (under `:root` and `@theme inline` — Tailwind v4, no `tailwind.config`) plus every animation and pattern class. Everything else — shadows, radii, type sizes, tracking — is written as Tailwind utilities, mostly arbitrary values like `shadow-[5px_5px_0_0_var(--ink)]`. There are no `--shadow-*`, `--radius-*`, `--space-*` or `--dur-*` variables; don't reference them.
 - Shared form and button primitives live in `src/components/apply-ui.tsx`. Copy the class strings from there or from the component that already does the thing.
 - All user-facing strings, in en and th, are in `src/lib/i18n.ts`.
-- Surfaces: home (`/`, `/th`), the application and payment flow (`/apply`), and `/master-plan`. `/certificate` uses its own print vocabulary (§12).
+- Surfaces: home (`/`, `/th`), the private-training pages (`/education/factory`, `/school`, `/kids`), `/about`, the application and payment flow (`/apply`), and `/master-plan`. `/certificate` uses its own print vocabulary (§12).
 
 ---
 
@@ -22,7 +22,8 @@ Thai should sound natural and conversational, not like translated marketing copy
 | Rule | Do |
 |---|---|
 | **Person** | "We" = Humanoice, "you" = the student, addressed as equals: *"We check it on the spot."* |
-| **Vocabulary** | The offering is a **bootcamp**. Each self-serve run belongs to a **track** (`01` hardware, `02` software, `03` the full bootcamp combining both). |
+| **Vocabulary** | The offering is a **bootcamp**. The two public courses are **Humanoid Building** (track `01`, hardware) and **Physical AI Basic** (track `02`, software). Private training is **Education**, split into Factory, Uni / School and Kids. |
+| **Prices** | Shown for the public courses only. Private training and kits never show a price — the CTA is LINE (*"Chat on LINE"*, *"Quote on LINE"*). |
 | **Headlines** | ALL CAPS in the display face, with the last phrase in the accent colour: *Pick your **track***, *Meet your **instructors***, *Questions, **answered***. In i18n this is a `title` + `highlight` pair. |
 | **Eyebrows** | Mono, uppercase, wide tracking, prefixed with `//`: `// The Tracks`, `// FAQ`, `// Step 2 of 2`. The hero eyebrow (`Humanoid School · Bangkok`) and footer location line are plain labels without `//`. |
 | **Body** | Sentence case. One idea per line. Card blurbs run 8–20 words. Curriculum items: a 2–4 word title plus one sentence (*"ROS 2 — The framework every modern robot runs on — nodes, topics, and control loops."*). |
@@ -63,10 +64,10 @@ In classes use the Tailwind names (`bg-crimson`, `text-ink/70`). In inline style
 | `::selection` | yellow background, ink text |
 
 ### Usage rules
-- **Section rhythm:** sections alternate so the page reads as stacked paper. Home runs crimson hero → yellow ticker → cream curriculum → cream-deep team → ink partners → cream FAQ → footer (ink ticker → photo CTA on ink → crimson bottom bar).
+- **Section rhythm:** sections alternate so the page reads as stacked paper. Home runs crimson hero → yellow ticker → cream courses → cream-deep education → ink partners → cream FAQ → footer (ink ticker → photo CTA on ink → crimson bottom bar).
 - **At most two background colours** per screen region.
-- **Accent rotation:** rows rotate their shadow colour **yellow → coral → crimson** (team cards, FAQ rows). Curriculum runs yellow → coral → featured crimson card on a yellow shadow. Form sections run yellow → coral → yellow.
-- **Featured content inverts:** crimson fill, cream type, yellow accents, yellow shadow (track 03, outcome panels).
+- **Accent rotation:** rows rotate their shadow colour **yellow → coral → crimson** (team cards, education cards, "why" cards, FAQ rows). Course and program cards run yellow → coral. Form sections run yellow → coral → yellow.
+- **Featured content inverts:** crimson fill, cream type, yellow accents, yellow shadow (outcome panels, the About mission panel).
 - On ink grounds a cream card takes a `border-cream/15` border and a coral shadow (partner card).
 
 ---
@@ -297,9 +298,10 @@ Every CTA that leads to `/apply` or LINE goes through `TrackedLink` / `TrackedAn
 - **Reveal.** IntersectionObserver wrapper (threshold .15, bottom margin −8%) that adds `.is-visible` once.
 
 ### Composites
-- **Navbar:** lockup, numbered section links (`01`–`03` at `crimson/50`), language switcher, nav CTA.
+- **Navbar:** lockup, numbered page links (`01 Education ▾` with a dropdown of the three segments, `02 About us`, numbers at `crimson/50`), language switcher, nav CTA. Below `md` the links and language switcher move into a round menu button that drops a full-width cream panel (`nav-menu.tsx`).
+- **Education page:** crimson header with spec bar and a LINE CTA → program cards (cream) → "why" cards (cream-deep) → "own one" kit cards on ink (factory and uni/school only) → footer.
 - **Hero:** eyebrow, three-line masked headline, lead, CTA; bench window on the right; spec bar along the bottom.
-- **Track card:** price sticker, icon badge, kicker, name, MetaPill, blurb, dashed rule, item list, CTA pinned to the bottom. Track 03 is the featured crimson card whose list items reference tracks 01 and 02.
+- **Track card:** price sticker, icon badge, kicker, name, MetaPill, blurb, dashed rule, item list, CTA pinned to the bottom.
 - **Team card:** square photo Card with a numbered accent chip, LinkedIn IconButton, name, mono role in crimson, blurb.
 - **Partner cards:** cream partner Card on ink.
 - **Footer:** mission ticker, photo CTA (scrim, LINE QR, location eyebrow, closer headline), bottom bar (lockup, nav, social marks, copyright).

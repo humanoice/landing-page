@@ -1,4 +1,5 @@
 import { Curriculum } from "@/components/curriculum";
+import { Education } from "@/components/education";
 import { Faq } from "@/components/faq";
 import { FlashSalePopup } from "@/components/flash-sale-popup";
 import { Hero } from "@/components/hero";
@@ -6,7 +7,6 @@ import { Marquee } from "@/components/marquee";
 import { Navbar } from "@/components/navbar";
 import { Partners } from "@/components/partners";
 import { SiteFooter } from "@/components/site-footer";
-import { Team } from "@/components/team";
 import { applyPath, type HomeDictionary, type Locale } from "@/lib/i18n";
 
 type HomePageProps = {
@@ -18,7 +18,7 @@ type HomePageProps = {
 export function HomePage({ locale, copy, ticker }: HomePageProps) {
   return (
     <>
-      <Navbar locale={locale} copy={copy.nav} />
+      <Navbar locale={locale} copy={copy} />
       <main>
         <Hero locale={locale} copy={copy.hero} />
         <Marquee
@@ -30,7 +30,7 @@ export function HomePage({ locale, copy, ticker }: HomePageProps) {
           sepClassName="text-crimson"
         />
         <Curriculum locale={locale} copy={copy.curriculum} />
-        <Team copy={copy.team} />
+        <Education locale={locale} copy={copy.education} />
         <Partners copy={copy.partners} />
         <Faq copy={copy.faq} />
       </main>
