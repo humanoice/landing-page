@@ -30,7 +30,6 @@ import {
 } from "@/app/apply/actions";
 import { EMAIL, LANGUAGES, PROGRAMMING_LANGUAGES, SKILLS } from "@/lib/apply-options";
 import type { CourseOption } from "@/lib/courses";
-import { FLASH_SALE_CODE } from "@/lib/flash-sale";
 import type { ApplyCopy, Locale } from "@/lib/i18n";
 import {
   bill,
@@ -75,8 +74,7 @@ const EMPTY: FormValues = {
   receiptName: "",
   receiptTaxId: "",
   receiptAddress: "",
-  // Flash Sale: the code is typed in for them, and the live check below applies it on load.
-  discountCode: FLASH_SALE_CODE,
+  discountCode: "",
 };
 
 /** Long enough that typing an address doesn't fire a query per keystroke. */

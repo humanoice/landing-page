@@ -2,21 +2,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { ApplyForm } from "@/components/apply-form";
-import { FlashSalePopup } from "@/components/flash-sale-popup";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { getUpcomingCourses, pickCourse } from "@/lib/courses";
-import { localePath, type ApplyCopy, type HomeDictionary, type Locale } from "@/lib/i18n";
+import { localePath, type ApplyCopy, type Locale } from "@/lib/i18n";
 
 type ApplyPageProps = {
   locale: Locale;
   copy: ApplyCopy;
   languageLabel: string;
-  flashSale: HomeDictionary["flashSale"];
   /** raw `?course=` value — id or slug */
   course?: string | string[];
 };
 
-export function ApplyPage({ locale, copy, languageLabel, flashSale, course }: ApplyPageProps) {
+export function ApplyPage({ locale, copy, languageLabel, course }: ApplyPageProps) {
   const home = localePath(locale);
 
   return (
@@ -73,8 +71,6 @@ export function ApplyPage({ locale, copy, languageLabel, flashSale, course }: Ap
           </Suspense>
         </div>
       </main>
-
-      <FlashSalePopup copy={flashSale} />
     </div>
   );
 }
