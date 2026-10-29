@@ -37,15 +37,13 @@ const en = {
     eyebrow: "Humanoid School · Bangkok",
     title: ["Learn to", "", "build humanoids."],
     description:
-      "Thailand's first hands-on humanoid school. From raw materials to full deployment — you assemble, program, and deploy a real humanoid.",
+      "Thailand's first hands-on humanoid school. From raw materials to full deployment — you assemble, train, and deploy a real humanoid.",
     join: "Apply",
-    curriculum: "See the curriculum",
     reel: {
       alt: "Students laying out parts, testing a board with a multimeter, and walking a humanoid on a gantry at the Humanoice workshop",
     },
     facts: [
       ["Location", "Phra Khanong, Bangkok"],
-      ["Courses", "2 · Monthly"],
     ],
   },
   curriculum: {
@@ -53,15 +51,15 @@ const en = {
     title: "Pick your",
     highlight: "course",
     track: "Track",
-    note: "Each course runs once a month and goes ahead with 2 or more people.",
     tracks: [
       {
-        name: "Humanoid Building",
+        name: "Building Humanoids",
+        photoAlt: "Students and instructors posing with two humanoids they are building",
         tag: "Hardware",
         duration: "8 hours",
         price: "4,900 THB",
         blurb:
-          "It's like IKEA but for humanoids — build the legs, arms, and body yourself, then wire it up.",
+          "Like IKEA but for humanoids — build the legs, arms, and body yourself, then wire it up.",
         cta: "Apply",
         items: [
           [
@@ -84,27 +82,28 @@ const en = {
       },
       {
         name: "Physical AI Basic",
+        photoAlt: "An instructor presenting on a wall screen to students at their laptops",
         tag: "Software",
         duration: "6 hours",
         price: "2,900 THB",
         blurb:
-          "Modern software for humanoids: model the body, simulate it, and train it to walk.",
+          "Modern software for humanoids: ROS 2, simulation, reinforcement learning, and VLA models that teach one to walk.",
         cta: "Apply",
         items: [
           [
-            "ROS 2",
+            "ROS 2 & URDF",
             "The framework every modern robot runs on — nodes, topics, and control loops.",
           ],
           [
-            "URDF",
+            "Simulation",
             "Model a humanoid's body so your code knows every link and joint.",
           ],
           [
-            "MuJoCo",
+            "Reinforcement Learning",
             "Rehearse every motion in real physics before it touches hardware.",
           ],
           [
-            "Reinforcement learning",
+            "Teleoperation & VLA Model",
             "Train the policy that makes the robot walk.",
           ],
         ],
@@ -115,10 +114,10 @@ const en = {
     eyebrow: "// Team",
     title: "Meet your",
     highlight: "instructors",
-    roles: ["CEO", "Senior Robotic Engineer", "Physical AI Engineer"],
+    roles: ["CEO", "Staff Engineer", "Physical AI Engineer"],
     blurbs: [
       "On a mission to make Thailand the Shenzhen of Southeast Asia",
-      "Robot enthusiast with intensive background in the automation industry",
+      "Robot engineer with intensive background in blockchain and AI",
       "Senior product manager who loves applying intelligence to the physical world",
     ],
   },
@@ -140,11 +139,11 @@ const en = {
     items: [
       {
         q: "No background at all — can I still join?",
-        a: "Yes. Humanoid Building and Physical AI Basic both start from zero, so you don't need any coding background. We walk you through every step on the day.",
+        a: "Yes. Building Humanoids and Physical AI Basic both start from zero, so you don't need any coding background. We walk you through every step on the day.",
       },
       {
         q: "How long is each course, and how often does it run?",
-        a: "Humanoid Building is 8 hours; Physical AI Basic is 6 hours. Each runs once a month and goes ahead with 2 or more people — dates and times are on the application page.",
+        a: "Building Humanoids is 8 hours; Physical AI Basic is 6 hours.",
       },
       {
         q: "Why learn to build a humanoid?",
@@ -156,15 +155,17 @@ const en = {
       },
       {
         q: "Which humanoid do we learn on, and what are its specs?",
-        a: "1.25 m tall, 34 kg, 23 degrees of freedom, joints up to 120 N·m, and a 48 V / 15 Ah battery.",
+        a: "A Roboparty humanoid: 1.25 m tall, 34 kg, 23 degrees of freedom, joints up to 120 N·m, and a 48 V / 15 Ah battery.",
       },
       {
         q: "How old do I need to be to join?",
-        a: "15+ for the public courses. This is real mechanical and electrical work — it can be dangerous if you’re careless. For ages 12–18, book a private Kids session.",
+        a: "12–18 years old. This is real mechanical and electrical work, so kids build in a small private group with an instructor at the bench the whole time.",
+        /** Rendered as a link under the answer — an education segment page. */
+        link: { segment: "kids" as const, label: "See the Kids session" },
       },
       {
         q: "Can you train my team, class, or kids privately?",
-        a: "Yes. Factories, universities, schools, and families book private sessions at their place or our lab. Pick yours under Education, then chat with us on LINE for a quote.",
+        a: "Yes. Factories, universities, schools, and families book private sessions at their place or our lab. Chat with us on LINE.",
       },
       {
         q: "What language do you teach in?",
@@ -175,9 +176,9 @@ const en = {
   /** Private (B2B) training: the home teaser, the nav dropdown, and /education/[segment]. No prices — every CTA is LINE. */
   education: {
     eyebrow: "// Education",
-    title: "Private training for",
-    highlight: "your team",
-    intro: "We bring the humanoid to your factory, campus, or home — or you come to our lab.",
+    title: "for you",
+    highlight: "Private training",
+    intro: "We bring the experience of building humanoids to your wherever you want",
     more: "See the program",
     line: "Chat on LINE",
     programEyebrow: "// The program",
@@ -273,7 +274,7 @@ const en = {
         lead: "No theory, no slides. Your kids assemble a real humanoid in one day, then take the joystick and make it walk.",
         facts: [
           ["Age", "12–18"],
-          ["Group", "1–2 or 3–6 kids"],
+          ["Group", "1-6 kids"],
           ["Length", "8 hours"],
           ["Where", "Your home or our lab"],
         ],
@@ -317,6 +318,15 @@ const en = {
         kit: false,
       },
     },
+    /** Sample-certificate block on the uni/school and kids pages. */
+    certificate: {
+      eyebrow: "// On completion",
+      title: "Earn a",
+      highlight: "certificate",
+      body: "Everyone who finishes gets a certificate with their name and course. Each one carries a number anyone can verify online.",
+      alt: "Sample Humanoice certificate of completion with the name field reading Your Name",
+      caption: "Sample certificate",
+    },
     /** "Own one" block on the factory and uni/school pages. */
     kit: {
       eyebrow: "// Own one",
@@ -351,8 +361,10 @@ const en = {
     description:
       "Humanoice is a hands-on humanoid robotics lab in Phra Khanong, Bangkok — public courses, private training, and humanoid kits.",
     eyebrow: "// About us",
-    heading: ["We build", "humanoids."],
+    heading: ["Make Thailand", "the Shenzhen of Southeast Asia."],
     lead: "Humanoice (ฮิวแมนน้อย) is a humanoid robotics lab in Phra Khanong, Bangkok. We teach people to build real open-source humanoids, and we sell and service the robots too.",
+    photoAlt: "Students and instructors gathered around humanoids at our lab",
+    photoCaption: "Our lab in Phra Khanong, Bangkok",
     mission: {
       eyebrow: "// Our mission",
       text: "Make Thailand the Shenzhen of Southeast Asia.",
@@ -362,7 +374,7 @@ const en = {
     whatTitle: "Three ways",
     whatHighlight: "in",
     what: [
-      ["Public courses", "Humanoid Building and Physical AI Basic, once a month at our lab. Book a seat online."],
+      ["Public courses", "Building Humanoids and Physical AI Basic, once a month at our lab. Book a seat online."],
       ["Private training", "For factories, universities, schools, and kids — at your place or ours."],
       ["Humanoid kits", "Buy the robot we teach on, with a year of maintenance support."],
     ],
@@ -684,13 +696,11 @@ const th: ThaiDictionary = {
     description:
       "โรงเรียนสอนประกอบฮิวแมนนอยด์ แบบลงมือทำแห่งแรกของไทย ตั้งแต่ชิ้นส่วนแรกจนพร้อมใช้งานจริง — คุณจะได้ประกอบ เขียนโปรแกรม และพาฮิวแมนนอยด์เดิน",
     join: "สมัคร",
-    curriculum: "มาดูหลักสูตร",
     reel: {
       alt: "นักเรียนกำลังจัดวางชิ้นส่วน ทดสอบบอร์ดด้วยมัลติมิเตอร์ และพาฮิวแมนนอยด์เดินบนราวช่วยพยุงที่เวิร์กช็อปของ Humanoice",
     },
     facts: [
       ["สถานที่", "พระโขนง, กรุงเทพฯ"],
-      ["คอร์ส", "2 คอร์ส · ทุกเดือน"],
     ],
   },
   curriculum: {
@@ -698,10 +708,10 @@ const th: ThaiDictionary = {
     title: "เลือกคอร์ส",
     highlight: "ของคุณ",
     track: "คอร์ส",
-    note: "แต่ละคอร์สเปิดเดือนละรอบ และเปิดเรียนเมื่อมีผู้เรียนตั้งแต่ 2 คนขึ้นไป",
     tracks: [
       {
-        name: "Humanoid Building",
+        name: "Building Humanoids",
+        photoAlt: "ผู้เรียนและผู้สอนถ่ายรูปกับฮิวแมนนอยด์สองตัวที่กำลังประกอบ",
         tag: "ฮาร์ดแวร์",
         duration: "8 ชั่วโมง",
         price: "4,900 บาท",
@@ -729,27 +739,28 @@ const th: ThaiDictionary = {
       },
       {
         name: "Physical AI Basic",
+        photoAlt: "ผู้สอนกำลังบรรยายบนจอผนังให้ผู้เรียนที่นั่งหน้าแล็ปท็อป",
         tag: "ซอฟต์แวร์",
         duration: "6 ชั่วโมง",
         price: "2,900 บาท",
         blurb:
-          "สายซอฟต์แวร์ของฮิวแมนนอยด์ — สร้างโมเดล จำลอง แล้วเทรนให้มันเดินได้",
+          "ซอฟต์แวร์สมัยใหม่สำหรับฮิวแมนนอยด์ — ROS 2, การจำลอง, reinforcement learning และโมเดล VLA ที่สอนให้หุ่นเดินได้",
         cta: "สมัคร",
         items: [
           [
-            "ROS 2",
+            "ROS 2 & URDF",
             "framework ที่หุ่นยนต์สมัยใหม่ใช้ — node, topic, และ control loop",
           ],
           [
-            "URDF",
+            "Simulation",
             "สร้างโมเดลร่างกายฮิวแมนนอยด์ให้ code รู้จักทุกชิ้นส่วนและทุกข้อต่อ",
           ],
           [
-            "MuJoCo",
+            "Reinforcement Learning",
             "ซ้อมทุกการเคลื่อนไหวในฟิสิกส์จำลองก่อนลงหุ่นจริง",
           ],
           [
-            "Reinforcement learning",
+            "Teleoperation & VLA Model",
             "เทรน policy ที่ทำให้หุ่นเดินได้",
           ],
         ],
@@ -760,10 +771,10 @@ const th: ThaiDictionary = {
     eyebrow: "// ทีมเรา",
     title: "มารู้จัก",
     highlight: "ทีมผู้สอน",
-    roles: ["CEO", "วิศวกรหุ่นยนต์อาวุโส", "Physical AI Engineer"],
+    roles: ["CEO", "Staff Engineer", "Physical AI Engineer"],
     blurbs: [
       "ตั้งใจเปลี่ยนประเทศไทยให้เป็น Shenzhen แห่ง Southeast Asia",
-      "สายหุ่นยนต์ตัวจริง พร้อมประสบการณ์แน่นในวงการระบบอัตโนมัติ",
+      "วิศวกรหุ่นยนต์ ประสบการณ์แน่นทั้งสายบล็อกเชนและ AI",
       "ผู้จัดการผลิตภัณฑ์อาวุโสที่สนุกกับการเอา AI มาใช้ในโลกจริง",
     ],
   },
@@ -783,11 +794,11 @@ const th: ThaiDictionary = {
     items: [
       {
         q: "ถ้าไม่มีความรู้พื้นฐานเลย เรียนได้ไหม",
-        a: "ได้เลย ทั้ง Humanoid Building และ Physical AI Basic เริ่มจากศูนย์ได้ ไม่ต้องมีพื้นฐานเขียนโปรแกรมมาก่อน เราพาทำไปทีละขั้นในห้องเรียน",
+        a: "ได้เลย ทั้ง Building Humanoids และ Physical AI Basic เริ่มจากศูนย์ได้ ไม่ต้องมีพื้นฐานเขียนโปรแกรมมาก่อน เราพาทำไปทีละขั้นในห้องเรียน",
       },
       {
         q: "แต่ละคอร์สเรียนนานแค่ไหน เปิดบ่อยแค่ไหน",
-        a: "Humanoid Building เรียน 8 ชั่วโมง ส่วน Physical AI Basic เรียน 6 ชั่วโมง แต่ละคอร์สเปิดเดือนละรอบ และเปิดเรียนเมื่อมีผู้เรียนตั้งแต่ 2 คน ดูวันและเวลาได้ในหน้าสมัคร",
+        a: "Building Humanoids เรียน 8 ชั่วโมง ส่วน Physical AI Basic เรียน 6 ชั่วโมง",
       },
       {
         q: "ทำไมต้องเรียนประกอบฮิวแมนนอยด์",
@@ -799,15 +810,16 @@ const th: ThaiDictionary = {
       },
       {
         q: "ฮิวแมนนอยด์ที่ใช้สอน มีรายละเอียดเป็นยังไง",
-        a: "สูง 1.25 เมตร หนัก 34 กก. 23 องศาอิสระ (DOF) แรงบิดข้อต่อสูงสุด 120 N·m แบตเตอรี่ 48V 15Ah",
+        a: "ฮิวแมนนอยด์ของ Roboparty สูง 1.25 เมตร หนัก 34 กก. 23 องศาอิสระ (DOF) แรงบิดข้อต่อสูงสุด 120 N·m แบตเตอรี่ 48V 15Ah",
       },
       {
         q: "ต้องอายุเท่าไหร่ถึงจะเรียนได้",
-        a: "คอร์สทั่วไปรับอายุ 15 ปีขึ้นไป เพราะเป็นงาน mechanic และไฟฟ้าของจริง ถ้าไม่ระวังก็อาจเกิดอันตรายได้ ถ้าอายุ 12–18 ปี จองคลาสส่วนตัวสำหรับเด็กได้",
+        a: "อายุ 12–18 ปี เพราะเป็นงาน mechanic และไฟฟ้าของจริง เด็กๆ จะได้ประกอบหุ่นในกลุ่มเล็กแบบส่วนตัว โดยมีผู้สอนอยู่ข้างโต๊ะตลอดเวลา",
+        link: { segment: "kids", label: "ดูคลาสสำหรับเด็ก" },
       },
       {
         q: "สอนแบบส่วนตัวให้ทีม ห้องเรียน หรือลูกได้ไหม",
-        a: "ได้ โรงงาน มหาวิทยาลัย โรงเรียน และครอบครัวจองคลาสส่วนตัวได้ ที่สถานที่ของคุณหรือที่แล็บเรา เลือกแบบที่ใช่ในเมนูการศึกษา แล้วทักไลน์มาขอใบเสนอราคา",
+        a: "ได้ โรงงาน มหาวิทยาลัย โรงเรียน และครอบครัวจองคลาสส่วนตัวได้ ทักมาในไลน์เพื่อขอข้อมูลเพิ่มเติม",
       },
       {
         q: "สอนเป็นภาษาอะไร",
@@ -817,8 +829,8 @@ const th: ThaiDictionary = {
   },
   education: {
     eyebrow: "// การศึกษา",
-    title: "คลาสส่วนตัวสำหรับ",
-    highlight: "ทีมของคุณ",
+    title: "สำหรับทีมของคุณ",
+    highlight: "คลาสส่วนตัว",
     intro: "เราขนฮิวแมนนอยด์ไปสอนถึงโรงงาน มหาวิทยาลัย หรือบ้านคุณ หรือจะมาเรียนที่แล็บเราก็ได้",
     more: "ดูหลักสูตร",
     line: "ทักไลน์คุยกัน",
@@ -914,7 +926,7 @@ const th: ThaiDictionary = {
         lead: "ไม่มีทฤษฎี ไม่มีสไลด์ ลูกของคุณจะได้ประกอบฮิวแมนนอยด์จริงในหนึ่งวัน แล้วจับจอยบังคับให้มันเดิน",
         facts: [
           ["อายุ", "12–18 ปี"],
-          ["กลุ่ม", "1–2 หรือ 3–6 คน"],
+          ["กลุ่ม", "1-6 คน"],
           ["ระยะเวลา", "8 ชั่วโมง"],
           ["สถานที่", "บ้านคุณหรือแล็บเรา"],
         ],
@@ -958,6 +970,14 @@ const th: ThaiDictionary = {
         kit: false,
       },
     },
+    certificate: {
+      eyebrow: "// เรียนจบแล้ว",
+      title: "รับ",
+      highlight: "ใบประกาศนียบัตร",
+      body: "ทุกคนที่เรียนจบจะได้ใบประกาศนียบัตรที่มีชื่อและชื่อคอร์ส พร้อมเลขที่ใครก็ตรวจสอบออนไลน์ได้",
+      alt: "ตัวอย่างใบประกาศนียบัตร Humanoice ที่ช่องชื่อเขียนว่า Your Name",
+      caption: "ตัวอย่างใบประกาศนียบัตร",
+    },
     kit: {
       eyebrow: "// มีหุ่นเป็นของตัวเอง",
       title: "มีฮิวแมนนอยด์",
@@ -993,6 +1013,8 @@ const th: ThaiDictionary = {
     eyebrow: "// เกี่ยวกับเรา",
     heading: ["เราสร้าง", "ฮิวแมนนอยด์"],
     lead: "ฮิวแมนน้อย (Humanoice) คือแล็บหุ่นยนต์ฮิวแมนนอยด์ที่พระโขนง กรุงเทพฯ เราสอนคนให้ประกอบฮิวแมนนอยด์โอเพนซอร์สของจริง และขายพร้อมดูแลหุ่นด้วย",
+    photoAlt: "ผู้เรียนและผู้สอนยืนล้อมฮิวแมนนอยด์ในแล็บของเรา",
+    photoCaption: "แล็บของเราที่พระโขนง กรุงเทพฯ",
     mission: {
       eyebrow: "// พันธกิจ",
       text: "เปลี่ยนประเทศไทยให้เป็น Shenzhen แห่ง Southeast Asia",
@@ -1002,7 +1024,7 @@ const th: ThaiDictionary = {
     whatTitle: "สามทาง",
     whatHighlight: "ที่จะเริ่ม",
     what: [
-      ["คอร์สทั่วไป", "Humanoid Building และ Physical AI Basic เปิดเดือนละรอบที่แล็บเรา จองที่นั่งออนไลน์ได้เลย"],
+      ["คอร์สทั่วไป", "Building Humanoids และ Physical AI Basic เปิดเดือนละรอบที่แล็บเรา จองที่นั่งออนไลน์ได้เลย"],
       ["คลาสส่วนตัว", "สำหรับโรงงาน มหาวิทยาลัย โรงเรียน และเด็ก ที่สถานที่ของคุณหรือของเรา"],
       ["ชุดคิทฮิวแมนนอยด์", "ซื้อหุ่นรุ่นที่เราใช้สอน พร้อมบริการดูแลรักษา 1 ปี"],
     ],

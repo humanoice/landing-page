@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { Reveal } from "@/components/reveal";
-import type { HomeDictionary } from "@/lib/i18n";
+import { educationPath, type HomeDictionary, type Locale } from "@/lib/i18n";
 
 /**
  * Native <details> — no client JS, works before hydration, and the answers stay
@@ -11,9 +12,9 @@ const ACCENTS = [
   { color: "var(--red)", ink: "text-cream" },
 ];
 
-type FaqProps = { copy: HomeDictionary["faq"] };
+type FaqProps = { locale: Locale; copy: HomeDictionary["faq"] };
 
-export function Faq({ copy }: FaqProps) {
+export function Faq({ locale, copy }: FaqProps) {
   return (
     <section id="faq" className="relative scroll-mt-20 bg-cream py-20 sm:py-28">
       <div
@@ -73,6 +74,17 @@ export function Faq({ copy }: FaqProps) {
                     <p className="max-w-3xl text-sm leading-relaxed text-ink/70">
                       {item.a}
                     </p>
+                    {item.link && (
+                      <Link
+                        href={educationPath(locale, item.link.segment)}
+                        className="group mt-4 inline-flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-[0.12em] text-ink transition-colors hover:text-crimson"
+                      >
+                        {item.link.label}
+                        <span className="transition-transform duration-200 group-hover:translate-x-1">
+                          →
+                        </span>
+                      </Link>
+                    )}
                   </div>
                 </details>
               </Reveal>

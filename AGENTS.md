@@ -24,7 +24,7 @@ Database is Neon
 
 ## Offer structure
 
-- **B2C** — the two public courses, *Humanoid Building* (track 1, hardware) and *Physical AI Basic* (track 2, software). The only offers with a price on the site; CTA goes to `/apply`. Run names and prices on `/apply` come from the `courses` rows, so keep them in step with `curriculum` in i18n.
+- **B2C** — the two public courses, *Building Humanoids* (track 1, hardware) and *Physical AI Basic* (track 2, software). The only offers with a price on the site; CTA goes to `/apply`. Run names and prices on `/apply` come from the `courses` rows, so keep them in step with `curriculum` in i18n.
 - **B2B** — private training for Factory / Uni-School / Kids, plus the humanoid kit and maintenance. Never show a price; every CTA is LINE.
 
 ## Design language — "Build Joyfully"

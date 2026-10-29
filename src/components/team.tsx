@@ -12,17 +12,18 @@ const MEMBERS = [
     photo: "/team/son.jpg",
     color: "var(--yellow-main)",
     linkedin: "https://www.linkedin.com/in/sitthaveet/",
+    schools: [{ name: "Chulalongkorn University", logo: "/team/chula.webp" }],
     blurb:
       "On a mission to make Thailand to be the Shenzhen of Southeast Asia",
   },
   {
-    name: "Bill",
-    role: "Senior Robotic Engineer",
-    photo: "/team/bill.jpg",
+    name: "Non",
+    role: "Staff Engineer",
+    photo: "/team/non.jpeg",
     color: "var(--orange-secondary)",
-    linkedin: "https://www.linkedin.com/in/tanawit-sinsukudomchai/",
-    blurb:
-      "Robot enthusiast with intensive background in automation industry",
+    linkedin: "https://www.linkedin.com/in/nonthakonjitchiranant/",
+    schools: [{ name: "King Mongkut's Institute of Technology Ladkrabang", logo: "/team/kmitl.webp" }],
+    blurb: "Robot engineer with intensive background in blockchain and AI",
   },
   {
     name: "Mild",
@@ -30,6 +31,10 @@ const MEMBERS = [
     photo: "/team/mild.jpg",
     color: "var(--red)",
     linkedin: "https://www.linkedin.com/in/punthira-chinotaikul-15163a100/",
+    schools: [
+      { name: "The University of Tokyo", logo: "/team/tokyo.png" },
+      { name: "University of Cambridge", logo: "/team/cambridge.png" },
+    ],
     blurb:
       "Senior product manager who love applied intelligence to physical world",
   },
@@ -103,15 +108,33 @@ export function Team({ copy }: TeamProps) {
                 </a>
 
                 <div className="mt-5">
-                  <h3 className="font-display text-2xl font-extrabold tracking-tight text-ink">
-                    {member.name}
-                  </h3>
-                  <p
-                    className="mt-0.5 font-mono text-xs font-bold uppercase tracking-[0.16em]"
-                    style={{ color: "var(--red)" }}
-                  >
-                    {member.role}
-                  </p>
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="font-display text-2xl font-extrabold tracking-tight text-ink">
+                        {member.name}
+                      </h3>
+                      <p
+                        className="mt-0.5 font-mono text-xs font-bold uppercase tracking-[0.16em]"
+                        style={{ color: "var(--red)" }}
+                      >
+                        {member.role}
+                      </p>
+                    </div>
+                    <ul className="flex shrink-0 items-center gap-2">
+                      {member.schools.map((school) => (
+                        <li key={school.name}>
+                          <Image
+                            src={school.logo}
+                            alt={school.name}
+                            title={school.name}
+                            width={80}
+                            height={80}
+                            className="h-10 w-auto max-w-14 object-contain"
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                   <p className="mt-3 max-w-xs text-sm leading-relaxed text-ink/70">
                     {member.blurb}
                   </p>

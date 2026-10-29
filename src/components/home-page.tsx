@@ -31,7 +31,7 @@ export function HomePage({ locale, copy, ticker }: HomePageProps) {
         <Curriculum locale={locale} copy={copy.curriculum} />
         <Education locale={locale} copy={copy.education} />
         <Partners copy={copy.partners} />
-        <Faq copy={copy.faq} />
+        <Faq locale={locale} copy={copy.faq} />
       </main>
       <SiteFooter locale={locale} copy={copy} />
     </>

@@ -22,7 +22,7 @@ Thai should sound natural and conversational, not like translated marketing copy
 | Rule | Do |
 |---|---|
 | **Person** | "We" = Humanoice, "you" = the student, addressed as equals: *"We check it on the spot."* |
-| **Vocabulary** | The offering is a **bootcamp**. The two public courses are **Humanoid Building** (track `01`, hardware) and **Physical AI Basic** (track `02`, software). Private training is **Education**, split into Factory, Uni / School and Kids. |
+| **Vocabulary** | The offering is a **bootcamp**. The two public courses are **Building Humanoids** (track `01`, hardware) and **Physical AI Basic** (track `02`, software). Private training is **Education**, split into Factory, Uni / School and Kids. |
 | **Prices** | Shown for the public courses only. Private training and kits never show a price — the CTA is LINE (*"Chat on LINE"*, *"Quote on LINE"*). |
 | **Headlines** | ALL CAPS in the display face, with the last phrase in the accent colour: *Pick your **track***, *Meet your **instructors***, *Questions, **answered***. In i18n this is a `title` + `highlight` pair. |
 | **Eyebrows** | Mono, uppercase, wide tracking, prefixed with `//`: `// The Tracks`, `// FAQ`, `// Step 2 of 2`. The hero eyebrow (`Humanoid School · Bangkok`) and footer location line are plain labels without `//`. |
@@ -298,7 +298,7 @@ Every CTA that leads to `/apply` or LINE goes through `TrackedLink` / `TrackedAn
 - **Reveal.** IntersectionObserver wrapper (threshold .15, bottom margin −8%) that adds `.is-visible` once.
 
 ### Composites
-- **Navbar:** lockup, numbered page links (`01 Education ▾` with a dropdown of the three segments, `02 About us`, numbers at `crimson/50`), language switcher, nav CTA. Below `md` the links and language switcher move into a round menu button that drops a full-width cream panel (`nav-menu.tsx`).
+- **Navbar:** lockup, page links (`Education ▾` with a dropdown of the three segments, `About us`), language switcher, nav CTA. Below `md` the links and language switcher move into a round menu button that drops a full-width cream panel (`nav-menu.tsx`).
 - **Education page:** crimson header with spec bar and a LINE CTA → program cards (cream) → "why" cards (cream-deep) → "own one" kit cards on ink (factory and uni/school only) → footer.
 - **Hero:** eyebrow, three-line masked headline, lead, CTA; bench window on the right; spec bar along the bottom.
 - **Track card:** price sticker, icon badge, kicker, name, MetaPill, blurb, dashed rule, item list, CTA pinned to the bottom.

@@ -42,7 +42,7 @@ function useDismiss(
   }, [open, close, ref, trigger]);
 }
 
-/** Desktop links: "01 Education ▾" with its segment dropdown, then "02 About us". */
+/** Desktop links: "Education ▾" with its segment dropdown, then "About us". */
 export function DesktopNav({ links }: { links: NavLinks }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -71,7 +71,6 @@ export function DesktopNav({ links }: { links: NavLinks }) {
           onClick={() => setOpen((o) => !o)}
           className={`${LINK} ${inEducation ? "text-crimson" : "text-ink/70"}`}
         >
-          <span className="text-crimson/50 group-hover:text-crimson">01</span>
           {links.education.label}
           <span
             aria-hidden
@@ -124,7 +123,6 @@ export function DesktopNav({ links }: { links: NavLinks }) {
           aria-current={onAbout ? "page" : undefined}
           className={`${LINK} ${onAbout ? "text-crimson" : "text-ink/70"}`}
         >
-          <span className="text-crimson/50 group-hover:text-crimson">02</span>
           {links.about.label}
         </Link>
       </li>
@@ -174,7 +172,7 @@ export function MobileNav({ links, label, children }: MobileNavProps) {
         className="absolute inset-x-0 top-full border-b-2 border-ink bg-cream px-5 pb-7 pt-5 sm:px-8"
       >
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink/60">
-          <span className="text-crimson/60">01</span> {links.education.label}
+          {links.education.label}
         </p>
         <ul className="mt-1 border-b-2 border-dashed border-ink/15 pb-3">
           {links.education.items.map((link) => (
@@ -196,9 +194,6 @@ export function MobileNav({ links, label, children }: MobileNavProps) {
           aria-current={links.about.href === pathname ? "page" : undefined}
           className={`mt-3 ${item} ${links.about.href === pathname ? "text-crimson" : "text-ink"}`}
         >
-          <span className="mr-2 font-mono text-[11px] font-normal tracking-[0.18em] text-crimson/60">
-            02
-          </span>
           {links.about.label}
         </Link>
         <div className="mt-5">{children}</div>

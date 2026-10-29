@@ -1,5 +1,7 @@
 import { AssembleIcon, CodeIcon } from "@/components/icons";
+import Image, { type StaticImageData } from "next/image";
 import { Reveal } from "@/components/reveal";
+import { CLASS_PHOTOS } from "@/lib/class-photos";
 import { applyPath, type HomeDictionary, type Locale } from "@/lib/i18n";
 import { TrackedLink } from "@/components/track";
 
@@ -15,6 +17,8 @@ type TrackMeta = {
   color: string;
   stickerRotate: string;
   icon: React.ReactNode;
+  photo: StaticImageData;
+  photoPosition: string;
   /** courses.slug this card applies for. */
   applySlug: "hardware" | "software";
 };
@@ -25,6 +29,8 @@ const TRACKS: TrackMeta[] = [
     color: "var(--yellow-main)",
     stickerRotate: "-2deg",
     icon: <AssembleIcon />,
+    photo: CLASS_PHOTOS.groupWithRobots,
+    photoPosition: "object-[50%_30%]",
     applySlug: "hardware",
   },
   {
@@ -32,6 +38,8 @@ const TRACKS: TrackMeta[] = [
     color: "var(--orange-secondary)",
     stickerRotate: "2deg",
     icon: <CodeIcon />,
+    photo: CLASS_PHOTOS.presenting,
+    photoPosition: "object-[50%_55%]",
     applySlug: "software",
   },
 ];
@@ -70,11 +78,23 @@ export function Curriculum({ locale, copy }: CurriculumProps) {
               >
                 {/* Price sticker riding the top edge */}
                 <span
-                  className="absolute -top-5 right-5 rounded-xl border-2 border-ink bg-crimson px-3.5 py-1.5 font-mono text-base font-bold tracking-tight text-white shadow-[4px_4px_0_0_var(--ink)]"
+                  className="absolute -top-5 right-5 z-10 rounded-xl border-2 border-ink bg-crimson px-3.5 py-1.5 font-mono text-base font-bold tracking-tight text-white shadow-[4px_4px_0_0_var(--ink)]"
                   style={{ transform: `rotate(${track.stickerRotate})` }}
                 >
                   {track.price}
                 </span>
+
+                {/* Class photo, bleeding to the card edges */}
+                <div className="relative -mx-6 -mt-9 mb-6 aspect-[16/10] overflow-hidden rounded-t-[1.3rem] border-b-[3px] border-ink bg-cream-deep sm:-mx-7 sm:-mt-10">
+                  <Image
+                    src={track.photo}
+                    alt={track.photoAlt}
+                    fill
+                    placeholder="blur"
+                    sizes="(min-width: 1280px) 600px, (min-width: 768px) 50vw, 100vw"
+                    className={`object-cover ${track.photoPosition}`}
+                  />
+                </div>
 
                 {/* Card header */}
                 <div className="flex items-center gap-3.5">
@@ -144,12 +164,6 @@ export function Curriculum({ locale, copy }: CurriculumProps) {
             </Reveal>
           ))}
         </div>
-
-        <Reveal delay={200}>
-          <p className="mt-10 text-center font-mono text-xs text-ink/50">
-            ※ {copy.note}
-          </p>
-        </Reveal>
       </div>
     </section>
   );

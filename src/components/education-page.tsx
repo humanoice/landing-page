@@ -1,3 +1,6 @@
+import Image from "next/image";
+import certificateExample from "../../public/certificate_example.png";
+import { EDUCATION_PHOTOS } from "@/components/education";
 import { AssembleIcon, CodeIcon, WalkIcon } from "@/components/icons";
 import { Navbar } from "@/components/navbar";
 import { Reveal } from "@/components/reveal";
@@ -23,6 +26,9 @@ const WHY_ACCENTS = [
   { color: "var(--red)", ink: "text-cream" },
 ];
 
+/** Private-training pages that show the sample certificate. */
+const CERTIFICATE_SEGMENTS: EducationSegment[] = ["school", "kids"];
+
 type EducationPageProps = {
   locale: Locale;
   copy: HomeDictionary;
@@ -43,19 +49,24 @@ export function EducationPage({ locale, copy, segment }: EducationPageProps) {
       <Navbar locale={locale} copy={copy} path={`/education/${segment}`} />
       <main>
         {/* ---------- Header ---------- */}
-        <section className="relative overflow-hidden bg-crimson text-cream">
+        <section className="relative isolate overflow-hidden bg-crimson text-cream">
+          <Image
+            src={EDUCATION_PHOTOS[segment]}
+            alt=""
+            fill
+            preload
+            sizes="100vw"
+            className="object-cover object-center mix-blend-multiply contrast-125 grayscale"
+          />
+          {/* Duotone keeps the photo on-brand; the crimson fade keeps the headline legible. */}
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-crimson/75 sm:bg-transparent sm:bg-gradient-to-r sm:from-crimson sm:via-crimson/70 sm:to-transparent"
+          />
           <div
             aria-hidden
             className="grid-lines absolute inset-0"
             style={{ "--line": "rgba(255,255,255,0.07)", "--cell": "80px" } as React.CSSProperties}
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(60% 55% at 78% 30%, rgba(250,226,81,0.22) 0%, rgba(189,17,74,0) 60%)",
-            }}
           />
           <div
             aria-hidden
@@ -217,6 +228,44 @@ export function EducationPage({ locale, copy, segment }: EducationPageProps) {
             </div>
           </div>
         </section>
+
+        {/* ---------- Certificate (uni / school, kids) ---------- */}
+        {CERTIFICATE_SEGMENTS.includes(segment) && (
+          <section className="relative border-t-2 border-ink bg-cream py-20 sm:py-28">
+            <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+              <Reveal>
+                <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-crimson">
+                  <span className="inline-block h-px w-8 bg-crimson" />
+                  {edu.certificate.eyebrow}
+                </p>
+                <h2 className="mt-5 font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight text-ink">
+                  {edu.certificate.title}{" "}
+                  <span className="text-crimson">{edu.certificate.highlight}</span>
+                </h2>
+                <p className="mt-6 max-w-md text-base leading-relaxed text-ink/70 sm:text-lg">
+                  {edu.certificate.body}
+                </p>
+              </Reveal>
+
+              <Reveal delay={130}>
+                <figure className="relative">
+                  <div className="overflow-hidden rounded-3xl border-[3px] border-ink bg-[#fffdf7] shadow-[10px_10px_0_0_var(--yellow-main)]">
+                    <Image
+                      src={certificateExample}
+                      alt={edu.certificate.alt}
+                      placeholder="blur"
+                      sizes="(min-width: 1280px) 700px, (min-width: 1024px) 55vw, 100vw"
+                      className="h-auto w-full"
+                    />
+                  </div>
+                  <figcaption className="absolute -top-4 left-5 rounded-full border-2 border-ink bg-cream px-3 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink shadow-[2px_2px_0_0_var(--ink)]">
+                    {edu.certificate.caption}
+                  </figcaption>
+                </figure>
+              </Reveal>
+            </div>
+          </section>
+        )}
 
         {/* ---------- Own one (factory, uni / school) ---------- */}
         {page.kit && (

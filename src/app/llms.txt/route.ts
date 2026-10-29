@@ -62,8 +62,8 @@ Both cover the same content; the Thai pages are a translation, not a separate of
 
 ${courses.join("\n")}
 
-${curriculum.note} Run dates and remaining seats are not listed here because they
-change — read them live at ${url("/apply")}.
+Run dates and remaining seats are not listed here because they change — read
+them live at ${url("/apply")}.
 
 ## Private training
 

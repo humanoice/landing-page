@@ -1,14 +1,23 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import {
   EDUCATION_SEGMENTS,
   educationPath,
   type EducationCopy,
+  type EducationSegment,
   type Locale,
 } from "@/lib/i18n";
 
 /** Accent rotation, one per segment — yellow → coral → crimson. */
 const ACCENTS = ["var(--yellow-main)", "var(--orange-secondary)", "var(--red)"];
+
+/** One real photo per segment — the home card background and the segment page header. */
+export const EDUCATION_PHOTOS: Record<EducationSegment, string> = {
+  factory: "/factory.jpg",
+  school: "/university.webp",
+  kids: "/kids.jpeg",
+};
 
 type EducationProps = { locale: Locale; copy: EducationCopy };
 
@@ -26,7 +35,7 @@ export function Education({ locale, copy }: EducationProps) {
             {copy.eyebrow}
           </p>
           <h2 className="mt-5 max-w-2xl font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight text-ink">
-            {copy.title} <span className="text-crimson">{copy.highlight}</span>
+            <span className="text-crimson">{copy.highlight}</span> {copy.title}
           </h2>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-ink/70 sm:text-lg">
             {copy.intro}
@@ -41,35 +50,42 @@ export function Education({ locale, copy }: EducationProps) {
               <Reveal key={segment} delay={i * 130} className="h-full">
                 <Link
                   href={educationPath(locale, segment)}
-                  className="group flex h-full flex-col rounded-3xl border-[3px] border-ink bg-white p-6 text-ink shadow-[8px_8px_0_0_var(--shadow)] transition-all duration-200 hover:-translate-y-1.5 hover:shadow-[12px_12px_0_0_var(--shadow)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink sm:p-7"
+                  className="group relative isolate flex h-full min-h-[26rem] flex-col overflow-hidden rounded-3xl border-[3px] border-ink bg-ink p-6 text-cream shadow-[8px_8px_0_0_var(--shadow)] transition-all duration-200 hover:-translate-y-1.5 hover:shadow-[12px_12px_0_0_var(--shadow)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink sm:p-7"
                   style={{ "--shadow": accent } as React.CSSProperties}
                 >
-                  <div className="flex items-center gap-3.5">
-                    <span
-                      className={`grid size-10 shrink-0 place-items-center rounded-xl border-2 border-ink font-mono text-sm font-bold ${
-                        i === 2 ? "text-cream" : "text-ink"
-                      }`}
-                      style={{ background: accent }}
-                    >
-                      0{i + 1}
-                    </span>
-                    <p className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-crimson">
-                      {item.who}
-                    </p>
-                  </div>
+                  <Image
+                    src={EDUCATION_PHOTOS[segment]}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1280px) 400px, (min-width: 768px) 33vw, 100vw"
+                    className="-z-10 object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div
+                    aria-hidden
+                    className="absolute inset-x-0 bottom-0 -z-10 h-[70%] bg-gradient-to-t from-ink via-ink/85 to-transparent"
+                  />
 
-                  <h3 className="mt-5 font-display text-2xl font-extrabold uppercase tracking-tight">
+                  <p
+                    className={`self-start rounded-xl border-2 border-ink px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.14em] shadow-[4px_4px_0_0_var(--ink)] ${
+                      i === 2 ? "text-cream" : "text-ink"
+                    } ${i % 2 ? "rotate-2" : "-rotate-2"}`}
+                    style={{ background: accent }}
+                  >
+                    {item.who}
+                  </p>
+
+                  <h3 className="mt-auto pt-40 font-display text-2xl font-extrabold uppercase tracking-tight">
                     {item.nav}
                   </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-ink/70">{item.hint}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-cream/80">{item.hint}</p>
 
-                  <div className="mt-5 border-t-2 border-dashed border-ink/15" />
+                  <div className="mt-5 border-t-2 border-dashed border-cream/25" />
 
-                  <p className="mt-4 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-ink/60">
+                  <p className="mt-4 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-cream/70">
                     {item.meta}
                   </p>
 
-                  <span className="mt-auto inline-flex items-center gap-2 pt-6 font-mono text-xs font-bold uppercase tracking-[0.12em] text-ink transition-colors group-hover:text-crimson">
+                  <span className="inline-flex items-center gap-2 pt-6 font-mono text-xs font-bold uppercase tracking-[0.12em] text-cream transition-colors group-hover:text-yellow-main">
                     {copy.more}
                     <span className="transition-transform duration-200 group-hover:translate-x-1">
                       →
