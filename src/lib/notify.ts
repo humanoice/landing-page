@@ -85,7 +85,7 @@ export function announceApplication(who: Applicant, runs: RunSummary[], billing:
         ? ["To pay", "nothing — the code covers it all, seat confirmed"]
         : billing
         ? ["To pay", `${formatThb(billing.dueThb)} THB`]
-        : // No transfer step: a B2B run with no price, or seats they'd already paid for.
+        : // No transfer step: seats they'd already paid for.
           ["To pay", "nothing — LINE takes it from here"],
       ["Bundle", bundleWords(billing?.bundleThb ?? 0)],
       ["Discount", discountWords(billing?.discount ?? null)],

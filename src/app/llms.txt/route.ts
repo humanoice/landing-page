@@ -1,4 +1,4 @@
-import { getDictionary } from "@/lib/i18n";
+import { COURSE_SLUGS, EDUCATION_SEGMENTS, getDictionary } from "@/lib/i18n";
 import { siteConfig } from "@/lib/site";
 
 /**
@@ -18,32 +18,24 @@ import { siteConfig } from "@/lib/site";
  */
 export const dynamic = "force-static";
 
-/**
- * Which self-serve run each track applies for, by index into `curriculum.tracks`.
- * Mirrors TRACKS in src/components/curriculum.tsx — track 03 is B2B, so it has no
- * public run and routes to LINE instead.
- */
-const APPLY_SLUG = ["hardware", "software", undefined] as const;
-
 const url = (path: string) => `${siteConfig.url}${path}`;
 
 /** Card blurbs are written to sit on their own, so some end without a full stop. */
 const sentence = (text: string) => (/[.!?]$/.test(text) ? text : `${text}.`);
 
 function body() {
-  const { curriculum, partners, plan, footer } = getDictionary("en");
+  const { curriculum, education, about, partners, plan, footer } = getDictionary("en");
 
   const courses = curriculum.tracks.map((track, i) => {
-    const slug = APPLY_SLUG[i];
-    const href = slug ? url(`/apply?course=${slug}`) : siteConfig.lineAddUrl;
+    const href = url(`/apply?course=${COURSE_SLUGS[i]}`);
     const covers = track.items.map(([title]) => title).join(", ");
-    // The B2B card carries deliberate placeholders ("n days", "xx,xxx THB") —
-    // playful on a sticker, but a model reading this file would quote them back
-    // as the real price. Only state terms that are actually settled.
-    const terms = slug
-      ? `${track.duration}, ${track.price}.`
-      : "Private cohort, length and pricing on request.";
-    return `- [${track.name}](${href}): ${terms} ${sentence(track.blurb)} Covers: ${covers}.`;
+    return `- [${track.name}](${href}): ${track.duration}, ${track.price}. ${sentence(track.blurb)} Covers: ${covers}.`;
+  });
+
+  // Private training is quoted per group on LINE — no price is stated anywhere.
+  const training = EDUCATION_SEGMENTS.map((segment) => {
+    const page = education.segments[segment];
+    return `- [${page.title}](${url(`/education/${segment}`)}): ${page.description} Pricing on request.`;
   });
 
   return `# ${siteConfig.name} (ฮิวแมนน้อย)
@@ -60,24 +52,31 @@ Founded 2026.
 The site is published in English at ${siteConfig.url}/ and Thai at ${siteConfig.url}/th.
 Both cover the same content; the Thai pages are a translation, not a separate offering.
 
-## Courses
+## Public courses
 
 ${courses.join("\n")}
 
-Run dates, current prices, and remaining seats are not listed here because they
-change — read them live at ${url("/apply")}.
+Run dates and remaining seats are not listed here because they change — read
+them live at ${url("/apply")}.
+
+## Private training
+
+${training.join("\n")}
+
+Factories and universities can also buy the humanoid kit with 12 months of
+maintenance support. Quotes for training and kits come through LINE.
 
 ## Pages
 
-- [Home](${url("/")}): What Humanoice is, the three tracks, the instructors, and the open-source hardware the courses run on.
+- [Home](${url("/")}): What Humanoice is, the public courses, private training, and the open-source hardware the courses run on.
 - [หน้าแรก (Thai)](${url("/th")}): The same page in Thai.
+- [${about.title}](${url("/about")}): ${about.description} Includes the instructors.
 - [${plan.title}](${url("/master-plan")}): ${plan.description}
 - [Apply](${url("/apply")}): Application form, with live course dates, prices, and seat counts.
 - [สมัครเรียน (Thai)](${url("/th/apply")}): The application form in Thai.
 
 ## Hardware partners
 
-- ${partners.asimov}
 - ${partners.roboparty}
 - ${partners.lerobot}
 

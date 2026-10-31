@@ -1,15 +1,123 @@
-"use client";
-
 import Image from "next/image";
 import { TrackedAnchor } from "@/components/track";
 import { siteConfig } from "@/lib/site";
 
 /**
- * The pieces the application form and the payment step share: the field and
- * button styles, a numbered section card, a controlled text field, the outcome
- * panel every ending renders in, and the LINE tiles. Nothing here knows what the
- * form is for.
+ * The site's shared primitives: button and field styles, the eyebrow and section
+ * heading, the accent rotation, card pieces, the form's section card and text
+ * field, the outcome panel every ending renders in, and the LINE tiles.
+ *
+ * No "use client" on purpose — server sections import the class strings too, and
+ * a constant imported from a client module arrives as a reference, not a string.
  */
+
+/** Rows of cards rotate their accent yellow → coral → crimson; `ink` is the type colour that reads on it. */
+const ACCENTS = [
+  { color: "var(--yellow-main)", ink: "text-ink" },
+  { color: "var(--orange-secondary)", ink: "text-ink" },
+  { color: "var(--red)", ink: "text-cream" },
+] as const;
+
+export const accent = (i: number) => ACCENTS[i % ACCENTS.length];
+
+/** `light` sits on cream (crimson accent); `dark` sits on crimson or ink (yellow accent). */
+type Tone = "light" | "dark";
+
+/** `// The Tracks` — a short rule, then mono caps. */
+export function Eyebrow({
+  tone = "light",
+  className = "",
+  style,
+  children,
+}: {
+  tone?: Tone;
+  className?: string;
+  style?: React.CSSProperties;
+  children: React.ReactNode;
+}) {
+  const dark = tone === "dark";
+  return (
+    <p
+      className={`flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] ${dark ? "text-yellow-main" : "text-crimson"} ${className}`}
+      style={style}
+    >
+      <span className={`inline-block h-px w-8 ${dark ? "bg-yellow-main" : "bg-crimson"}`} />
+      {children}
+    </p>
+  );
+}
+
+/** Section h2: ALL CAPS display, the last phrase in the accent. `className` sets the measure. */
+export function SectionHeading({
+  title,
+  highlight,
+  tone = "light",
+  className = "max-w-2xl",
+}: {
+  title: string;
+  highlight: string;
+  tone?: Tone;
+  className?: string;
+}) {
+  const dark = tone === "dark";
+  return (
+    <h2
+      className={`mt-5 font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight ${dark ? "text-cream" : "text-ink"} ${className}`}
+    >
+      {title} <span className={dark ? "text-yellow-main" : "text-crimson"}>{highlight}</span>
+    </h2>
+  );
+}
+
+/** A syllabus — square accent bullet, bold title, one-line detail. Public course cards and B2B program cards. */
+export function SyllabusList({ items, color }: { items: readonly (readonly string[])[]; color: string }) {
+  return (
+    <ul className="mt-5 space-y-4">
+      {items.map(([title, detail]) => (
+        <li key={title} className="flex gap-3">
+          <span className="mt-1 size-3.5 shrink-0 rounded border-2 border-ink" style={{ background: color }} />
+          <div>
+            <p className="font-display text-sm font-bold uppercase tracking-tight">{title}</p>
+            <p className="mt-0.5 text-[13px] leading-snug text-ink/60">{detail}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Blueprint grid + coral glow — the atmosphere of every ink section. */
+export function InkAtmosphere() {
+  return (
+    <>
+      <div
+        aria-hidden
+        className="grid-lines absolute inset-0"
+        style={{ "--line": "rgba(255,255,255,0.05)", "--cell": "72px" } as React.CSSProperties}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: "radial-gradient(50% 50% at 80% 20%, rgba(215,86,86,0.18) 0%, rgba(27,10,17,0) 70%)",
+        }}
+      />
+    </>
+  );
+}
+
+/** A full-bleed photo under the ink scrim, for cream type over a real shot. Parent: `relative isolate`. */
+export function ScrimPhoto({ src }: { src: React.ComponentProps<typeof Image>["src"] }) {
+  return (
+    <>
+      <Image src={src} alt="" fill sizes="100vw" className="object-cover object-center" />
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-ink/55 sm:bg-gradient-to-r sm:from-ink/85 sm:via-ink/55 sm:to-ink/30"
+      />
+    </>
+  );
+}
 
 export const LABEL =
   "mb-2 flex items-baseline gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-ink/70";
@@ -18,8 +126,11 @@ export const INPUT =
 export const ERROR = "mt-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-crimson";
 export const CHIP =
   "inline-flex cursor-pointer select-none items-center rounded-full border-2 border-ink bg-white px-3.5 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink shadow-[2px_2px_0_0_var(--ink)] transition-all duration-150 hover:-translate-y-0.5 has-[:checked]:bg-ink has-[:checked]:text-yellow-main has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-yellow-main/60";
-export const CTA =
-  "group inline-flex items-center gap-2 rounded-full border-2 border-ink bg-yellow-main px-7 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.12em] text-ink shadow-[5px_5px_0_0_var(--ink)] transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[9px_9px_0_0_var(--ink)] active:translate-x-0 active:translate-y-0 active:shadow-[3px_3px_0_0_var(--ink)]";
+const CTA_BASE =
+  "group inline-flex items-center gap-2 rounded-full border-2 border-ink px-7 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.12em] text-ink shadow-[5px_5px_0_0_var(--ink)] transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[9px_9px_0_0_var(--ink)] active:translate-x-0 active:translate-y-0 active:shadow-[3px_3px_0_0_var(--ink)]";
+export const CTA = `${CTA_BASE} bg-yellow-main`;
+/** The quieter CTA beside a primary one: same shape and motion, cream fill. */
+export const CTA_SECONDARY = `${CTA_BASE} bg-cream`;
 /** CTA while its action runs: still, dimmed, and not pretending to be clickable. */
 export const CTA_BUSY =
   "disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[5px_5px_0_0_var(--ink)]";
@@ -190,10 +301,7 @@ export function OutcomePanel({
         className={`grid sm:grid-cols-[1fr_auto] sm:items-start ${compact ? "gap-6 sm:gap-8" : "gap-8 sm:gap-10"}`}
       >
         <div className="min-w-0">
-          <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-yellow-main">
-            <span className="inline-block h-px w-8 bg-yellow-main" />
-            {eyebrow}
-          </p>
+          <Eyebrow tone="dark">{eyebrow}</Eyebrow>
           {/* Sized for the longest headline any locale hands it, which has to clear the QR tile. */}
           <h2
             className={`font-display font-black uppercase leading-[0.95] tracking-tight ${
@@ -218,11 +326,13 @@ type LineCtaProps = {
   label: string;
   /** The inset size, for a CTA inside a card. */
   small?: boolean;
+  /** Cream fill, for when it sits beside a primary CTA. */
+  secondary?: boolean;
   className?: string;
 };
 
 /** "Add us on LINE" — the way out of every dead end in this flow. */
-export function LineCta({ location, label, small, className = "" }: LineCtaProps) {
+export function LineCta({ location, label, small, secondary, className = "" }: LineCtaProps) {
   return (
     <TrackedAnchor
       event="line_click"
@@ -230,7 +340,7 @@ export function LineCta({ location, label, small, className = "" }: LineCtaProps
       href={siteConfig.lineAddUrl}
       target="_blank"
       rel="noreferrer"
-      className={`${CTA} ${small ? CTA_SMALL : ""} ${className}`}
+      className={`${secondary ? CTA_SECONDARY : CTA} ${small ? CTA_SMALL : ""} ${className}`}
     >
       {label}
       <Arrow />
@@ -242,10 +352,12 @@ type LineQrProps = {
   /** GA `line_click` location, e.g. "apply_success_qr" */
   location: string;
   label: string;
+  /** The footer's closing-CTA size. */
+  large?: boolean;
 };
 
-/** Same QR as the footer — on desktop it's the fastest way to add us. */
-export function LineQr({ location, label }: LineQrProps) {
+/** The LINE QR tile — on desktop it's the fastest way to add us. */
+export function LineQr({ location, label, large }: LineQrProps) {
   return (
     <TrackedAnchor
       event="line_click"
@@ -259,10 +371,10 @@ export function LineQr({ location, label }: LineQrProps) {
       <Image
         src={siteConfig.lineQrUrl}
         alt={label}
-        width={200}
-        height={200}
-        sizes="(max-width: 639px) 150px, 180px"
-        className="size-[150px] rounded-xl sm:size-[180px]"
+        width={large ? 220 : 200}
+        height={large ? 220 : 200}
+        sizes={large ? "(max-width: 639px) 180px, 220px" : "(max-width: 639px) 150px, 180px"}
+        className={`rounded-xl ${large ? "size-[180px] sm:size-[220px]" : "size-[150px] sm:size-[180px]"}`}
       />
     </TrackedAnchor>
   );

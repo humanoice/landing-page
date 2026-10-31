@@ -8,12 +8,13 @@ import {
   CTA,
   CTA_BUSY,
   ERROR,
+  Eyebrow,
   LineCta,
   META,
   OutcomePanel,
   PILL,
   Section,
-} from "@/components/apply-ui";
+} from "@/components/ui";
 import { track, TrackedAnchor } from "@/components/track";
 import {
   confirmPayment,
@@ -61,10 +62,7 @@ export function PaymentPanel({ payment, copy, locale }: PaymentPanelProps) {
   return (
     <div className="space-y-10">
       <header className="pop-in" style={{ "--rot": "0deg" } as React.CSSProperties}>
-        <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-crimson">
-          <span className="inline-block h-px w-8 bg-crimson" />
-          {pay.eyebrow}
-        </p>
+        <Eyebrow>{pay.eyebrow}</Eyebrow>
         <h2 className="mt-4 font-display text-[clamp(1.8rem,5vw,2.8rem)] font-black uppercase leading-[0.95] tracking-tight">
           {pay.title} <span className="text-crimson">{pay.highlight}</span>
         </h2>

@@ -1,46 +1,31 @@
-import Image from "next/image";
-import Link from "next/link";
 import { Suspense } from "react";
 import { ApplyForm } from "@/components/apply-form";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { SlimHeader } from "@/components/navbar";
+import { TrackedAnchor } from "@/components/track";
+import { Eyebrow } from "@/components/ui";
 import { getUpcomingCourses, pickCourse } from "@/lib/courses";
-import { localePath, type ApplyCopy, type Locale } from "@/lib/i18n";
+import { localePath, type ApplyCopy, type Dictionary, type Locale } from "@/lib/i18n";
+import { siteConfig } from "@/lib/site";
 
 type ApplyPageProps = {
   locale: Locale;
-  copy: ApplyCopy;
-  languageLabel: string;
+  copy: Dictionary;
   /** raw `?course=` value — id or slug */
   course?: string | string[];
 };
 
-export function ApplyPage({ locale, copy, languageLabel, course }: ApplyPageProps) {
-  const home = localePath(locale);
+export function ApplyPage({ locale, copy: dictionary, course }: ApplyPageProps) {
+  const copy = dictionary.apply;
 
   return (
     <div className="min-h-screen bg-cream text-ink">
-      <header className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-5 py-5 sm:px-8">
-        <Link href={home} className="group flex items-center gap-2.5">
-          <span className="grid size-9 place-items-center rounded-xl border-2 border-ink bg-white shadow-[2px_2px_0_0_var(--ink)] transition-transform duration-200 group-hover:rotate-[-4deg]">
-            <Image src="/logo.png" alt="Humanoice" width={30} height={30} />
-          </span>
-          <span className="font-display text-base font-extrabold tracking-tight">ฮิวแมนน้อย</span>
-        </Link>
-        <div className="flex items-center gap-3 sm:gap-4">
-          <LanguageSwitcher
-            locale={locale}
-            englishHref={localePath("en", "/apply")}
-            thaiHref={localePath("th", "/apply")}
-            label={languageLabel}
-          />
-        </div>
-      </header>
+      <SlimHeader home={localePath(locale)} className="max-w-3xl px-5 py-5 sm:px-8">
+        <LanguageSwitcher label={dictionary.nav.language} />
+      </SlimHeader>
 
       <main className="mx-auto max-w-3xl px-5 pb-28 pt-8 sm:px-8 sm:pt-14">
-        <p className="hero-rise flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-crimson">
-          <span className="inline-block h-px w-8 bg-crimson" />
-          {copy.eyebrow}
-        </p>
+        <Eyebrow className="hero-rise">{copy.eyebrow}</Eyebrow>
 
         <div className="relative mt-5">
           <h1
@@ -64,6 +49,23 @@ export function ApplyPage({ locale, copy, languageLabel, course }: ApplyPageProp
           {copy.intro}
         </p>
 
+        <p
+          className="hero-rise mt-3 max-w-xl text-sm leading-relaxed text-ink/60"
+          style={{ animationDelay: "0.2s" }}
+        >
+          {copy.privateTraining.text}{" "}
+          <TrackedAnchor
+            event="line_click"
+            params={{ location: "apply_private_training" }}
+            href={siteConfig.lineAddUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="font-semibold text-ink underline decoration-2 underline-offset-4 transition-colors hover:text-crimson"
+          >
+            {copy.privateTraining.link} →
+          </TrackedAnchor>
+        </p>
+
         {/* The shell above is sent at once; the form waits on the courses query and streams in. */}
         <div className="hero-rise mt-12" style={{ animationDelay: "0.28s" }}>
           <Suspense fallback={<FormSkeleton />}>
@@ -75,7 +77,9 @@ export function ApplyPage({ locale, copy, languageLabel, course }: ApplyPageProp
   );
 }
 
-async function Form({ locale, copy, course }: Pick<ApplyPageProps, "locale" | "copy" | "course">) {
+type FormProps = { locale: Locale; copy: ApplyCopy; course: ApplyPageProps["course"] };
+
+async function Form({ locale, copy, course }: FormProps) {
   const courses = await getUpcomingCourses(locale);
 
   return (

@@ -3,7 +3,7 @@
 import { after } from "next/server";
 import { EMAIL, LANGUAGES, PROGRAMMING_LANGUAGES, SKILLS } from "@/lib/apply-options";
 import { buildIcs, googleCalendarUrl, type CalendarEvent } from "@/lib/calendar";
-import { formatRun, runEnd, type RunSummary } from "@/lib/courses";
+import { formatRun, PUBLIC_TRACKS, runEnd, type RunSummary } from "@/lib/courses";
 import { db } from "@/lib/db";
 import { findDiscount, type Discount, type DiscountReason } from "@/lib/discount";
 import { directionsText, sendPaymentConfirmation, type ConfirmationRun } from "@/lib/email";
@@ -126,7 +126,7 @@ export type PaymentSummary = {
 export type ApplyState =
   | { status: "idle" }
   | { status: "error"; errors: ApplyErrors; values: ApplyValues }
-  /** Saved, but nothing to pay for here: a B2B run, or seats they'd already paid for. LINE takes it from there. */
+  /** Saved, but nothing to pay for here: seats they'd already paid for. LINE takes it from there. */
   | { status: "success" }
   /** Saved and priced — step 2 is the transfer. */
   | { status: "pay"; payment: PaymentSummary }
@@ -178,11 +178,11 @@ function parseYears(raw: string): number | undefined | "invalid" {
 /** An unpaid seat of theirs on a run they just picked, priced. */
 type UnpaidRow = {
   id: string;
-  track_no: number | null;
+  track_no: number;
   name: string;
   start_time: string;
   end_time: string | null;
-  price_thb: number | null;
+  price_thb: number;
 };
 
 export async function submitApplication(_prev: ApplyState, formData: FormData): Promise<ApplyState> {
@@ -299,10 +299,11 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
         end as seats_left
       from courses c
       where c.id = any(${courses}::int[]) and c.is_active and c.start_time > now()
+        and c.track_no = any(${PUBLIC_TRACKS}::int[]) and c.price_thb is not null
       order by c.start_time, c.id
     `) as {
       id: number;
-      track_no: number | null;
+      track_no: number;
       name: string;
       start_time: string;
       end_time: string | null;
@@ -315,8 +316,7 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
       return { status: "error", errors: { course: "full" }, values };
     }
     // Two runs of the same track are the same content twice — the form won't
-    // offer it, so this is only reachable without JS. Untracked runs share a
-    // null, which a Set collapses just like the form groups them.
+    // offer it, so this is only reachable without JS.
     if (new Set(open.map((course) => course.track_no)).size !== open.length) {
       return { status: "error", errors: { course: "oneTrack" }, values };
     }
@@ -370,8 +370,8 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
       select id from student
     `) as { id: string }[];
 
-    // What's left to pay for. A run they already paid for isn't billed twice; a
-    // run with no price (B2B) can't be billed at all — either way, LINE takes over.
+    // What's left to pay for. A run they already paid for isn't billed twice —
+    // if that's all of them, there's no transfer and LINE takes over.
     const unpaid = (await sql`
       select p.id, c.track_no, c.name, c.start_time, c.end_time, c.price_thb
       from participations p
@@ -385,7 +385,7 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
     // to read, whether or not there's a transfer to chase.
     const picked = open.map((run) => summarise(run, locale));
 
-    if (unpaid.length === 0 || unpaid.some((run) => run.price_thb === null)) {
+    if (unpaid.length === 0) {
       announceApplication(values, picked, null);
       return { status: "success" };
     }
@@ -393,7 +393,7 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
     // The bundle is earned by what this payment covers: a track paid for on an
     // earlier application was paid in full then, and isn't re-priced now.
     const { priceThb, bundleThb, discountThb, withholdingThb, dueThb } = bill(
-      unpaid.reduce((sum, run) => sum + (run.price_thb as number), 0),
+      unpaid.reduce((sum, run) => sum + run.price_thb, 0),
       payerType,
       { bundle: isBundle(unpaid.map((run) => run.track_no)), codePercent: discount?.percent ?? null },
     );

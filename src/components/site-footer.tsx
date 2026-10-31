@@ -1,18 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Marquee } from "@/components/marquee";
-import { localePath, type HomeDictionary, type Locale } from "@/lib/i18n";
+import { siteLinks } from "@/components/navbar";
 import { TrackedAnchor } from "@/components/track";
+import { LineQr, ScrimPhoto } from "@/components/ui";
+import { localePath, type HomeDictionary, type Locale } from "@/lib/i18n";
 import { siteConfig } from "@/lib/site";
 
 type SiteFooterProps = { locale: Locale; copy: HomeDictionary };
 
 export function SiteFooter({ locale, copy }: SiteFooterProps) {
-  const nav = [
-    { label: copy.nav.curriculum, href: "#curriculum" },
-    { label: copy.nav.team, href: "#team" },
-    { label: copy.nav.partners, href: "#partners" },
-  ];
+  const links = siteLinks(locale, copy);
+  const nav = [...links.education.items, links.about];
 
   // Every mark in public/social is a solid black badge on transparent, so `invert`
   // flips it to a white badge with the glyph knocked out — no chrome needed around
@@ -82,39 +81,12 @@ export function SiteFooter({ locale, copy }: SiteFooterProps) {
 
       {/* Big closing CTA */}
       <div id="apply" className="relative isolate z-10 scroll-mt-20 overflow-hidden bg-ink">
-        <Image
-          src="/roboparty-background.webp"
-          alt=""
-          fill
-          sizes="100vw"
-          className="object-cover object-center"
-        />
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-ink/55 sm:bg-gradient-to-r sm:from-ink/85 sm:via-ink/55 sm:to-ink/30"
-        />
+        <ScrimPhoto src="/roboparty-background.webp" />
 
         <div className="relative mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-28">
           <div className="grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:items-end">
             <div className="flex items-end">
-              <TrackedAnchor
-                event="line_click"
-                params={{ location: "footer_qr" }}
-                href={siteConfig.lineAddUrl}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={copy.footer.qrLabel}
-                className="group relative block shrink-0 rounded-[1.35rem] bg-cream p-3 shadow-[6px_6px_0_0_var(--ink)] transition-transform duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[9px_9px_0_0_var(--ink)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-main"
-              >
-                <Image
-                  src={siteConfig.lineQrUrl}
-                  alt={copy.footer.qrLabel}
-                  width={220}
-                  height={220}
-                  sizes="(max-width: 639px) 180px, 220px"
-                  className="size-[180px] rounded-xl sm:size-[220px]"
-                />
-              </TrackedAnchor>
+              <LineQr location="footer_qr" label={copy.footer.qrLabel} large />
             </div>
 
             <div>

@@ -1,8 +1,7 @@
-import type { Metadata } from "next";
 import { connection } from "next/server";
 import { ApplyPage } from "@/components/apply-page";
 import { getDictionary } from "@/lib/i18n";
-import { siteConfig } from "@/lib/site";
+import { pageMetadata } from "@/lib/metadata";
 
 /**
  * Applies to every server action posted from this page — including the slip
@@ -11,23 +10,14 @@ import { siteConfig } from "@/lib/site";
  */
 export const maxDuration = 60;
 
-const dictionary = getDictionary("th");
-const copy = dictionary.apply;
+const copy = getDictionary("th");
 
-export const metadata: Metadata = {
-  title: copy.title,
-  description: copy.description,
-  alternates: { canonical: "/th/apply", languages: { en: "/apply", th: "/th/apply" } },
-  openGraph: {
-    type: "website",
-    siteName: siteConfig.name,
-    title: `${copy.title} — ${siteConfig.name}`,
-    description: copy.description,
-    url: "/th/apply",
-    locale: "th_TH",
-    images: [siteConfig.ogImage],
-  },
-};
+export const metadata = pageMetadata({
+  locale: "th",
+  path: "/apply",
+  title: copy.apply.title,
+  description: copy.apply.description,
+});
 
 type ApplyRouteProps = {
   searchParams: Promise<{ course?: string | string[] }>;
@@ -38,9 +28,5 @@ export default async function ThaiApplyRoute({ searchParams }: ApplyRouteProps) 
   await connection();
   const { course } = await searchParams;
 
-  return (
-    <div lang="th">
-      <ApplyPage locale="th" copy={copy} languageLabel={dictionary.nav.language} course={course} />
-    </div>
-  );
+  return <ApplyPage locale="th" copy={copy} course={course} />;
 }

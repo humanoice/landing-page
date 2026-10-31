@@ -4,7 +4,6 @@
   --yellow-main: #fae251;
   --orange-secondary: #d75656;
   --red: #bd114a;
-  --grey: #eeeeee;
   --white: #ffffff;
 
   /* Extended brand palette for the "Build Joyfully" system */
@@ -23,7 +22,6 @@
   --color-coral: var(--orange-secondary);
   --color-red: var(--red);
   --color-crimson: var(--red);
-  --color-grey: var(--grey);
   --color-white: var(--white);
   --color-ink: var(--ink);
   --color-cream: var(--cream);
@@ -85,19 +83,12 @@ body::before {
   width: max-content;
   animation: marquee var(--speed, 32s) linear infinite;
 }
-.marquee--rev {
-  animation-name: marquee-rev;
-}
 .marquee-host:hover .marquee {
   animation-play-state: paused;
 }
 @keyframes marquee {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
-}
-@keyframes marquee-rev {
-  from { transform: translateX(-50%); }
-  to   { transform: translateX(0); }
 }
 
 /* ---------- On-load hero choreography ---------- */
@@ -136,25 +127,6 @@ body::before {
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-14px); }
-}
-
-/* gentle "hello" wave on the mascot */
-.wave {
-  animation: wave 5s ease-in-out infinite;
-  transform-origin: 60% 90%;
-}
-@keyframes wave {
-  0%, 60%, 100% { transform: rotate(0deg); }
-  70%           { transform: rotate(4deg); }
-  80%           { transform: rotate(-3deg); }
-  90%           { transform: rotate(2deg); }
-}
-
-.spin-slow {
-  animation: spin-slow 26s linear infinite;
-}
-@keyframes spin-slow {
-  to { transform: rotate(360deg); }
 }
 
 /* Buffering readout — square ticks, not a spinner, to match the hard-edge kit */

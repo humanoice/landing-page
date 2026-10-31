@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { EDUCATION_SEGMENTS } from "@/lib/i18n";
 import { siteConfig } from "@/lib/site";
 
 /**
@@ -23,8 +24,10 @@ import { siteConfig } from "@/lib/site";
 // Bump when that page's copy changes. Most copy lives in src/lib/i18n.ts, so the
 // EN and TH twins of a page move together.
 const UPDATED = {
-  home: "2026-08-26",
+  home: "2026-10-28",
   apply: "2026-08-26",
+  education: "2026-10-28",
+  about: "2026-10-28",
   masterPlan: "2026-08-15",
 } as const;
 
@@ -53,6 +56,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...bilingual("", UPDATED.home),
     ...bilingual("/apply", UPDATED.apply),
+    ...EDUCATION_SEGMENTS.flatMap((segment) =>
+      bilingual(`/education/${segment}`, UPDATED.education),
+    ),
+    ...bilingual("/about", UPDATED.about),
     // English only — /th/master-plan redirects here instead of translating, so
     // there is no alternate to annotate.
     { url: url("/master-plan"), lastModified: UPDATED.masterPlan },

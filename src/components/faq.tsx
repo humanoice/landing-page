@@ -1,19 +1,16 @@
+import Link from "next/link";
 import { Reveal } from "@/components/reveal";
-import type { HomeDictionary } from "@/lib/i18n";
+import { accent, Arrow, Eyebrow, SectionHeading } from "@/components/ui";
+import { educationPath, type HomeDictionary, type Locale } from "@/lib/i18n";
+
+type FaqProps = { locale: Locale; copy: HomeDictionary["faq"] };
 
 /**
  * Native <details> — no client JS, works before hydration, and the answers stay
- * in the DOM for crawlers. `ink` is the plus glyph's colour on that accent.
+ * in the DOM for crawlers.
  */
-const ACCENTS = [
-  { color: "var(--yellow-main)", ink: "text-ink" },
-  { color: "var(--orange-secondary)", ink: "text-ink" },
-  { color: "var(--red)", ink: "text-cream" },
-];
 
-type FaqProps = { copy: HomeDictionary["faq"] };
-
-export function Faq({ copy }: FaqProps) {
+export function Faq({ locale, copy }: FaqProps) {
   return (
     <section id="faq" className="relative scroll-mt-20 bg-cream py-20 sm:py-28">
       <div
@@ -24,23 +21,18 @@ export function Faq({ copy }: FaqProps) {
 
       <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8">
         <Reveal>
-          <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-crimson">
-            <span className="inline-block h-px w-8 bg-crimson" />
-            {copy.eyebrow}
-          </p>
-          <h2 className="mt-5 max-w-2xl font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight text-ink">
-            {copy.title} <span className="text-crimson">{copy.highlight}</span>
-          </h2>
+          <Eyebrow>{copy.eyebrow}</Eyebrow>
+          <SectionHeading title={copy.title} highlight={copy.highlight} />
         </Reveal>
 
         <div className="mt-12 flex flex-col gap-4">
           {copy.items.map((item, i) => {
-            const accent = ACCENTS[i % ACCENTS.length];
+            const { color, ink } = accent(i);
             return (
               <Reveal key={item.q} delay={i * 90}>
                 <details
                   className="group rounded-3xl border-[3px] border-ink bg-cream-deep shadow-[6px_6px_0_0_var(--shadow)] transition-all duration-200 open:bg-cream hover:-translate-y-0.5 hover:shadow-[9px_9px_0_0_var(--shadow)]"
-                  style={{ "--shadow": accent.color } as React.CSSProperties}
+                  style={{ "--shadow": color } as React.CSSProperties}
                 >
                   <summary className="flex cursor-pointer list-none items-center gap-4 rounded-3xl px-5 py-5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink sm:gap-6 sm:px-7 [&::-webkit-details-marker]:hidden">
                     <span className="font-mono text-[11px] font-bold tracking-[0.18em] text-ink/40">
@@ -51,8 +43,8 @@ export function Faq({ copy }: FaqProps) {
                     </h3>
                     <span
                       aria-hidden
-                      className={`grid size-8 shrink-0 place-items-center rounded-full border-2 border-ink transition-transform duration-200 group-open:rotate-45 ${accent.ink}`}
-                      style={{ background: accent.color }}
+                      className={`grid size-8 shrink-0 place-items-center rounded-full border-2 border-ink transition-transform duration-200 group-open:rotate-45 ${ink}`}
+                      style={{ background: color }}
                     >
                       <svg
                         viewBox="0 0 24 24"
@@ -73,6 +65,15 @@ export function Faq({ copy }: FaqProps) {
                     <p className="max-w-3xl text-sm leading-relaxed text-ink/70">
                       {item.a}
                     </p>
+                    {item.link && (
+                      <Link
+                        href={educationPath(locale, item.link.segment)}
+                        className="group mt-4 inline-flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-[0.12em] text-ink transition-colors hover:text-crimson"
+                      >
+                        {item.link.label}
+                        <Arrow />
+                      </Link>
+                    )}
                   </div>
                 </details>
               </Reveal>

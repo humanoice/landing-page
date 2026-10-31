@@ -15,7 +15,7 @@ import {
   PILL,
   Section,
   TextField,
-} from "@/components/apply-ui";
+} from "@/components/ui";
 import { PaidPanel, PaymentPanel } from "@/components/payment-panel";
 import { track } from "@/components/track";
 import {
@@ -123,9 +123,9 @@ export function ApplyForm({ locale, copy, courses, preselected }: ApplyFormProps
   // Depend only on props, so a keystroke in any of the ~17 text fields doesn't
   // re-sort the runs and rebuild three option lists.
   const groups = useMemo(() => groupByTrack(courses), [courses]);
-  // Only advertise the bundle when it can actually be had: a priced, open run in both tracks.
+  // Only advertise the bundle when it can actually be had: an open run in both tracks.
   const bundleOpen = useMemo(
-    () => isBundle(courses.filter((course) => !isFull(course) && course.priceThb !== null).map((c) => c.trackNo)),
+    () => isBundle(courses.filter((course) => !isFull(course)).map((c) => c.trackNo)),
     [courses],
   );
   const chipOptions = useMemo(
@@ -246,7 +246,7 @@ export function ApplyForm({ locale, copy, courses, preselected }: ApplyFormProps
     }));
   };
 
-  const trackOf = (id: number) => courses.find((course) => course.id === id)?.trackNo ?? null;
+  const trackOf = (id: number) => courses.find((course) => course.id === id)?.trackNo;
 
   /** Tick a run — or untick it, which is how a track someone changed their mind about gets dropped. */
   const pick = (course: CourseOption) => {
@@ -257,7 +257,7 @@ export function ApplyForm({ locale, copy, courses, preselected }: ApplyFormProps
     );
   };
 
-  const clearTrack = (trackNo: number | null) => {
+  const clearTrack = (trackNo: number) => {
     setPicked((current) => current.filter((id) => trackOf(id) !== trackNo));
   };
 
@@ -298,7 +298,7 @@ export function ApplyForm({ locale, copy, courses, preselected }: ApplyFormProps
             <div className="space-y-5">
               {groups.map((group) => (
                 <TrackGroup
-                  key={group.trackNo ?? "other"}
+                  key={group.trackNo}
                   group={group}
                   copy={copy.course}
                   picked={picked}
@@ -752,23 +752,21 @@ type AmountPreviewProps = {
  * time on the payment step. Same arithmetic the action stores (src/lib/payment.ts).
  */
 function AmountPreview({ copy, unit, picked, courses, payer, discount }: AmountPreviewProps) {
-  const prices = picked.map((id) => courses.find((course) => course.id === id)?.priceThb ?? null);
-  const note =
-    picked.length === 0 ? copy.pickFirst : prices.some((price) => price === null) ? copy.onRequest : null;
+  const runs = courses.filter((course) => picked.includes(course.id));
 
-  if (note) {
+  if (runs.length === 0) {
     return (
       <p className="mt-7 rounded-2xl border-2 border-dashed border-ink/25 bg-cream/60 px-4 py-3 text-center text-sm text-ink/60">
-        {note}
+        {copy.pickFirst}
       </p>
     );
   }
 
   const { priceThb, bundleThb, discountThb, withholdingThb, dueThb } = bill(
-    prices.reduce<number>((sum, price) => sum + (price ?? 0), 0),
+    runs.reduce((sum, run) => sum + run.priceThb, 0),
     payer ?? "individual",
     {
-      bundle: isBundle(picked.map((id) => courses.find((course) => course.id === id)?.trackNo ?? null)),
+      bundle: isBundle(runs.map((run) => run.trackNo)),
       codePercent: discount?.percent ?? null,
     },
   );
@@ -823,8 +821,8 @@ function AmountPreview({ copy, unit, picked, courses, payer, discount }: AmountP
 }
 
 type TrackGroup = {
-  /** courses.track_no — 1 Hardware / 2 Software / 3 B2B; null = untracked run */
-  trackNo: number | null;
+  /** courses.track_no — 1 Hardware / 2 Software */
+  trackNo: number;
   courses: CourseOption[];
 };
 
@@ -834,12 +832,11 @@ const isFull = (course: CourseOption) => course.seats !== null && course.seats.l
 const TRACK_ACCENT: Record<number, string> = {
   1: "var(--yellow-main)",
   2: "var(--orange-secondary)",
-  3: "var(--red)",
 };
 
 /**
  * Runs of the same track differ only by date, so they belong in one box.
- * Hardware before software before B2B — same order as the curriculum section.
+ * Hardware before software — same order as the curriculum section.
  */
 function groupByTrack(courses: CourseOption[]): TrackGroup[] {
   const groups: TrackGroup[] = [];
@@ -848,7 +845,7 @@ function groupByTrack(courses: CourseOption[]): TrackGroup[] {
     if (group) group.courses.push(course);
     else groups.push({ trackNo: course.trackNo, courses: [course] });
   }
-  return groups.sort((a, b) => (a.trackNo ?? 99) - (b.trackNo ?? 99));
+  return groups.sort((a, b) => a.trackNo - b.trackNo);
 }
 
 type TrackGroupProps = {
@@ -862,9 +859,9 @@ type TrackGroupProps = {
 
 function TrackGroup({ group, copy, picked, onPick, onClear }: TrackGroupProps) {
   const [lead] = group.courses;
-  const trackNo = String(lead.trackNo ?? 0).padStart(2, "0");
-  const tag = lead.trackNo ? copy.trackTags[lead.trackNo - 1] : undefined;
-  const accent = TRACK_ACCENT[lead.trackNo ?? 0] ?? "var(--yellow-main)";
+  const trackNo = String(lead.trackNo).padStart(2, "0");
+  const tag = copy.trackTags[lead.trackNo - 1];
+  const accent = TRACK_ACCENT[lead.trackNo] ?? "var(--yellow-main)";
   // Whatever every run shares gets hoisted into the header, so the options
   // below are just dates. Anything that differs stays on its own row.
   const sharedPrice = group.courses.every((course) => course.priceThb === lead.priceThb);
@@ -896,7 +893,7 @@ function TrackGroup({ group, copy, picked, onPick, onClear }: TrackGroupProps) {
         </div>
         {sharedPrice && (
           <span className="shrink-0 rounded-lg border-2 border-ink bg-crimson px-2.5 py-1 font-mono text-sm font-bold tracking-tight text-white shadow-[2px_2px_0_0_var(--ink)]">
-            {lead.priceThb === null ? copy.priceTbd : `${formatThb(lead.priceThb)} ${copy.priceUnit}`}
+            {formatThb(lead.priceThb)} {copy.priceUnit}
           </span>
         )}
       </div>
@@ -1013,7 +1010,7 @@ function CourseOption({ course, copy, checked, onPick, showPrice, showDescriptio
             full ? "opacity-55" : ""
           }`}
         >
-          {course.priceThb === null ? copy.priceTbd : `${formatThb(course.priceThb)} ${copy.priceUnit}`}
+          {formatThb(course.priceThb)} {copy.priceUnit}
         </span>
       )}
     </label>
@@ -1022,7 +1019,7 @@ function CourseOption({ course, copy, checked, onPick, showPrice, showDescriptio
 
 type SuccessPanelProps = { copy: ApplyCopy["success"] };
 
-/** Saved, but nothing to pay for online — a B2B run, or seats already paid. LINE takes it from here. */
+/** Saved, but nothing to pay for online — every seat picked was already paid. LINE takes it from here. */
 function SuccessPanel({ copy }: SuccessPanelProps) {
   // The conversion. Fires on mount because this panel only renders once the
   // server action has actually written the application.

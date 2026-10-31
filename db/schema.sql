@@ -18,10 +18,10 @@ create table if not exists courses (
   id            integer generated always as identity primary key,
   slug          text        not null,          -- 'hardware-101' — stable key, safe for URLs (not unique: a track can run many times)
   name          text        not null,          -- 'Hardware in Humanoid 101'
-  track_no      smallint,                      -- 1 Hardware / 2 Software / 3 B2B
+  track_no      smallint,                      -- 1 Hardware / 2 Software / 3 B2B (not sold on /apply: see PUBLIC_TRACKS in src/lib/courses.ts)
   start_time    timestamptz,                   -- when the run starts, e.g. '2026-10-02 09:00+07' (Bangkok); null = TBD
   end_time      timestamptz,                   -- when the run ends,   e.g. '2026-10-04 17:00+07'
-  price_thb     integer,                       -- null = "talk to us" (B2B)
+  price_thb     integer,                       -- null = "talk to us" (B2B); /apply never lists or accepts a run without one
   limit_seat    smallint    check (limit_seat > 0),   -- max seats per run; null = no cap
   description   text,
   is_active     boolean     not null default true,

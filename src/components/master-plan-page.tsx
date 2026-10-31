@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { SlimHeader } from "@/components/navbar";
 import type { MasterPlanCopy } from "@/lib/i18n";
 
 type MasterPlanPageProps = { copy: MasterPlanCopy };
@@ -7,20 +7,14 @@ type MasterPlanPageProps = { copy: MasterPlanCopy };
 export function MasterPlanPage({ copy }: MasterPlanPageProps) {
   return (
     <div className="min-h-screen bg-cream text-ink">
-      <header className="mx-auto flex max-w-2xl items-center justify-between gap-4 px-6 py-6">
-        <Link href="/" className="group flex items-center gap-2.5">
-          <span className="grid size-9 place-items-center rounded-xl border-2 border-ink bg-white shadow-[2px_2px_0_0_var(--ink)] transition-transform duration-200 group-hover:rotate-[-4deg]">
-            <Image src="/logo.png" alt="Humanoice" width={30} height={30} />
-          </span>
-          <span className="font-display text-base font-extrabold tracking-tight">ฮิวแมนน้อย</span>
-        </Link>
+      <SlimHeader home="/" className="max-w-2xl px-6 py-6">
         <Link
           href="/"
           className="font-mono text-xs uppercase tracking-[0.18em] text-ink/60 transition-colors hover:text-crimson"
         >
           ← {copy.home}
         </Link>
-      </header>
+      </SlimHeader>
 
       <main className="mx-auto max-w-2xl px-6 pb-28 pt-10 sm:pt-16">
         <p className="hero-rise font-mono text-xs uppercase tracking-[0.28em] text-crimson">{copy.title}</p>

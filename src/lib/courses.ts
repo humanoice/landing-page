@@ -6,10 +6,10 @@ type CourseRow = {
   id: number;
   slug: string;
   name: string;
-  track_no: number | null;
+  track_no: number;
   start_time: string | Date;
   end_time: string | Date | null;
-  price_thb: number | null;
+  price_thb: number;
   limit_seat: number | null;
   description: string | null;
   /** participations on this run with paid_status = true */
@@ -21,15 +21,16 @@ export type CourseOption = {
   id: number;
   slug: string;
   name: string;
-  trackNo: number | null;
+  /** courses.track_no — 1 Hardware / 2 Software */
+  trackNo: number;
   description: string | null;
   /** e.g. "Sat 3 – Sun 4 Oct 2026" (Bangkok time) */
   dates: string;
   /** e.g. "10:00–17:00" */
   hours: string;
   days: number;
-  /** THB; null = price on request (B2B). Formatted with `formatThb` where it's shown. */
-  priceThb: number | null;
+  /** THB. Formatted with `formatThb` where it's shown. */
+  priceThb: number;
   /** limit_seat minus paid participations; null = no cap */
   seats: { left: number; total: number } | null;
 };
@@ -81,7 +82,14 @@ export function runEnd(startTime: string | Date, endTime: string | Date | null):
   return endTime ? new Date(endTime) : new Date(new Date(startTime).getTime() + DEFAULT_RUN_MS);
 }
 
-/** Runs still open for applications: active and not started yet. TBD runs (null start) are hidden. */
+/**
+ * The tracks /apply sells: the two public courses. Private training (track 3,
+ * no price) is quoted on LINE and never listed or accepted here, so every run
+ * this form sees has a track and a price.
+ */
+export const PUBLIC_TRACKS = [1, 2];
+
+/** Runs still open for applications: public, priced, active and not started yet. TBD runs (null start) are hidden. */
 export async function getUpcomingCourses(locale: Locale): Promise<CourseOption[]> {
   const rows = (await db()`
     select
@@ -92,6 +100,7 @@ export async function getUpcomingCourses(locale: Locale): Promise<CourseOption[]
       )::int as paid_count
     from courses c
     where c.is_active and c.start_time > now()
+      and c.track_no = any(${PUBLIC_TRACKS}::int[]) and c.price_thb is not null
     order by c.start_time, c.id
   `) as CourseRow[];
 
