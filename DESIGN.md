@@ -126,7 +126,7 @@ Tailwind's default 4px scale; no custom spacing tokens.
 | Grid gaps | `gap-6` partners · `gap-8` team · `gap-x-6 gap-y-10 xl:gap-x-8` tracks (room for stickers) · `gap-4` FAQ · `space-y-10` form sections |
 
 - The **home navbar is the only fixed element**: `sticky top-0`, `bg-cream/90 backdrop-blur-sm`, `border-b-2 border-ink`. `/apply` and `/master-plan` get a slim, non-sticky header (logo badge + wordmark).
-- Transparency appears in exactly **two places**: that navbar, and the ink scrim over the footer photo (`bg-ink/55`, widening to a left-to-right `ink/85 → ink/55 → ink/30` gradient at `sm`). The scrim is the only gradient that isn't atmosphere.
+- Transparency appears in exactly **two places**: that navbar, and the ink scrim over a photo — the footer bench shot and the Education program section (`bg-ink/55`, widening to a left-to-right `ink/85 → ink/55 → ink/30` gradient at `sm`). The scrim is the only gradient that isn't atmosphere.
 
 ---
 
@@ -173,6 +173,7 @@ Tailwind's default 4px scale; no custom spacing tokens.
 - The hero field is flat crimson with the grid, glow, dots and floating outlines. Its one piece of media is the **bench window** (`HeroReel`): a 9:16 loop of real workshop footage (`/hero-loop.mp4`, poster `/hero-loop-poster.webp`) in a 3px ink frame with a 12px yellow shadow. It stands straight because it's evidence, not a sticker.
 - Gradients are never used as decoration. The two radial glows are atmosphere; the footer scrim is legibility.
 - Photography is warm and real: team portraits (`public/team/`, square crops), the footer bench shot (`roboparty-background.webp`). There's no illustration on the site today.
+- **Kit robot** (`robot-rp0.jpeg`, the "own one" section on ink): a studio shot on black, no frame. It stands bottom-right on the section floor with `mix-blend-lighten`, so its black backdrop becomes the ink ground, and a mask feathers its left, right and top edges. Below `lg` a spacer under the CTA gives it room to stand. Reuse this for any product cut-out shot on black.
 
 ---
 
@@ -299,7 +300,7 @@ Every CTA that leads to `/apply` or LINE goes through `TrackedLink` / `TrackedAn
 
 ### Composites
 - **Navbar:** lockup, page links (`Education ▾` with a dropdown of the three segments, `About us`), language switcher, nav CTA. Below `md` the links and language switcher move into a round menu button that drops a full-width cream panel (`nav-menu.tsx`).
-- **Education page:** crimson header with spec bar and a LINE CTA → program cards (cream) → "why" cards (cream-deep) → "own one" kit cards on ink (factory and uni/school only) → footer.
+- **Education page:** crimson header with spec bar and a LINE CTA → "why" cards (cream) → program cards on a scrimmed classroom photo (`public/class/programming2.jpg`, ink scrim, cream/yellow heading) → "own one" kit cards on ink beside the kit robot photo (factory and uni/school only) → footer.
 - **Hero:** eyebrow, three-line masked headline, lead, CTA; bench window on the right; spec bar along the bottom.
 - **Track card:** price sticker, icon badge, kicker, name, MetaPill, blurb, dashed rule, item list, CTA pinned to the bottom.
 - **Team card:** square photo Card with a numbered accent chip, LinkedIn IconButton, name, mono role in crimson, blurb.

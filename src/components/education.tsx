@@ -65,15 +65,6 @@ export function Education({ locale, copy }: EducationProps) {
                     className="absolute inset-x-0 bottom-0 -z-10 h-[70%] bg-gradient-to-t from-ink via-ink/85 to-transparent"
                   />
 
-                  <p
-                    className={`self-start rounded-xl border-2 border-ink px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.14em] shadow-[4px_4px_0_0_var(--ink)] ${
-                      i === 2 ? "text-cream" : "text-ink"
-                    } ${i % 2 ? "rotate-2" : "-rotate-2"}`}
-                    style={{ background: accent }}
-                  >
-                    {item.who}
-                  </p>
-
                   <h3 className="mt-auto pt-40 font-display text-2xl font-extrabold uppercase tracking-tight">
                     {item.nav}
                   </h3>
@@ -81,11 +72,7 @@ export function Education({ locale, copy }: EducationProps) {
 
                   <div className="mt-5 border-t-2 border-dashed border-cream/25" />
 
-                  <p className="mt-4 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-cream/70">
-                    {item.meta}
-                  </p>
-
-                  <span className="inline-flex items-center gap-2 pt-6 font-mono text-xs font-bold uppercase tracking-[0.12em] text-cream transition-colors group-hover:text-yellow-main">
+                  <span className="inline-flex items-center gap-2 pt-4 font-mono text-xs font-bold uppercase tracking-[0.12em] text-cream transition-colors group-hover:text-yellow-main">
                     {copy.more}
                     <span className="transition-transform duration-200 group-hover:translate-x-1">
                       →

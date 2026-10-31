@@ -1,5 +1,6 @@
 import Image from "next/image";
 import certificateExample from "../../public/certificate_example.png";
+import robotPhoto from "../../public/robot-rp0.jpeg";
 import { EDUCATION_PHOTOS } from "@/components/education";
 import { AssembleIcon, CodeIcon, WalkIcon } from "@/components/icons";
 import { Navbar } from "@/components/navbar";
@@ -25,6 +26,19 @@ const WHY_ACCENTS = [
   { color: "var(--orange-secondary)", ink: "text-ink" },
   { color: "var(--red)", ink: "text-cream" },
 ];
+
+/**
+ * Feathers the kit photo's edges so its black studio backdrop dissolves into
+ * the ink section instead of reading as a pasted rectangle.
+ */
+const ROBOT_MASK = {
+  maskImage:
+    "linear-gradient(to right, transparent, black 22%, black 85%, transparent), linear-gradient(to bottom, transparent, black 8%)",
+  WebkitMaskImage:
+    "linear-gradient(to right, transparent, black 22%, black 85%, transparent), linear-gradient(to bottom, transparent, black 8%)",
+  maskComposite: "intersect",
+  WebkitMaskComposite: "source-in",
+} as React.CSSProperties;
 
 /** Private-training pages that show the sample certificate. */
 const CERTIFICATE_SEGMENTS: EducationSegment[] = ["school", "kids"];
@@ -88,7 +102,7 @@ export function EducationPage({ locale, copy, segment }: EducationPageProps) {
               className="hero-rise mt-7 max-w-xl text-base leading-relaxed text-cream/80 sm:text-lg"
               style={{ animationDelay: "0.16s" }}
             >
-              {page.lead}
+              {page.hint}
             </p>
             <div className="hero-rise mt-9" style={{ animationDelay: "0.24s" }}>
               <TrackedAnchor
@@ -125,16 +139,68 @@ export function EducationPage({ locale, copy, segment }: EducationPageProps) {
           </div>
         </section>
 
-        {/* ---------- The program ---------- */}
+        {/* ---------- Why ---------- */}
         <section className="relative bg-cream py-20 sm:py-28">
           <div className="mx-auto max-w-7xl px-5 sm:px-8">
             <Reveal>
               <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-crimson">
                 <span className="inline-block h-px w-8 bg-crimson" />
-                {edu.programEyebrow}
+                {edu.whyEyebrow}
               </p>
               <h2 className="mt-5 max-w-2xl font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight text-ink">
-                {page.programTitle} <span className="text-crimson">{page.programHighlight}</span>
+                {page.whyTitle} <span className="text-crimson">{page.whyHighlight}</span>
+              </h2>
+            </Reveal>
+
+            <div className="mt-12 grid gap-8 md:grid-cols-3">
+              {page.why.map(([title, body], i) => {
+                const accent = WHY_ACCENTS[i % WHY_ACCENTS.length];
+                return (
+                  <Reveal key={title} delay={i * 130} className="h-full">
+                    <article
+                      className="h-full rounded-3xl border-[3px] border-ink bg-white p-6 text-ink shadow-[8px_8px_0_0_var(--shadow)] sm:p-7"
+                      style={{ "--shadow": accent.color } as React.CSSProperties}
+                    >
+                      <span
+                        className={`grid size-10 place-items-center rounded-xl border-2 border-ink font-mono text-sm font-bold ${accent.ink}`}
+                        style={{ background: accent.color }}
+                      >
+                        0{i + 1}
+                      </span>
+                      <h3 className="mt-5 font-display text-lg font-extrabold uppercase leading-tight tracking-tight sm:text-xl">
+                        {title}
+                      </h3>
+                      <p className="mt-2 text-sm leading-relaxed text-ink/70">{body}</p>
+                    </article>
+                  </Reveal>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* ---------- The program ---------- */}
+        <section className="relative isolate overflow-hidden border-t-2 border-ink bg-ink py-20 sm:py-28">
+          <Image
+            src="/class/programming2.jpg"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-ink/55 sm:bg-gradient-to-r sm:from-ink/85 sm:via-ink/55 sm:to-ink/30"
+          />
+
+          <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
+            <Reveal>
+              <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-yellow-main">
+                <span className="inline-block h-px w-8 bg-yellow-main" />
+                {edu.programEyebrow}
+              </p>
+              <h2 className="mt-5 max-w-2xl font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight text-cream">
+                {page.programTitle} <span className="text-yellow-main">{page.programHighlight}</span>
               </h2>
             </Reveal>
 
@@ -189,46 +255,6 @@ export function EducationPage({ locale, copy, segment }: EducationPageProps) {
           </div>
         </section>
 
-        {/* ---------- Why ---------- */}
-        <section className="relative border-t-2 border-ink bg-cream-deep py-20 sm:py-28">
-          <div className="mx-auto max-w-7xl px-5 sm:px-8">
-            <Reveal>
-              <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-crimson">
-                <span className="inline-block h-px w-8 bg-crimson" />
-                {edu.whyEyebrow}
-              </p>
-              <h2 className="mt-5 max-w-2xl font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight text-ink">
-                {page.whyTitle} <span className="text-crimson">{page.whyHighlight}</span>
-              </h2>
-            </Reveal>
-
-            <div className="mt-12 grid gap-8 md:grid-cols-3">
-              {page.why.map(([title, body], i) => {
-                const accent = WHY_ACCENTS[i % WHY_ACCENTS.length];
-                return (
-                  <Reveal key={title} delay={i * 130} className="h-full">
-                    <article
-                      className="h-full rounded-3xl border-[3px] border-ink bg-white p-6 text-ink shadow-[8px_8px_0_0_var(--shadow)] sm:p-7"
-                      style={{ "--shadow": accent.color } as React.CSSProperties}
-                    >
-                      <span
-                        className={`grid size-10 place-items-center rounded-xl border-2 border-ink font-mono text-sm font-bold ${accent.ink}`}
-                        style={{ background: accent.color }}
-                      >
-                        0{i + 1}
-                      </span>
-                      <h3 className="mt-5 font-display text-lg font-extrabold uppercase leading-tight tracking-tight sm:text-xl">
-                        {title}
-                      </h3>
-                      <p className="mt-2 text-sm leading-relaxed text-ink/70">{body}</p>
-                    </article>
-                  </Reveal>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
         {/* ---------- Certificate (uni / school, kids) ---------- */}
         {CERTIFICATE_SEGMENTS.includes(segment) && (
           <section className="relative border-t-2 border-ink bg-cream py-20 sm:py-28">
@@ -269,7 +295,7 @@ export function EducationPage({ locale, copy, segment }: EducationPageProps) {
 
         {/* ---------- Own one (factory, uni / school) ---------- */}
         {page.kit && (
-          <section className="relative overflow-hidden bg-ink py-20 text-cream sm:py-28">
+          <section className="relative isolate overflow-hidden bg-ink py-20 text-cream sm:py-28">
             <div
               aria-hidden
               className="grid-lines absolute inset-0"
@@ -284,57 +310,81 @@ export function EducationPage({ locale, copy, segment }: EducationPageProps) {
               }}
             />
 
-            <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8">
-              <Reveal>
-                <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-yellow-main">
-                  <span className="inline-block h-px w-8 bg-yellow-main" />
-                  {edu.kit.eyebrow}
-                </p>
-                <h2 className="mt-5 max-w-2xl font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight">
-                  {edu.kit.title} <span className="text-yellow-main">{edu.kit.highlight}</span>
-                </h2>
-                <p className="mt-6 max-w-xl text-base leading-relaxed text-cream/80 sm:text-lg">
-                  {edu.kit.intro}
-                </p>
-              </Reveal>
+            {/* The robot stands on the section floor, right of the copy. `lighten`
+                turns the photo's black backdrop into the ink ground, so the grid
+                and coral glow show through around it. */}
+            <div className="pointer-events-none absolute inset-0 mx-auto max-w-7xl">
+              <div
+                className="absolute bottom-0 right-0 aspect-[488/629] h-[380px] mix-blend-lighten sm:h-[460px] lg:h-[min(90%,760px)]"
+                style={ROBOT_MASK}
+              >
+                <Image
+                  src={robotPhoto}
+                  alt={edu.kit.alt}
+                  fill
+                  sizes="(min-width: 1024px) 590px, 360px"
+                  className="object-contain object-bottom"
+                />
+              </div>
+            </div>
 
-              <div className="mt-12 grid gap-6 md:grid-cols-2">
-                {edu.kit.offers.map((offer, i) => (
-                  <Reveal key={offer.name} delay={i * 130} className="h-full">
-                    <article className="h-full rounded-3xl border-[3px] border-cream/15 bg-cream p-7 text-ink shadow-[8px_8px_0_0_var(--orange-secondary)]">
-                      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-crimson">
-                        {offer.tag}
-                      </p>
-                      <h3 className="mt-2 font-display text-2xl font-extrabold tracking-tight">
-                        {offer.name}
-                      </h3>
-                      <div className="mt-5 border-t-2 border-dashed border-ink/15" />
-                      <ul className="mt-5 space-y-3">
-                        {offer.items.map((line) => (
-                          <li key={line} className="flex gap-3 text-sm leading-relaxed text-ink/70">
-                            <span className="mt-1.5 size-3.5 shrink-0 rounded border-2 border-ink bg-yellow-main" />
-                            {line}
-                          </li>
-                        ))}
-                      </ul>
-                    </article>
-                  </Reveal>
-                ))}
+            <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8">
+              <div className="lg:max-w-[58%]">
+                <Reveal>
+                  <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-yellow-main">
+                    <span className="inline-block h-px w-8 bg-yellow-main" />
+                    {edu.kit.eyebrow}
+                  </p>
+                  <h2 className="mt-5 max-w-2xl font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight">
+                    {edu.kit.title} <span className="text-yellow-main">{edu.kit.highlight}</span>
+                  </h2>
+                  <p className="mt-6 max-w-xl text-base leading-relaxed text-cream/80 sm:text-lg">
+                    {edu.kit.intro}
+                  </p>
+                </Reveal>
+
+                <div className="mt-12 grid gap-6 md:grid-cols-2">
+                  {edu.kit.offers.map((offer, i) => (
+                    <Reveal key={offer.name} delay={i * 130} className="h-full">
+                      <article className="h-full rounded-3xl border-[3px] border-cream/15 bg-cream p-7 text-ink shadow-[8px_8px_0_0_var(--orange-secondary)]">
+                        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-crimson">
+                          {offer.tag}
+                        </p>
+                        <h3 className="mt-2 font-display text-2xl font-extrabold tracking-tight">
+                          {offer.name}
+                        </h3>
+                        <div className="mt-5 border-t-2 border-dashed border-ink/15" />
+                        <ul className="mt-5 space-y-3">
+                          {offer.items.map((line) => (
+                            <li key={line} className="flex gap-3 text-sm leading-relaxed text-ink/70">
+                              <span className="mt-1.5 size-3.5 shrink-0 rounded border-2 border-ink bg-yellow-main" />
+                              {line}
+                            </li>
+                          ))}
+                        </ul>
+                      </article>
+                    </Reveal>
+                  ))}
+                </div>
+
+                <Reveal delay={200}>
+                  <TrackedAnchor
+                    event="line_click"
+                    params={{ location: `${location}_kit` }}
+                    href={siteConfig.lineAddUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={`${CTA} mt-12`}
+                  >
+                    {edu.kit.cta}
+                    <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
+                  </TrackedAnchor>
+                </Reveal>
               </div>
 
-              <Reveal delay={200}>
-                <TrackedAnchor
-                  event="line_click"
-                  params={{ location: `${location}_kit` }}
-                  href={siteConfig.lineAddUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={`${CTA} mt-12`}
-                >
-                  {edu.kit.cta}
-                  <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-                </TrackedAnchor>
-              </Reveal>
+              {/* Below lg the robot has no column of its own: leave it a floor
+                  under the CTA to stand on. */}
+              <div aria-hidden className="h-64 sm:h-60 lg:hidden" />
             </div>
           </section>
         )}

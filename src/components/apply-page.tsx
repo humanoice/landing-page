@@ -3,8 +3,10 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { ApplyForm } from "@/components/apply-form";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { TrackedAnchor } from "@/components/track";
 import { getUpcomingCourses, pickCourse } from "@/lib/courses";
 import { localePath, type ApplyCopy, type Locale } from "@/lib/i18n";
+import { siteConfig } from "@/lib/site";
 
 type ApplyPageProps = {
   locale: Locale;
@@ -62,6 +64,23 @@ export function ApplyPage({ locale, copy, languageLabel, course }: ApplyPageProp
           style={{ animationDelay: "0.16s" }}
         >
           {copy.intro}
+        </p>
+
+        <p
+          className="hero-rise mt-3 max-w-xl text-sm leading-relaxed text-ink/60"
+          style={{ animationDelay: "0.2s" }}
+        >
+          {copy.privateTraining.text}{" "}
+          <TrackedAnchor
+            event="line_click"
+            params={{ location: "apply_private_training" }}
+            href={siteConfig.lineAddUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="font-semibold text-ink underline decoration-2 underline-offset-4 transition-colors hover:text-crimson"
+          >
+            {copy.privateTraining.link} →
+          </TrackedAnchor>
         </p>
 
         {/* The shell above is sent at once; the form waits on the courses query and streams in. */}
