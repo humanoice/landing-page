@@ -1,4 +1,4 @@
-import { EDUCATION_SEGMENTS, getDictionary } from "@/lib/i18n";
+import { COURSE_SLUGS, EDUCATION_SEGMENTS, getDictionary } from "@/lib/i18n";
 import { siteConfig } from "@/lib/site";
 
 /**
@@ -18,12 +18,6 @@ import { siteConfig } from "@/lib/site";
  */
 export const dynamic = "force-static";
 
-/**
- * Which self-serve run each course applies for, by index into `curriculum.tracks`.
- * Mirrors TRACKS in src/components/curriculum.tsx.
- */
-const APPLY_SLUG = ["hardware", "software"] as const;
-
 const url = (path: string) => `${siteConfig.url}${path}`;
 
 /** Card blurbs are written to sit on their own, so some end without a full stop. */
@@ -33,7 +27,7 @@ function body() {
   const { curriculum, education, about, partners, plan, footer } = getDictionary("en");
 
   const courses = curriculum.tracks.map((track, i) => {
-    const href = url(`/apply?course=${APPLY_SLUG[i]}`);
+    const href = url(`/apply?course=${COURSE_SLUGS[i]}`);
     const covers = track.items.map(([title]) => title).join(", ");
     return `- [${track.name}](${href}): ${track.duration}, ${track.price}. ${sentence(track.blurb)} Covers: ${covers}.`;
   });
@@ -83,7 +77,6 @@ maintenance support. Quotes for training and kits come through LINE.
 
 ## Hardware partners
 
-- ${partners.asimov}
 - ${partners.roboparty}
 - ${partners.lerobot}
 

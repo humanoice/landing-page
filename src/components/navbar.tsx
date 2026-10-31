@@ -12,15 +12,11 @@ import {
   type Locale,
 } from "@/lib/i18n";
 
-type NavbarProps = {
-  locale: Locale;
-  copy: HomeDictionary;
-  /** Path of this page without the /th prefix, so the switcher lands on its twin: "/about". */
-  path?: string;
-};
+type NavbarProps = { locale: Locale; copy: HomeDictionary };
 
-export function Navbar({ locale, copy, path = "/" }: NavbarProps) {
-  const links: NavLinks = {
+/** The site's page links — the navbar's dropdown and the footer's list are both built from this. */
+export function siteLinks(locale: Locale, copy: HomeDictionary): NavLinks {
+  return {
     education: {
       label: copy.nav.education,
       items: EDUCATION_SEGMENTS.map((segment) => ({
@@ -31,15 +27,11 @@ export function Navbar({ locale, copy, path = "/" }: NavbarProps) {
     },
     about: { label: copy.nav.about, href: localePath(locale, "/about") },
   };
+}
 
-  const languageSwitcher = (
-    <LanguageSwitcher
-      locale={locale}
-      englishHref={localePath("en", path)}
-      thaiHref={localePath("th", path)}
-      label={copy.nav.language}
-    />
-  );
+export function Navbar({ locale, copy }: NavbarProps) {
+  const links = siteLinks(locale, copy);
+  const languageSwitcher = <LanguageSwitcher label={copy.nav.language} />;
 
   return (
     <header className="sticky top-0 z-50 border-b-2 border-ink bg-cream/90 backdrop-blur-sm">
@@ -86,6 +78,33 @@ export function Navbar({ locale, copy, path = "/" }: NavbarProps) {
           </MobileNav>
         </div>
       </nav>
+    </header>
+  );
+}
+
+/**
+ * The slim, non-sticky header of a single-purpose page (/apply, /master-plan):
+ * logo badge and wordmark home, whatever the page needs on the right.
+ * `className` sets the page's measure and gutter.
+ */
+export function SlimHeader({
+  home,
+  className,
+  children,
+}: {
+  home: string;
+  className: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <header className={`mx-auto flex items-center justify-between gap-4 ${className}`}>
+      <Link href={home} className="group flex items-center gap-2.5">
+        <span className="grid size-9 place-items-center rounded-xl border-2 border-ink bg-white shadow-[2px_2px_0_0_var(--ink)] transition-transform duration-200 group-hover:rotate-[-4deg]">
+          <Image src="/logo.png" alt="Humanoice" width={30} height={30} />
+        </span>
+        <span className="font-display text-base font-extrabold tracking-tight">ฮิวแมนน้อย</span>
+      </Link>
+      {children}
     </header>
   );
 }

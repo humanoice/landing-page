@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { EducationPage } from "@/components/education-page";
 import { EDUCATION_SEGMENTS, getDictionary, isEducationSegment } from "@/lib/i18n";
-import { siteConfig } from "@/lib/site";
+import { pageMetadata } from "@/lib/metadata";
 
 const copy = getDictionary("th");
 
@@ -19,31 +19,18 @@ export async function generateMetadata({
   const { segment } = await params;
   if (!isEducationSegment(segment)) return {};
   const page = copy.education.segments[segment];
-  const path = `/education/${segment}`;
 
-  return {
+  return pageMetadata({
+    locale: "th",
+    path: `/education/${segment}`,
     title: page.title,
     description: page.description,
-    alternates: { canonical: `/th${path}`, languages: { en: path, th: `/th${path}` } },
-    openGraph: {
-      type: "website",
-      siteName: siteConfig.name,
-      title: `${page.title} — ${siteConfig.name}`,
-      description: page.description,
-      url: `/th${path}`,
-      locale: "th_TH",
-      images: [siteConfig.ogImage],
-    },
-  };
+  });
 }
 
 export default async function ThaiEducationRoute({ params }: PageProps<"/th/education/[segment]">) {
   const { segment } = await params;
   if (!isEducationSegment(segment)) notFound();
 
-  return (
-    <div lang="th">
-      <EducationPage locale="th" copy={copy} segment={segment} />
-    </div>
-  );
+  return <EducationPage locale="th" copy={copy} segment={segment} />;
 }

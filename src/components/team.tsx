@@ -1,42 +1,33 @@
 import Image from "next/image";
 import { Reveal } from "@/components/reveal";
+import { accent, Eyebrow, SectionHeading } from "@/components/ui";
 import type { HomeDictionary } from "@/lib/i18n";
 
 /**
- * Placeholder roles + blurbs — easy to edit. Photos live in /public/team.
+ * Who, in card order. Roles and blurbs are copy — `team.roles` / `team.blurbs`
+ * in i18n, by the same index. Photos live in /public/team.
  */
 const MEMBERS = [
   {
-    name: "Son",
-    role: "CEO",
+    name: "Sitthavee Teerakulchon (Son)",
     photo: "/team/son.jpg",
-    color: "var(--yellow-main)",
     linkedin: "https://www.linkedin.com/in/sitthaveet/",
     schools: [{ name: "Chulalongkorn University", logo: "/team/chula.webp" }],
-    blurb:
-      "On a mission to make Thailand to be the Shenzhen of Southeast Asia",
   },
   {
-    name: "Non",
-    role: "Staff Engineer",
+    name: "Nonthakon Jitchiranant (Non)",
     photo: "/team/non.jpeg",
-    color: "var(--orange-secondary)",
     linkedin: "https://www.linkedin.com/in/nonthakonjitchiranant/",
     schools: [{ name: "King Mongkut's Institute of Technology Ladkrabang", logo: "/team/kmitl.webp" }],
-    blurb: "Robot engineer with intensive background in blockchain and AI",
   },
   {
-    name: "Mild",
-    role: "Physical AI Engineer",
+    name: "Punthira Chinotaikul (Mild)",
     photo: "/team/mild.jpg",
-    color: "var(--red)",
     linkedin: "https://www.linkedin.com/in/punthira-chinotaikul-15163a100/",
     schools: [
       { name: "The University of Tokyo", logo: "/team/tokyo.png" },
       { name: "University of Cambridge", logo: "/team/cambridge.png" },
     ],
-    blurb:
-      "Senior product manager who love applied intelligence to physical world",
   },
 ];
 
@@ -45,6 +36,7 @@ type TeamProps = { copy: HomeDictionary["team"] };
 export function Team({ copy }: TeamProps) {
   const members = MEMBERS.map((member, index) => ({
     ...member,
+    color: accent(index).color,
     role: copy.roles[index],
     blurb: copy.blurbs[index],
   }));
@@ -55,13 +47,8 @@ export function Team({ copy }: TeamProps) {
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <Reveal>
-          <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-crimson">
-            <span className="inline-block h-px w-8 bg-crimson" />
-            {copy.eyebrow}
-          </p>
-          <h2 className="mt-5 max-w-3xl font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight text-ink">
-            {copy.title} <span className="text-crimson">{copy.highlight}</span>
-          </h2>
+          <Eyebrow>{copy.eyebrow}</Eyebrow>
+          <SectionHeading title={copy.title} highlight={copy.highlight} className="max-w-3xl" />
         </Reveal>
 
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { EducationPage } from "@/components/education-page";
 import { EDUCATION_SEGMENTS, getDictionary, isEducationSegment } from "@/lib/i18n";
-import { siteConfig } from "@/lib/site";
+import { pageMetadata } from "@/lib/metadata";
 
 const copy = getDictionary("en");
 
@@ -19,22 +19,13 @@ export async function generateMetadata({
   const { segment } = await params;
   if (!isEducationSegment(segment)) return {};
   const page = copy.education.segments[segment];
-  const path = `/education/${segment}`;
 
-  return {
+  return pageMetadata({
+    locale: "en",
+    path: `/education/${segment}`,
     title: page.title,
     description: page.description,
-    alternates: { canonical: path, languages: { en: path, th: `/th${path}` } },
-    openGraph: {
-      type: "website",
-      siteName: siteConfig.name,
-      title: `${page.title} — ${siteConfig.name}`,
-      description: page.description,
-      url: path,
-      locale: "en_US",
-      images: [siteConfig.ogImage],
-    },
-  };
+  });
 }
 
 export default async function EducationRoute({ params }: PageProps<"/education/[segment]">) {

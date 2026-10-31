@@ -49,13 +49,8 @@ export const metadata: Metadata = {
   creator: siteConfig.name,
   publisher: siteConfig.name,
   category: "education",
-  alternates: {
-    canonical: "/",
-    languages: {
-      en: "/",
-      th: "/th",
-    },
-  },
+  // No `alternates` here: every page sets its own canonical via pageMetadata, and a
+  // layout-level canonical "/" would leak onto any page that forgot to.
   openGraph: {
     type: "website",
     siteName: siteConfig.name,

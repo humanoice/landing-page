@@ -1,5 +1,6 @@
 import "server-only";
 import type { Language, ProgrammingLanguage, Skill } from "@/lib/apply-options";
+import { siteConfig } from "@/lib/site";
 
 export type Locale = "en" | "th";
 
@@ -57,6 +58,12 @@ const B2B_PROGRAM_EN = [
 ];
 
 const en = {
+  /** The home page's <title> and description; every other page carries its own `title` + `description`. */
+  home: {
+    // Widened: siteConfig is `as const`, and Thai has to fit this type with its own strings.
+    title: siteConfig.title as string,
+    description: siteConfig.description as string,
+  },
   nav: {
     education: "Education",
     about: "About us",
@@ -66,7 +73,7 @@ const en = {
   },
   hero: {
     eyebrow: "Humanoid School · Bangkok",
-    title: ["Learn to", "", "build humanoids."],
+    title: ["Learn to", "build humanoids."],
     description:
       "Thailand's first hands-on humanoid school. From raw materials to full deployment — you assemble, train, and deploy a real humanoid.",
     join: "Apply",
@@ -110,17 +117,15 @@ const en = {
     highlight: "instructors",
     roles: ["CEO", "Staff Engineer", "Physical AI Engineer"],
     blurbs: [
-      "On a mission to make Thailand the Shenzhen of Southeast Asia",
-      "Robot engineer with intensive background in blockchain and AI",
-      "Senior product manager who loves applying intelligence to the physical world",
+      "Physics-loving engineer, now he works at a robotics and Physical AI company. Has taught computer science at top universities, including the National University of Singapore and Chulalongkorn.",
+      "Robot engineer with extensive experience from blockchain to AI technology. Now at an AI startup.",
+      "Senior product manager who loves putting AI to work in the real world. Now studying for a master's in Medical Robotics at Mahidol University.",
     ],
   },
   partners: {
     eyebrow: "// Open-Source Partners",
     title: "We build on",
     highlight: "open robots",
-    asimov:
-      "Asimov 1, Here Be Dragons Edition — open-source humanoid robot by Menlo Research.",
     roboparty:
       "ROBOTO ORIGIN, open-source humanoid robot by a Shanghai-based company.",
     lerobot:
@@ -170,8 +175,8 @@ const en = {
   /** Private (B2B) training: the home teaser, the nav dropdown, and /education/[segment]. No prices — every CTA is LINE. */
   education: {
     eyebrow: "// Education",
-    title: "for you",
-    highlight: "Private training",
+    title: "Private training",
+    highlight: "for you",
     intro: "We bring the experience of building humanoids to you whenever and wherever you want",
     more: "See the program",
     line: "Chat on LINE",
@@ -211,7 +216,6 @@ const en = {
             "Our team can offer you a solution for your automation needs",
           ]
         ],
-        kit: true,
       },
       school: {
         nav: "Uni / School",
@@ -245,7 +249,6 @@ const en = {
             "Provide best environment for students to research and develop humanoid robotics and physical AI.",
           ],
         ],
-        kit: true,
       },
       kids: {
         nav: "Kids",
@@ -298,7 +301,6 @@ const en = {
             "Robotics and AI are the future, and building a humanoid is a great way to learn the skills needed for the future",
           ],
         ],
-        kit: false,
       },
     },
     /** Sample-certificate block on the uni/school and kids pages. */
@@ -347,21 +349,6 @@ const en = {
     eyebrow: "// About us",
     heading: ["Make Thailand", "the Shenzhen of Southeast Asia."],
     lead: "Humanoice (ฮิวแมนน้อย) is a humanoid robotics lab in Phra Khanong, Bangkok. We teach people to build real open-source humanoids, and we sell and service the robots too.",
-    photoAlt: "Students and instructors gathered around humanoids at our lab",
-    photoCaption: "Our lab in Phra Khanong, Bangkok",
-    mission: {
-      eyebrow: "// Our mission",
-      text: "Make Thailand the Shenzhen of Southeast Asia.",
-      link: "Read the master plan",
-    },
-    whatEyebrow: "// What we do",
-    whatTitle: "Three ways",
-    whatHighlight: "in",
-    what: [
-      ["Public courses", "Building Humanoids and Physical AI Basic, once a month at our lab. Book a seat online."],
-      ["Private training", "For factories, universities, schools, and kids — at your place or ours."],
-      ["Humanoid kits", "Buy the robot we teach on, with a year of maintenance support."],
-    ],
   },
   footer: {
     ticker: "Make Thailand the Shenzhen of Southeast Asia",
@@ -467,13 +454,12 @@ const en = {
     course: {
       track: "Track",
       // indexed by courses.track_no − 1
-      trackTags: ["Hardware", "Software", "B2B"],
+      trackTags: ["Hardware", "Software"],
       pickDate: "Pick a date",
       /** Drops this track's pick, for someone who only wants the other one. */
       clear: "Clear",
       dayUnit: ["day", "days"],
       priceUnit: "THB",
-      priceTbd: "Talk to us",
       seatsLeft: ["seat left", "seats left"],
       full: "Full",
       empty:
@@ -498,12 +484,13 @@ const en = {
       discountExpired: "That code has expired",
       discountExhausted: "That code has been used up",
     },
+    /** Every run they picked was already paid for — nothing new to bill. */
     success: {
       eyebrow: "// Thank you",
-      title: "Registration complete",
-      highlight: "Payment pending",
-      body: "Your seat will only be confirmed after payment. Please add us on LINE to make your payment.",
-      line: "Pay via LINE",
+      title: "You're already",
+      highlight: "booked",
+      body: "You've paid for every run you picked, so there's nothing more to pay. Need to change something? Message us on LINE.",
+      line: "Chat on LINE",
       qrLabel: "@humanoice",
     },
     /** Section 04: who pays, what goes on the receipt, and a live total. */
@@ -543,7 +530,6 @@ const en = {
         withholding: "3% withholding tax",
         due: "Transfer",
         pickFirst: "Pick a date above and the amount shows up here.",
-        onRequest: "Price on request — we'll sort payment out on LINE.",
       },
     },
     /** Step 2: bank details, slip upload, and what to say when the slip doesn't pass. */
@@ -645,10 +631,10 @@ const en = {
 
 export type HomeDictionary = Omit<typeof en, "plan" | "apply">;
 export type EducationCopy = typeof en.education;
-export type AboutCopy = typeof en.about;
 export type MasterPlanCopy = typeof en.plan;
 export type ApplyCopy = typeof en.apply;
-type ThaiDictionary = HomeDictionary & { apply: ApplyCopy };
+/** What both locales carry. English alone adds `plan` (the master plan isn't translated). */
+export type Dictionary = HomeDictionary & { apply: ApplyCopy };
 
 const HARDWARE_ITEMS_TH: typeof HARDWARE_ITEMS_EN = [
   [
@@ -701,7 +687,11 @@ const B2B_PROGRAM_TH: typeof B2B_PROGRAM_EN = [
   },
 ];
 
-const th: ThaiDictionary = {
+const th: Dictionary = {
+  home: {
+    title: "Humanoice — โรงเรียนฮิวแมนนอยด์แห่งประเทศไทย",
+    description: "บูตแคมป์ฮิวแมนนอยด์แบบลงมือทำแห่งแรกของไทย จากการประกอบสู่การทำให้หุ่นยนต์เดินได้",
+  },
   nav: {
     education: "การศึกษา",
     about: "เกี่ยวกับเรา",
@@ -711,7 +701,7 @@ const th: ThaiDictionary = {
   },
   hero: {
     eyebrow: "โรงเรียนสอนฮิวแมนนอยด์ · กรุงเทพฯ",
-    title: ["เรียนการสร้าง", "", "ฮิวแมนนอยด์"],
+    title: ["เรียนการสร้าง", "ฮิวแมนนอยด์"],
     description:
       "โรงเรียนสอนประกอบฮิวแมนนอยด์ แบบลงมือทำแห่งแรกของไทย ตั้งแต่ชิ้นส่วนแรกจนพร้อมใช้งานจริง — คุณจะได้ประกอบ เขียนโปรแกรม และพาฮิวแมนนอยด์เดิน",
     join: "สมัคร",
@@ -755,17 +745,15 @@ const th: ThaiDictionary = {
     highlight: "ทีมผู้สอน",
     roles: ["CEO", "Staff Engineer", "Physical AI Engineer"],
     blurbs: [
-      "ตั้งใจเปลี่ยนประเทศไทยให้เป็น Shenzhen แห่ง Southeast Asia",
-      "วิศวกรหุ่นยนต์ ประสบการณ์แน่นทั้งสายบล็อกเชนและ AI",
-      "ผู้จัดการผลิตภัณฑ์อาวุโสที่สนุกกับการเอา AI มาใช้ในโลกจริง",
+      "วิศวกรผู้ชื่นชอบฟิสิกส์ ปัจจุบันทำงานในบริษัทหุ่นยนต์และ Physical AI แห่งหนึ่งในกรุงเทพฯ มีประสบการณ์ในการสอนและอบรมด้านวิทยาการคอมพิวเตอร์ในมหาวิทยาลัยชั้นนำ เช่น National University of Singapore และจุฬาลงกรณ์",
+      "วิศวกรหุ่นยนต์ ประสบการณ์หลากหลายตั้งแต่งานสาย blockchain และ AI ตอนนี้ทำงานในบริษัทสตาร์ทอัพด้าน AI",
+      "ผู้จัดการผลิตภัณฑ์อาวุโสที่สนุกกับการเอา AI มาใช้ในโลกจริง ปัจจุบันเรียนต่อปริญญาโทที่มหาวิทยาลัยมหิดล ด้าน Medical Robotics",
     ],
   },
   partners: {
     eyebrow: "// พาร์ตเนอร์โอเพนซอร์ส",
     title: "เราสร้างบน",
     highlight: "หุ่นยนต์เปิด",
-    asimov:
-      "Asimov 1, Here Be Dragons Edition — ฮิวแมนนอยด์โอเพนซอร์สจาก Menlo Research",
     roboparty: "ROBOTO ORIGIN — ฮิวแมนนอยด์โอเพนซอร์สจากบริษัทในเซี่ยงไฮ้",
     lerobot: "SO-ARM 101 — แขนหุ่นยนต์โอเพนซอร์สจากโปรเจกต์ LeRobot ของ Hugging Face",
   },
@@ -779,7 +767,7 @@ const th: ThaiDictionary = {
         a: "ได้เลย ทั้ง Building Humanoids และ Physical AI Basic เริ่มจากศูนย์ได้ ไม่ต้องมีพื้นฐานเขียนโปรแกรมมาก่อน เราพาทำไปทีละขั้นในห้องเรียน",
       },
       {
-        q: "แต่ละคอร์สเรียนนานแค่ไหน เปิดบ่อยแค่ไหน",
+        q: "แต่ละคอร์สเรียนนานแค่ไหน",
         a: "Building Humanoids เรียน 8 ชั่วโมง ส่วน Physical AI Basic เรียน 6 ชั่วโมง",
       },
       {
@@ -811,8 +799,8 @@ const th: ThaiDictionary = {
   },
   education: {
     eyebrow: "// การศึกษา",
-    title: "สำหรับทีมของคุณ",
-    highlight: "คลาสส่วนตัว",
+    title: "คลาสส่วนตัว",
+    highlight: "สำหรับทีมของคุณ",
     intro: "เราสอนฮิวแมนนอยด์และ physical AI ในสถานที่และเวลาที่คุณเลือก",
     more: "ดูหลักสูตร",
     line: "ทักไลน์คุยกัน",
@@ -851,7 +839,6 @@ const th: ThaiDictionary = {
             "ทีมเราพร้อมเสนอโซลูชันระบบอัตโนมัติที่ตอบโจทย์โรงงานของคุณ",
           ],
         ],
-        kit: true,
       },
       school: {
         nav: "มหาลัย / โรงเรียน",
@@ -885,7 +872,6 @@ const th: ThaiDictionary = {
             "สร้างสภาพแวดล้อมที่ดีที่สุดให้นักเรียนได้วิจัยและพัฒนาฮิวแมนนอยด์และ Physical AI",
           ],
         ],
-        kit: true,
       },
       kids: {
         nav: "เด็ก",
@@ -938,7 +924,6 @@ const th: ThaiDictionary = {
             "หุ่นยนต์และ AI คืออนาคต การประกอบฮิวแมนนอยด์คือจุดเริ่มต้นที่ดีในการฝึกทักษะเหล่านี้",
           ],
         ],
-        kit: false,
       },
     },
     certificate: {
@@ -985,21 +970,6 @@ const th: ThaiDictionary = {
     eyebrow: "// เกี่ยวกับเรา",
     heading: ["เราสร้าง", "ฮิวแมนนอยด์"],
     lead: "ฮิวแมนน้อย (Humanoice) คือแล็บหุ่นยนต์ฮิวแมนนอยด์ที่พระโขนง กรุงเทพฯ เราสอนคนให้ประกอบฮิวแมนนอยด์โอเพนซอร์สของจริง และขายพร้อมดูแลหุ่นด้วย",
-    photoAlt: "ผู้เรียนและผู้สอนยืนล้อมฮิวแมนนอยด์ในแล็บของเรา",
-    photoCaption: "แล็บของเราที่พระโขนง กรุงเทพฯ",
-    mission: {
-      eyebrow: "// พันธกิจ",
-      text: "เปลี่ยนประเทศไทยให้เป็น Shenzhen แห่ง Southeast Asia",
-      link: "อ่าน Master Plan",
-    },
-    whatEyebrow: "// สิ่งที่เราทำ",
-    whatTitle: "สามทาง",
-    whatHighlight: "ที่จะเริ่ม",
-    what: [
-      ["คอร์สทั่วไป", "Building Humanoids และ Physical AI Basic เปิดเดือนละรอบที่แล็บเรา จองที่นั่งออนไลน์ได้เลย"],
-      ["คลาสส่วนตัว", "สำหรับโรงงาน มหาวิทยาลัย โรงเรียน และเด็ก ที่สถานที่ของคุณหรือของเรา"],
-      ["ชุดคิทฮิวแมนนอยด์", "ซื้อหุ่นรุ่นที่เราใช้สอน พร้อมบริการดูแลรักษา 1 ปี"],
-    ],
   },
   footer: {
     ticker: "เปลี่ยนประเทศไทยให้เป็น Shenzhen แห่ง Southeast Asia",
@@ -1071,12 +1041,11 @@ const th: ThaiDictionary = {
     },
     course: {
       track: "คอร์ส",
-      trackTags: ["ฮาร์ดแวร์", "ซอฟต์แวร์", "B2B"],
+      trackTags: ["ฮาร์ดแวร์", "ซอฟต์แวร์"],
       pickDate: "เลือกรอบวันที่",
       clear: "ล้าง",
       dayUnit: ["วัน", "วัน"],
       priceUnit: "บาท",
-      priceTbd: "ทักมาคุยกัน",
       seatsLeft: ["ที่นั่งว่าง", "ที่นั่งว่าง"],
       full: "เต็มแล้ว",
       empty:
@@ -1102,10 +1071,10 @@ const th: ThaiDictionary = {
     },
     success: {
       eyebrow: "// ขอบคุณ",
-      title: "สมัครเรียบร้อย",
-      highlight: "รอจ่ายเงิน",
-      body: "ยืนยันที่นั่ง หลังจ่ายเงินเรียบร้อยแล้วเท่านั้น รบกวนแอดไลน์มาจ่ายเงินกับเราหน่อยน้า",
-      line: "จ่ายเงินใน LINE",
+      title: "คุณจองไว้",
+      highlight: "เรียบร้อยแล้ว",
+      body: "รอบที่เลือกจ่ายครบแล้ว ไม่ต้องจ่ายเพิ่ม ถ้าอยากเปลี่ยนอะไร ทักมาทางไลน์ได้เลย",
+      line: "แชทใน LINE",
       qrLabel: "@humanoice",
     },
     payer: {
@@ -1142,7 +1111,6 @@ const th: ThaiDictionary = {
         withholding: "หัก ณ ที่จ่าย 3%",
         due: "ยอดโอน",
         pickFirst: "เลือกรอบเรียนด้านบนก่อน แล้วยอดโอนจะแสดงตรงนี้",
-        onRequest: "ราคาตามตกลง เดี๋ยวคุยเรื่องชำระเงินกันทางไลน์",
       },
     },
     pay: {
@@ -1234,12 +1202,15 @@ const th: ThaiDictionary = {
 const dictionaries = { en, th };
 
 export function getDictionary(locale: "en"): typeof en;
-export function getDictionary(locale: "th"): ThaiDictionary;
+export function getDictionary(locale: "th"): Dictionary;
 /** For callers that only know the locale at runtime (the apply actions) — `.apply` is `ApplyCopy` either way. */
-export function getDictionary(locale: Locale): typeof en | ThaiDictionary;
-export function getDictionary(locale: Locale): typeof en | ThaiDictionary {
+export function getDictionary(locale: Locale): typeof en | Dictionary;
+export function getDictionary(locale: Locale): typeof en | Dictionary {
   return dictionaries[locale];
 }
+
+/** courses.slug each public course applies for, index-aligned with `curriculum.tracks`. */
+export const COURSE_SLUGS = ["hardware", "software"] as const;
 
 /** The application page, optionally pre-ticking a run: /apply?course=hardware, /th/apply?course=software */
 export function applyPath(locale: Locale, course?: string) {

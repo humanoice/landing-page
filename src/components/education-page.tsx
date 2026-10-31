@@ -1,32 +1,36 @@
 import Image from "next/image";
 import certificateExample from "../../public/certificate_example.png";
 import robotPhoto from "../../public/robot-rp0.jpeg";
-import { EDUCATION_PHOTOS } from "@/components/education";
 import { CursorCircle } from "@/components/cursor-circle";
 import { AssembleIcon, CodeIcon, WalkIcon } from "@/components/icons";
 import { Navbar } from "@/components/navbar";
 import { Reveal } from "@/components/reveal";
 import { SiteFooter } from "@/components/site-footer";
-import { TrackedAnchor } from "@/components/track";
+import {
+  accent,
+  Eyebrow,
+  InkAtmosphere,
+  LineCta,
+  ScrimPhoto,
+  SectionHeading,
+  SyllabusList,
+} from "@/components/ui";
+import { CLASS_PHOTOS, SEGMENT_PHOTOS } from "@/lib/class-photos";
 import type { EducationSegment, HomeDictionary, Locale } from "@/lib/i18n";
-import { siteConfig } from "@/lib/site";
 
-const CTA =
-  "group inline-flex items-center gap-2 rounded-full border-2 border-ink bg-yellow-main px-7 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.12em] text-ink shadow-[5px_5px_0_0_var(--ink)] transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[9px_9px_0_0_var(--ink)] active:translate-x-0 active:translate-y-0 active:shadow-[3px_3px_0_0_var(--ink)]";
-
-/** Program card accents and icons, by position: build first, then software (or driving, for kids). */
-const PROGRAM_META = [
-  { color: "var(--yellow-main)", icon: <AssembleIcon /> },
-  { color: "var(--orange-secondary)", icon: <CodeIcon /> },
-];
-const KIDS_SECOND_ICON = <WalkIcon />;
-
-/** Accent rotation for the "why" cards — yellow → coral → crimson. */
-const WHY_ACCENTS = [
-  { color: "var(--yellow-main)", ink: "text-ink" },
-  { color: "var(--orange-secondary)", ink: "text-ink" },
-  { color: "var(--red)", ink: "text-cream" },
-];
+/**
+ * What each segment's page carries beyond its copy: the program card icons
+ * (build, then software — or driving, for kids) and which optional sections
+ * it shows.
+ */
+const SEGMENT_META: Record<
+  EducationSegment,
+  { icons: [React.ReactNode, React.ReactNode]; certificate: boolean; kit: boolean }
+> = {
+  factory: { icons: [<AssembleIcon key="a" />, <CodeIcon key="c" />], certificate: false, kit: true },
+  school: { icons: [<AssembleIcon key="a" />, <CodeIcon key="c" />], certificate: true, kit: true },
+  kids: { icons: [<AssembleIcon key="a" />, <WalkIcon key="w" />], certificate: true, kit: false },
+};
 
 /**
  * Feathers the kit photo's edges so its black studio backdrop dissolves into
@@ -41,9 +45,6 @@ const ROBOT_MASK = {
   WebkitMaskComposite: "source-in",
 } as React.CSSProperties;
 
-/** Private-training pages that show the sample certificate. */
-const CERTIFICATE_SEGMENTS: EducationSegment[] = ["school", "kids"];
-
 type EducationPageProps = {
   locale: Locale;
   copy: HomeDictionary;
@@ -57,16 +58,17 @@ type EducationPageProps = {
 export function EducationPage({ locale, copy, segment }: EducationPageProps) {
   const edu = copy.education;
   const page = edu.segments[segment];
+  const meta = SEGMENT_META[segment];
   const location = `education_${segment}`;
 
   return (
     <>
-      <Navbar locale={locale} copy={copy} path={`/education/${segment}`} />
+      <Navbar locale={locale} copy={copy} />
       <main>
         {/* ---------- Header ---------- */}
         <section className="relative isolate overflow-hidden bg-crimson text-cream">
           <Image
-            src={EDUCATION_PHOTOS[segment]}
+            src={SEGMENT_PHOTOS[segment]}
             alt=""
             fill
             preload
@@ -86,10 +88,9 @@ export function EducationPage({ locale, copy, segment }: EducationPageProps) {
           <CursorCircle className="-right-16 top-16 size-56" />
 
           <div className="relative z-10 mx-auto max-w-7xl px-5 pb-20 pt-16 sm:px-8 lg:pb-24 lg:pt-24">
-            <p className="hero-rise flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-yellow-main">
-              <span className="inline-block h-px w-8 bg-yellow-main" />
+            <Eyebrow tone="dark" className="hero-rise">
               {page.eyebrow}
-            </p>
+            </Eyebrow>
             <h1
               className="hero-rise mt-6 max-w-4xl font-display text-[clamp(2.6rem,8vw,5rem)] font-black uppercase leading-[0.92] tracking-tight"
               style={{ animationDelay: "0.08s" }}
@@ -103,17 +104,7 @@ export function EducationPage({ locale, copy, segment }: EducationPageProps) {
               {page.hint}
             </p>
             <div className="hero-rise mt-9" style={{ animationDelay: "0.24s" }}>
-              <TrackedAnchor
-                event="line_click"
-                params={{ location }}
-                href={siteConfig.lineAddUrl}
-                target="_blank"
-                rel="noreferrer"
-                className={CTA}
-              >
-                {edu.line}
-                <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-              </TrackedAnchor>
+              <LineCta location={location} label={edu.line} />
             </div>
           </div>
 
@@ -141,27 +132,22 @@ export function EducationPage({ locale, copy, segment }: EducationPageProps) {
         <section className="relative bg-cream py-20 sm:py-28">
           <div className="mx-auto max-w-7xl px-5 sm:px-8">
             <Reveal>
-              <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-crimson">
-                <span className="inline-block h-px w-8 bg-crimson" />
-                {edu.whyEyebrow}
-              </p>
-              <h2 className="mt-5 max-w-2xl font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight text-ink">
-                {page.whyTitle} <span className="text-crimson">{page.whyHighlight}</span>
-              </h2>
+              <Eyebrow>{edu.whyEyebrow}</Eyebrow>
+              <SectionHeading title={page.whyTitle} highlight={page.whyHighlight} />
             </Reveal>
 
             <div className="mt-12 grid gap-8 md:grid-cols-3">
               {page.why.map(([title, body], i) => {
-                const accent = WHY_ACCENTS[i % WHY_ACCENTS.length];
+                const { color, ink } = accent(i);
                 return (
                   <Reveal key={title} delay={i * 130} className="h-full">
                     <article
                       className="h-full rounded-3xl border-[3px] border-ink bg-white p-6 text-ink shadow-[8px_8px_0_0_var(--shadow)] sm:p-7"
-                      style={{ "--shadow": accent.color } as React.CSSProperties}
+                      style={{ "--shadow": color } as React.CSSProperties}
                     >
                       <span
-                        className={`grid size-10 place-items-center rounded-xl border-2 border-ink font-mono text-sm font-bold ${accent.ink}`}
-                        style={{ background: accent.color }}
+                        className={`grid size-10 place-items-center rounded-xl border-2 border-ink font-mono text-sm font-bold ${ink}`}
+                        style={{ background: color }}
                       >
                         0{i + 1}
                       </span>
@@ -179,45 +165,29 @@ export function EducationPage({ locale, copy, segment }: EducationPageProps) {
 
         {/* ---------- The program ---------- */}
         <section className="relative isolate overflow-hidden border-t-2 border-ink bg-ink py-20 sm:py-28">
-          <Image
-            src="/class/programming2.jpg"
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover object-center"
-          />
-          <div
-            aria-hidden
-            className="absolute inset-0 bg-ink/55 sm:bg-gradient-to-r sm:from-ink/85 sm:via-ink/55 sm:to-ink/30"
-          />
+          <ScrimPhoto src={CLASS_PHOTOS.codeAlong} />
 
           <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
             <Reveal>
-              <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-yellow-main">
-                <span className="inline-block h-px w-8 bg-yellow-main" />
-                {edu.programEyebrow}
-              </p>
-              <h2 className="mt-5 max-w-2xl font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight text-cream">
-                {page.programTitle} <span className="text-yellow-main">{page.programHighlight}</span>
-              </h2>
+              <Eyebrow tone="dark">{edu.programEyebrow}</Eyebrow>
+              <SectionHeading tone="dark" title={page.programTitle} highlight={page.programHighlight} />
             </Reveal>
 
             <div className="mt-14 grid items-stretch gap-x-6 gap-y-10 md:grid-cols-2 xl:gap-x-8">
               {page.program.map((group, i) => {
-                const meta = PROGRAM_META[i];
-                const icon = segment === "kids" && i === 1 ? KIDS_SECOND_ICON : meta.icon;
+                const color = accent(i).color;
                 return (
                   <Reveal key={group.name} delay={i * 130} className="h-full">
                     <article
                       className="flex h-full flex-col rounded-3xl border-[3px] border-ink bg-white p-6 text-ink shadow-[8px_8px_0_0_var(--shadow)] sm:p-7"
-                      style={{ "--shadow": meta.color } as React.CSSProperties}
+                      style={{ "--shadow": color } as React.CSSProperties}
                     >
                       <div className="flex items-center gap-3.5">
                         <span
                           className="grid size-12 shrink-0 place-items-center rounded-2xl border-2 border-ink text-ink"
-                          style={{ background: meta.color }}
+                          style={{ background: color }}
                         >
-                          {icon}
+                          {meta.icons[i]}
                         </span>
                         <div>
                           <h3 className="font-display text-[1.35rem] font-extrabold uppercase leading-[1.1] tracking-tight sm:text-2xl">
@@ -229,22 +199,7 @@ export function EducationPage({ locale, copy, segment }: EducationPageProps) {
 
                       <div className="mt-5 border-t-2 border-dashed border-ink/15" />
 
-                      <ul className="mt-5 space-y-4">
-                        {group.items.map(([title, detail]) => (
-                          <li key={title} className="flex gap-3">
-                            <span
-                              className="mt-1 size-3.5 shrink-0 rounded border-2 border-ink"
-                              style={{ background: meta.color }}
-                            />
-                            <div>
-                              <p className="font-display text-sm font-bold uppercase tracking-tight">
-                                {title}
-                              </p>
-                              <p className="mt-0.5 text-[13px] leading-snug text-ink/60">{detail}</p>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
+                      <SyllabusList items={group.items} color={color} />
                     </article>
                   </Reveal>
                 );
@@ -254,18 +209,12 @@ export function EducationPage({ locale, copy, segment }: EducationPageProps) {
         </section>
 
         {/* ---------- Certificate (uni / school, kids) ---------- */}
-        {CERTIFICATE_SEGMENTS.includes(segment) && (
+        {meta.certificate && (
           <section className="relative border-t-2 border-ink bg-cream py-20 sm:py-28">
             <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
               <Reveal>
-                <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-crimson">
-                  <span className="inline-block h-px w-8 bg-crimson" />
-                  {edu.certificate.eyebrow}
-                </p>
-                <h2 className="mt-5 font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight text-ink">
-                  {edu.certificate.title}{" "}
-                  <span className="text-crimson">{edu.certificate.highlight}</span>
-                </h2>
+                <Eyebrow>{edu.certificate.eyebrow}</Eyebrow>
+                <SectionHeading title={edu.certificate.title} highlight={edu.certificate.highlight} />
                 <p className="mt-6 max-w-md text-base leading-relaxed text-ink/70 sm:text-lg">
                   {edu.certificate.body}
                 </p>
@@ -292,21 +241,9 @@ export function EducationPage({ locale, copy, segment }: EducationPageProps) {
         )}
 
         {/* ---------- Own one (factory, uni / school) ---------- */}
-        {page.kit && (
+        {meta.kit && (
           <section className="relative isolate overflow-hidden bg-ink py-20 text-cream sm:py-28">
-            <div
-              aria-hidden
-              className="grid-lines absolute inset-0"
-              style={{ "--line": "rgba(255,255,255,0.05)", "--cell": "72px" } as React.CSSProperties}
-            />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0"
-              style={{
-                background:
-                  "radial-gradient(50% 50% at 80% 20%, rgba(215,86,86,0.18) 0%, rgba(27,10,17,0) 70%)",
-              }}
-            />
+            <InkAtmosphere />
 
             {/* The robot stands on the section floor, right of the copy. `lighten`
                 turns the photo's black backdrop into the ink ground, so the grid
@@ -329,13 +266,8 @@ export function EducationPage({ locale, copy, segment }: EducationPageProps) {
             <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8">
               <div className="lg:max-w-[58%]">
                 <Reveal>
-                  <p className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-yellow-main">
-                    <span className="inline-block h-px w-8 bg-yellow-main" />
-                    {edu.kit.eyebrow}
-                  </p>
-                  <h2 className="mt-5 max-w-2xl font-display text-[clamp(2rem,5.5vw,3.75rem)] font-black uppercase leading-[0.95] tracking-tight">
-                    {edu.kit.title} <span className="text-yellow-main">{edu.kit.highlight}</span>
-                  </h2>
+                  <Eyebrow tone="dark">{edu.kit.eyebrow}</Eyebrow>
+                  <SectionHeading tone="dark" title={edu.kit.title} highlight={edu.kit.highlight} />
                   <p className="mt-6 max-w-xl text-base leading-relaxed text-cream/80 sm:text-lg">
                     {edu.kit.intro}
                   </p>
@@ -366,17 +298,7 @@ export function EducationPage({ locale, copy, segment }: EducationPageProps) {
                 </div>
 
                 <Reveal delay={200}>
-                  <TrackedAnchor
-                    event="line_click"
-                    params={{ location: `${location}_kit` }}
-                    href={siteConfig.lineAddUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={`${CTA} mt-12`}
-                  >
-                    {edu.kit.cta}
-                    <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-                  </TrackedAnchor>
+                  <LineCta location={`${location}_kit`} label={edu.kit.cta} className="mt-12" />
                 </Reveal>
               </div>
 

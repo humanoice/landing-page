@@ -1,23 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import type { Locale } from "@/lib/i18n";
+import { usePathname, useRouter } from "next/navigation";
 
-type LanguageSwitcherProps = {
-  locale: Locale;
-  englishHref: string;
-  thaiHref: string;
-  label: string;
-};
-
-export function LanguageSwitcher({
-  locale,
-  englishHref,
-  thaiHref,
-  label,
-}: LanguageSwitcherProps) {
+/** Every bilingual page lives at /path and /th/path, so the twin is the same path with the prefix toggled. */
+export function LanguageSwitcher({ label }: { label: string }) {
   const router = useRouter();
-  const selectedHref = locale === "en" ? englishHref : thaiHref;
+  const pathname = usePathname();
+  const path = pathname.replace(/^\/th(?=\/|$)/, "") || "/";
+  const englishHref = path;
+  const thaiHref = path === "/" ? "/th" : `/th${path}`;
+  const selectedHref = pathname === path ? englishHref : thaiHref;
 
   return (
     <label className="relative inline-flex items-center">

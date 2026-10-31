@@ -1,6 +1,7 @@
 import { CursorCircle } from "@/components/cursor-circle";
 import { HeroReel } from "@/components/hero-reel";
 import { TrackedLink } from "@/components/track";
+import { Arrow, CTA, Eyebrow } from "@/components/ui";
 import { applyPath, type HomeDictionary, type Locale } from "@/lib/i18n";
 
 type HeroProps = { locale: Locale; copy: HomeDictionary["hero"] };
@@ -37,10 +38,9 @@ export function Hero({ locale, copy }: HeroProps) {
       <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-12 px-5 pb-24 pt-16 sm:px-8 lg:grid-cols-[1.25fr_0.9fr] lg:gap-8 lg:pb-28 lg:pt-24">
         {/* ---------- Left: message ---------- */}
         <div>
-          <p className="hero-rise flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-yellow-main">
-            <span className="inline-block h-px w-8 bg-yellow-main" />
+          <Eyebrow tone="dark" className="hero-rise">
             {copy.eyebrow}
-          </p>
+          </Eyebrow>
 
           <h1 className="mt-6 font-display text-[clamp(2.6rem,8.5vw,6rem)] font-black uppercase leading-[0.92] tracking-tight">
             <span className="line-mask">
@@ -49,16 +49,11 @@ export function Hero({ locale, copy }: HeroProps) {
               </span>
             </span>
             <span className="line-mask">
-              <span className="line-inner" style={{ animationDelay: "0.18s" }}>
-                {copy.title[1]}
-              </span>
-            </span>
-            <span className="line-mask">
               <span
                 className="line-inner text-yellow-main"
-                style={{ animationDelay: "0.31s" }}
+                style={{ animationDelay: "0.18s" }}
               >
-                {copy.title[2]}
+                {copy.title[1]}
               </span>
             </span>
           </h1>
@@ -78,12 +73,10 @@ export function Hero({ locale, copy }: HeroProps) {
               event="apply_click"
               params={{ location: "hero" }}
               href={applyPath(locale)}
-              className="group inline-flex items-center gap-2 rounded-full border-2 border-ink bg-yellow-main px-7 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.12em] text-ink shadow-[5px_5px_0_0_var(--ink)] transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[9px_9px_0_0_var(--ink)] active:translate-x-0 active:translate-y-0 active:shadow-[3px_3px_0_0_var(--ink)]"
+              className={CTA}
             >
               {copy.join}
-              <span className="transition-transform duration-200 group-hover:translate-x-1">
-                →
-              </span>
+              <Arrow />
             </TrackedLink>
           </div>
         </div>

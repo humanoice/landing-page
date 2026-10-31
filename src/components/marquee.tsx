@@ -2,7 +2,6 @@ import { Fragment } from "react";
 
 type MarqueeProps = {
   items: string[];
-  reverse?: boolean;
   /** css duration, e.g. "32s" */
   speed?: string;
   /** separator glyph between items */
@@ -18,7 +17,6 @@ type MarqueeProps = {
  */
 export function Marquee({
   items,
-  reverse = false,
   speed = "34s",
   sep = "✦",
   className = "",
@@ -41,7 +39,7 @@ export function Marquee({
   return (
     <div className={`marquee-host overflow-hidden ${className}`}>
       <div
-        className={`marquee ${reverse ? "marquee--rev" : ""}`}
+        className="marquee"
         style={{ "--speed": speed } as React.CSSProperties}
       >
         {group}

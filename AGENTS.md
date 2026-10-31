@@ -17,9 +17,10 @@ Database is Neon
 ## Folder Structure
 
 - `src/app/` — routes only
-- `src/components/` — every section; `home-page.tsx` composes them in order (Navbar → Hero → Marquee → Curriculum → Education → Partners → FAQ → Footer). Other pages: `education-page.tsx` (`/education/[factory|school|kids]`), `about-page.tsx` (`/about`, holds Team), `apply-page.tsx`.
+- `src/components/` — every section; `home-page.tsx` composes them in order (Navbar → Hero → Curriculum → Education → Partners → FAQ → Footer). Other pages: `education-page.tsx` (`/education/[factory|school|kids]`), `about-page.tsx` (`/about`, holds Team), `apply-page.tsx`, `master-plan-page.tsx` (English only). Shared primitives (CTA, Eyebrow, SectionHeading, accent rotation, LINE tiles) live in `ui.tsx`.
+- Every route follows one pattern: `getDictionary(locale)` → `pageMetadata(...)` from `src/lib/metadata.ts` → render `<XPage locale copy />`. Thai routes are the same file under `src/app/th/`; `th/layout.tsx` sets `lang="th"` once.
 - `src/lib/site.ts` — single source of SEO truth (name, url, ogImage, themeColor, `lineAddUrl`). Metadata, sitemap, robots, manifest all read from it.
-- `src/lib/i18n.ts` — every user-facing string, `en` + `th`. Marked `server-only`.
+- `src/lib/i18n.ts` — every user-facing string, `en` + `th`, plus the route helpers (`localePath`, `applyPath`, `educationPath`, `COURSE_SLUGS`). Marked `server-only`. Non-translatable switches (which segment shows the kit or certificate) live in the component, not here.
 - `db/` — Neon Postgres. `schema.sql` = database schema
 
 ## Offer structure

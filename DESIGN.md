@@ -4,7 +4,7 @@ The design language is called **"Build Joyfully"**: industrial-playful brutalism
 
 **Sources of truth**
 - **This codebase wins.** `src/app/globals.css` holds the colour and font tokens (under `:root` and `@theme inline` — Tailwind v4, no `tailwind.config`) plus every animation and pattern class. Everything else — shadows, radii, type sizes, tracking — is written as Tailwind utilities, mostly arbitrary values like `shadow-[5px_5px_0_0_var(--ink)]`. There are no `--shadow-*`, `--radius-*`, `--space-*` or `--dur-*` variables; don't reference them.
-- Shared form and button primitives live in `src/components/apply-ui.tsx`. Copy the class strings from there or from the component that already does the thing.
+- Shared primitives live in `src/components/ui.tsx` (deliberately not a client module, so server sections import the class strings too). Use them rather than re-typing the classes.
 - All user-facing strings, in en and th, are in `src/lib/i18n.ts`.
 - Surfaces: home (`/`, `/th`), the private-training pages (`/education/factory`, `/school`, `/kids`), `/about`, the application and payment flow (`/apply`), and `/master-plan`. `/certificate` uses its own print vocabulary (§12).
 
@@ -23,7 +23,7 @@ Thai should sound natural and conversational, not like translated marketing copy
 |---|---|
 | **Person** | "We" = Humanoice, "you" = the student, addressed as equals: *"We check it on the spot."* |
 | **Vocabulary** | The offering is a **bootcamp**. The two public courses are **Building Humanoids** (track `01`, hardware) and **Physical AI Basic** (track `02`, software). Private training is **Education**, split into Factory, Uni / School and Kids. |
-| **Prices** | Shown for the public courses only. Private training and kits never show a price — the CTA is LINE (*"Chat on LINE"*, *"Quote on LINE"*). |
+| **Prices** | Shown for the public courses only, on `/apply` (home course cards carry no price). Private training and kits never show a price — the CTA is LINE (*"Chat on LINE"*, *"Quote on LINE"*). |
 | **Headlines** | ALL CAPS in the display face, with the last phrase in the accent colour: *Pick your **track***, *Meet your **instructors***, *Questions, **answered***. In i18n this is a `title` + `highlight` pair. |
 | **Eyebrows** | Mono, uppercase, wide tracking, prefixed with `//`: `// The Tracks`, `// FAQ`, `// Step 2 of 2`. The hero eyebrow (`Humanoid School · Bangkok`) and footer location line are plain labels without `//`. |
 | **Body** | Sentence case. One idea per line. Card blurbs run 8–20 words. Curriculum items: a 2–4 word title plus one sentence (*"ROS 2 — The framework every modern robot runs on — nodes, topics, and control loops."*). |
@@ -41,14 +41,13 @@ Red was chosen *"to represent the boldness and innovative in modern robot techno
 
 | CSS var | Hex | Tailwind names | Role |
 |---|---|---|---|
-| `--red` | `#bd114a` | `crimson`, `red` | **Brand voice.** Hero and footer fields, featured cards, accent words in headlines. |
-| `--yellow-main` | `#fae251` | `yellow-main`, `yellow` | **Action colour.** Primary CTA fill, accents on dark, focus ring, selection, the home ticker. |
+| `--red` | `#bd114a` | `crimson`, `red` | **Brand voice.** Hero, education header and footer fields, outcome panels, accent words in headlines. |
+| `--yellow-main` | `#fae251` | `yellow-main`, `yellow` | **Action colour.** Primary CTA fill, accents on dark, focus ring, selection. |
 | `--orange-secondary` | `#d75656` | `coral`, `orange-secondary` | Second rotation accent. It is a coral red, not an orange. |
 | `--ink` | `#1b0a11` | `ink`, `foreground` | Warm near-black. **Every border and all body type.** Never use a grey border. |
 | `--cream` | `#fbf3e2` | `cream`, `background` | Page canvas. Also `siteConfig.themeColor`. |
 | `--cream-deep` | `#f3e6cd` | `cream-deep` | Alternating section, closed accordion rows, skeleton blocks. |
 | `--white` | `#ffffff` | `white` | Card and field fill. |
-| `--grey` | `#eeeeee` | `grey` | Legacy brand value, unused. |
 
 In classes use the Tailwind names (`bg-crimson`, `text-ink/70`). In inline styles and shadow arbitrary values use the vars (`var(--yellow-main)`, `shadow-[8px_8px_0_0_var(--shadow)]`). Prefer `crimson` and `coral` in new code.
 
@@ -64,10 +63,10 @@ In classes use the Tailwind names (`bg-crimson`, `text-ink/70`). In inline style
 | `::selection` | yellow background, ink text |
 
 ### Usage rules
-- **Section rhythm:** sections alternate so the page reads as stacked paper. Home runs crimson hero → yellow ticker → cream courses → cream-deep education → ink partners → cream FAQ → footer (ink ticker → photo CTA on ink → crimson bottom bar).
+- **Section rhythm:** sections alternate so the page reads as stacked paper. Home runs crimson hero → cream courses → cream-deep education → ink partners → cream FAQ → footer (ink ticker → photo CTA on ink → crimson bottom bar).
 - **At most two background colours** per screen region.
 - **Accent rotation:** rows rotate their shadow colour **yellow → coral → crimson** (team cards, education cards, "why" cards, FAQ rows). Course and program cards run yellow → coral. Form sections run yellow → coral → yellow.
-- **Featured content inverts:** crimson fill, cream type, yellow accents, yellow shadow (outcome panels, the About mission panel).
+- **Featured content inverts:** crimson fill, cream type, yellow accents, yellow shadow (outcome panels).
 - On ink grounds a cream card takes a `border-cream/15` border and a coral shadow (partner card).
 
 ---
@@ -123,10 +122,10 @@ Tailwind's default 4px scale; no custom spacing tokens.
 | Section padding | `py-20 sm:py-28` |
 | Anchored sections | `scroll-mt-20` so the sticky navbar doesn't cover them |
 | Card padding | `p-6 sm:p-7` tracks · `p-6 sm:p-8` form sections · `p-7` partners · `p-7 sm:p-10` outcome panel |
-| Grid gaps | `gap-6` partners · `gap-8` team · `gap-x-6 gap-y-10 xl:gap-x-8` tracks (room for stickers) · `gap-4` FAQ · `space-y-10` form sections |
+| Grid gaps | `gap-6` partners · `gap-8` team · `gap-x-6 gap-y-10 xl:gap-x-8` tracks and programs · `gap-4` FAQ · `space-y-10` form sections |
 
-- The **home navbar is the only fixed element**: `sticky top-0`, `bg-cream/90 backdrop-blur-sm`, `border-b-2 border-ink`. `/apply` and `/master-plan` get a slim, non-sticky header (logo badge + wordmark).
-- Transparency appears in exactly **two places**: that navbar, and the ink scrim over a photo — the footer bench shot and the Education program section (`bg-ink/55`, widening to a left-to-right `ink/85 → ink/55 → ink/30` gradient at `sm`). The scrim is the only gradient that isn't atmosphere.
+- The **navbar is the only fixed element** (home, about, education): `sticky top-0`, `bg-cream/90 backdrop-blur-sm`, `border-b-2 border-ink`. `/apply` and `/master-plan` get a slim, non-sticky header (logo badge + wordmark).
+- Transparency appears in **two forms**: that navbar, and an ink scrim over a photo. `ScrimPhoto` (`ui.tsx`) is the standard one — `bg-ink/55`, widening to a left-to-right `ink/85 → ink/55 → ink/30` gradient at `sm` — under the footer bench shot and the Education program section. The About header uses a flat `bg-ink/65`; the education header a crimson duotone fade; home education cards an ink fade up from the bottom. Scrims are legibility, never decoration.
 
 ---
 
@@ -141,7 +140,7 @@ Tailwind's default 4px scale; no custom spacing tokens.
 | `border-t-2 border-dashed border-ink/15` | Divider between a card's header and its list (`border-cream/25` on crimson) |
 | `shadow-[2px_2px_0_0_var(--ink)]` | Chips, pills, language switcher, slim-header logo badge, form price tags |
 | `shadow-[3px_3px_0_0_var(--ink)]` | Fields, nav CTA, navbar logo badge, yellow notices, apply sticker |
-| `shadow-[4px_4px_0_0_var(--ink)]` | Small CTA, price sticker, summary box, track fieldsets, checked run card |
+| `shadow-[4px_4px_0_0_var(--ink)]` | Small CTA, summary box, track fieldsets, checked run card |
 | `shadow-[5px_5px_0_0_var(--ink)]` | Primary CTA (→ 9px hover, 3px press) |
 | `shadow-[6px_6px_0_0_var(--shadow)]` | Accordion rows (→ 9px) |
 | `shadow-[6px_6px_0_0_var(--ink)]` | LINE QR tile (→ 9px) |
@@ -155,7 +154,7 @@ Tailwind's default 4px scale; no custom spacing tokens.
 | `rounded-3xl` | 1.5rem | Cards, accordion rows, panels, hero reel |
 | `rounded-[1.35rem]` | 1.35rem | LINE QR tile |
 | `rounded-2xl` | 1rem | 48px icon badge, partner logos, summary and track boxes in the form |
-| `rounded-xl` | 0.75rem | Fields, price sticker, 40px badge, logo badge, run cards, notices |
+| `rounded-xl` | 0.75rem | Fields, 40px badge, logo badge, run cards, notices |
 | `rounded-lg` | 0.5rem | Small numbered chips (28–36px), form price tags |
 
 ---
@@ -165,13 +164,13 @@ Tailwind's default 4px scale; no custom spacing tokens.
 | Pattern | Spec | Where |
 |---|---|---|
 | **Paper grain** | `body::before`: fixed SVG `feTurbulence` film (baseFrequency .85, 3 octaves), `opacity .06`, `mix-blend-mode: overlay` | Everywhere |
-| **Blueprint grid** `.grid-lines` | 1px lines; set `--line` and `--cell` inline (defaults ink 6%, 72px) | Hero: white 7%, 80px · Partners: white 5%, 72px |
+| **Blueprint grid** `.grid-lines` | 1px lines; set `--line` and `--cell` inline (defaults ink 6%, 72px) | Hero and education header: white 7%, 80px · Ink sections (`InkAtmosphere`: partners, kit): white 5%, 72px |
 | **Dot field** `.dots` | 1.6px dots on a 22px grid; set `--dot` inline | FAQ: ink 7% · Footer: yellow 25% at `opacity-30` · Hero accent patch: yellow 40% at `opacity-40` |
-| **Radial glow** | Inline `radial-gradient` | Hero: yellow 22% core · Partners: coral 18% |
+| **Radial glow** | Inline `radial-gradient` | Hero: yellow 22% core · Ink sections (`InkAtmosphere`): coral 18% |
 | **Floating shapes** | Outlined circle (`border-yellow-main/25`) and pill (`border-cream/15`), 2px, `.float`. The circle is `CursorCircle`: it trails the mouse across the header and drifts home on leave (mouse only, still under reduced motion) | Hero, education header |
 
 - The hero field is flat crimson with the grid, glow, dots and floating outlines. Its one piece of media is the **bench window** (`HeroReel`): a 9:16 loop of real workshop footage (`/hero-loop.mp4`, poster `/hero-loop-poster.webp`) in a 3px ink frame with a 12px yellow shadow. It stands straight because it's evidence, not a sticker.
-- Gradients are never used as decoration. The two radial glows are atmosphere; the footer scrim is legibility.
+- Gradients are never used as decoration. The radial glows are atmosphere; scrims are legibility.
 - Photography is warm and real: team portraits (`public/team/`, square crops), the footer bench shot (`roboparty-background.webp`). There's no illustration on the site today.
 - **Kit robot** (`robot-rp0.jpeg`, the "own one" section on ink): a studio shot on black, no frame. It stands bottom-right on the section floor with `mix-blend-lighten`, so its black backdrop becomes the ink ground, and a mask feathers its left, right and top edges. Below `lg` a spacer under the CTA gives it room to stand. Reuse this for any product cut-out shot on black.
 
@@ -209,13 +208,12 @@ All motion is CSS classes in `globals.css`; there are no duration or easing vari
 | `.reveal` (+ `<Reveal>`) | 750ms `cubic-bezier(.16,1,.3,1)`, 30px rise plus fade, once | Section headers and cards on scroll |
 | Stagger | `delay={i * 130}` across card rows, `i * 90` down FAQ rows | Reveal delay |
 | `.hero-rise` | 900ms expo-out, 34px rise; stagger with inline `animationDelay` | Hero (0 → 0.7s), `/apply` and `/master-plan` headers (0.08s steps) |
-| `.line-mask` / `.line-inner` | 1s expo-out, lines at 0.05 / 0.18 / 0.31s | Hero headline, line by line |
+| `.line-mask` / `.line-inner` | 1s expo-out, lines at 0.05 / 0.18s | Hero headline, line by line |
 | `.pop-in` | 700ms `cubic-bezier(.34,1.56,.64,1)`, scales from 0.6; rotation from `--rot` (default −6deg — set `--rot: 0deg` for panels) | Apply sticker, outcome panels, payment header, form notices |
 | `.float` | 6s ease-in-out, rises 14px and back | Hero floating shapes |
-| `.marquee` | `--speed` (CSS default 32s; `Marquee` default 34s), linear, pauses on hover; `.marquee--rev` reverses | Home ticker 28s, footer ticker 30s |
+| `.marquee` | `--speed` (CSS default 32s; `Marquee` default 34s), linear, pauses on hover | Footer ticker 30s |
 | `.tick` | 0.9s, three square ticks staggered 0.15s | Hero reel buffering chip. **Never a spinner.** |
 | `animate-pulse` (Tailwind) | – | 6px dots in the nav CTA and `BusyNote`; form skeleton |
-| `.wave`, `.spin-slow` | 5s mascot wave / 26s rotation | Defined but currently unused |
 
 Everything neutralises under `prefers-reduced-motion`: animations and transitions collapse to 0.001ms, and `.reveal`, `.hero-rise`, `.line-inner`, `.pop-in` render in place. `HeroReel` also stays on its poster frame and only plays while on screen. The `<noscript>` block in `layout.tsx` keeps `.reveal` content visible and hides the reel's buffering chip.
 
@@ -223,7 +221,7 @@ Everything neutralises under `prefers-reduced-motion`: animations and transition
 
 ## 9. Iconography & glyphs
 
-- **Line icons** are hand-drawn inline SVG: a 24×24 viewBox, `stroke-width: 2.4`, round caps and joins, `currentColor`, no fills (see `ICON_PROPS` in `curriculum.tsx`). There is no icon font or package. Existing icons: assemble (wrench), code (`</>`), walk (figure), and the FAQ plus (stroke 3, rotates 45° to a close).
+- **Line icons** are hand-drawn inline SVG: a 24×24 viewBox, `stroke-width: 2.4`, round caps and joins, `currentColor`, no fills (see `ICON_PROPS` in `icons.tsx`). There is no icon font or package. Existing icons: assemble (wrench), code (`</>`), walk (figure), and the FAQ plus (stroke 3, rotates 45° to a close).
 - The LinkedIn mark is the only filled icon.
 - **Draw new icons to that exact spec.** Don't substitute a CDN icon set.
 - **Icons never float free.** They sit in a bordered accent **Badge**: 48px (`size-12 rounded-2xl`) on track cards, 32px round for the FAQ plus.
@@ -246,13 +244,13 @@ Everything neutralises under `prefers-reduced-motion`: animations and transition
 - **Navbar lockup:** a 40px white badge (`rounded-xl`, 2px ink border, 3px ink shadow) holding the mark at 34px, then **ฮิวแมนน้อย** in display extrabold `text-lg`, with **HUMANOICE** under it in mono 10px uppercase at `0.32em`, crimson.
 - **Footer lockup:** 36px white badge with a `border-cream/30` border and no shadow; kicker at `0.28em` in yellow.
 - **Slim header** (`/apply`, `/master-plan`): 36px badge with a 2px shadow, wordmark only, no kicker.
-- There's no mascot illustration in this repo. If one is added, it's the only illustration allowed and animates with `.wave`.
+- There's no mascot illustration in this repo. If one is added, it's the only illustration allowed.
 
 ---
 
 ## 11. Components
 
-Production components live in `src/components/`. The shared primitives are exported from `apply-ui.tsx`: class strings `CTA`, `CTA_SMALL`, `CTA_BUSY`, `PILL`, `CHIP`, `INPUT`, `LABEL`, `ERROR`, `META`, and components `Arrow`, `BusyNote`, `Section`, `TextField`, `OutcomePanel`, `LineCta`, `LineQr`. The hero, navbar and curriculum inline their own CTA strings; keep them in step with `CTA` when changing the button.
+Production components live in `src/components/`. The shared primitives are exported from `ui.tsx`: class strings `CTA`, `CTA_SMALL`, `CTA_BUSY`, `PILL`, `CHIP`, `INPUT`, `LABEL`, `ERROR`, `META`; the `accent(i)` rotation; and components `Arrow`, `Eyebrow`, `SectionHeading`, `SyllabusList`, `InkAtmosphere`, `ScrimPhoto`, `BusyNote`, `Section`, `TextField`, `OutcomePanel`, `LineCta`, `LineQr`. `SlimHeader` and `siteLinks` live in `navbar.tsx`. Only the navbar (crimson variant) and curriculum (full-width, gentler hover) keep their own CTA strings; keep them in step with `CTA` when changing the button.
 
 Every CTA that leads to `/apply` or LINE goes through `TrackedLink` / `TrackedAnchor` (`track.tsx`) with a GA event and a `location` param.
 
@@ -273,16 +271,14 @@ Every CTA that leads to `/apply` or LINE goes through `TrackedLink` / `TrackedAn
 - **Card.** 3px ink border, `rounded-3xl`, white, cream or crimson fill, 8px shadow coloured through `--shadow`.
 - **Section** (form). White Card with a 40px mono number Badge, a display title (18–20px extrabold uppercase), and an optional hint at `ink/55`.
 - **Badge.** Accent-filled square with a 2px ink border holding an icon or number: 48px `rounded-2xl` (track icon), 40px `rounded-xl` (form step), 36px / 28px `rounded-lg` (track numbers), 14px `rounded` (list bullet).
-- **Price sticker.** Rides a track card's top edge (`absolute -top-5 right-5`). Mono 16px bold, `rounded-xl`, 2px border, 4px ink shadow, tilted ±2° statically. Crimson with white text on white cards; yellow with ink text on the featured card.
 - **Apply sticker.** Yellow pill beside the `/apply` headline: mono 11px at `.14em`, `★` prefix, 3px shadow, `.pop-in` at `--rot: 6deg`. Hidden below `sm`.
-- **MetaPill.** Read-only pill for duration: 2px border at `ink/15`, mono 11px at `.14em` in crimson, leading 6px dot. On crimson: `border-cream/30`, yellow.
-- **Topic pill.** 1px `border-cream/30`, mono 10px at `.08em`, `cream/80` — the featured card's per-track topic list.
+- **MetaPill.** Read-only pill for duration: 2px border at `ink/15`, mono 11px at `.14em` in crimson, leading 6px dot.
 - **Notice.** Yellow `rounded-xl` box, 2px border, 3px shadow, `.pop-in` — discount applied, saved details found. Empty states use a dashed `border-ink/25` box on `bg-cream/60`.
 
 ### Typography
 - **Eyebrow.** A 32×1px rule (`h-px w-8`), then mono 12px uppercase at `.28em`. Crimson on light grounds, yellow on dark.
 - **SectionHeading.** Section h2 size from §3, black weight, uppercase, `title` then a space then the accent `highlight` span.
-- **SpecItem.** Hero spec-bar cell: mono 10px caption at `.22em` in yellow over a display value at 18px bold, divided by `cream/15` rules; 2 columns on mobile, 4 from `sm`.
+- **SpecItem.** Education-header spec-bar cell: mono 10px caption at `.22em` in yellow over a display value at 18px bold, divided by `cream/15` rules; 2 columns on mobile, 4 from `sm`.
 
 ### Feedback
 - **Accordion.** Native `<details>`, no client JS.
@@ -294,15 +290,14 @@ Every CTA that leads to `/apply` or LINE goes through `TrackedLink` / `TrackedAn
 
 ### Motion
 - **Marquee.** Renders the items twice and translates −50% for a seamless loop that pauses on hover.
-  - Home ticker: yellow band with 2px ink rules, display 14px black at `.18em`, crimson `◆` separators.
   - Footer ticker: ink band, yellow display text at `.2em`, crimson `✦` separators.
 - **Reveal.** IntersectionObserver wrapper (threshold .15, bottom margin −8%) that adds `.is-visible` once.
 
 ### Composites
 - **Navbar:** lockup, page links (`Education ▾` with a dropdown of the three segments, `About us`), language switcher, nav CTA. Below `md` the links and language switcher move into a round menu button that drops a full-width cream panel (`nav-menu.tsx`).
-- **Education page:** crimson header with spec bar and a LINE CTA → "why" cards (cream) → program cards on a scrimmed classroom photo (`public/class/programming2.jpg`, ink scrim, cream/yellow heading) → "own one" kit cards on ink beside the kit robot photo (factory and uni/school only) → footer.
-- **Hero:** eyebrow, three-line masked headline, lead, CTA; bench window on the right; spec bar along the bottom.
-- **Track card:** price sticker, icon badge, kicker, name, MetaPill, blurb, dashed rule, item list, CTA pinned to the bottom.
+- **Education page:** crimson header with spec bar and a LINE CTA → "why" cards (cream) → program cards on a scrimmed classroom photo (`CLASS_PHOTOS.codeAlong`, ink scrim, cream/yellow heading) → sample certificate (uni/school and kids) → "own one" kit cards on ink beside the kit robot photo (factory and uni/school) → footer. Which optional sections a segment shows is `SEGMENT_META` in `education-page.tsx`.
+- **Hero:** eyebrow, two-line masked headline, lead, CTA; bench window on the right.
+- **Track card:** class photo bleeding to the edges, icon badge, kicker, name, MetaPill, blurb, dashed rule, `SyllabusList`, CTA pinned to the bottom.
 - **Team card:** square photo Card with a numbered accent chip, LinkedIn IconButton, name, mono role in crimson, blurb.
 - **Partner cards:** cream partner Card on ink.
 - **Footer:** mission ticker, photo CTA (scrim, LINE QR, location eyebrow, closer headline), bottom bar (lockup, nav, social marks, copyright).
