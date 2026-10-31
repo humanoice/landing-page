@@ -5,6 +5,7 @@ import { Hero } from "@/components/hero";
 import { Navbar } from "@/components/navbar";
 import { Partners } from "@/components/partners";
 import { SiteFooter } from "@/components/site-footer";
+import { Testimonials } from "@/components/testimonials";
 import { type HomeDictionary, type Locale } from "@/lib/i18n";
 
 type HomePageProps = {
@@ -20,6 +21,7 @@ export function HomePage({ locale, copy }: HomePageProps) {
         <Hero locale={locale} copy={copy.hero} />
         <Curriculum locale={locale} copy={copy.curriculum} />
         <Education locale={locale} copy={copy.education} />
+        <Testimonials copy={copy.testimonials} />
         <Partners copy={copy.partners} />
         <Faq locale={locale} copy={copy.faq} />
       </main>

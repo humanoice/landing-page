@@ -63,7 +63,7 @@ In classes use the Tailwind names (`bg-crimson`, `text-ink/70`). In inline style
 | `::selection` | yellow background, ink text |
 
 ### Usage rules
-- **Section rhythm:** sections alternate so the page reads as stacked paper. Home runs crimson hero → cream courses → cream-deep education → ink partners → cream FAQ → footer (ink ticker → photo CTA on ink → crimson bottom bar).
+- **Section rhythm:** sections alternate so the page reads as stacked paper. Home runs crimson hero → cream courses → cream-deep education → cream testimonials → ink partners → cream FAQ → footer (ink ticker → photo CTA on ink → crimson bottom bar).
 - **At most two background colours** per screen region.
 - **Accent rotation:** rows rotate their shadow colour **yellow → coral → crimson** (team cards, education cards, "why" cards, FAQ rows). Course and program cards run yellow → coral. Form sections run yellow → coral → yellow.
 - **Featured content inverts:** crimson fill, cream type, yellow accents, yellow shadow (outcome panels).
@@ -257,6 +257,7 @@ Every CTA that leads to `/apply` or LINE goes through `TrackedLink` / `TrackedAn
 ### Actions
 - **CTA.** Pill, 2px ink border, yellow fill. Mono 14px bold uppercase at `.12em`, `px-7 py-3.5`, 5px ink shadow, trailing `<Arrow />`.
   - *`CTA_SMALL`:* `px-6 py-3`, 12px text, 4px shadow, for a CTA inside a card. The curriculum cards use a full-width variant with the gentler hover from §7.
+  - *`CTA_SECONDARY`:* the same CTA with a cream fill, for the quieter of two side-by-side actions (hero: Apply + `LineCta secondary`).
   - *Nav:* crimson fill, white 12px text at `.14em`, 3px shadow, leading pulsing yellow dot.
 - **IconButton.** 36px circle, 2px ink border, cream fill, 3px accent shadow that grows to 5px. Used only for LinkedIn on team cards.
 - **Pill.** Small outlined action inside a field or card (copy, fill). White, 2px border, mono 11px at `.12em`, 2px ink shadow. A ghost variant (clear a track pick) uses `border-ink/25 text-ink/55`, no shadow, inking up on hover.
@@ -296,9 +297,10 @@ Every CTA that leads to `/apply` or LINE goes through `TrackedLink` / `TrackedAn
 ### Composites
 - **Navbar:** lockup, page links (`Education ▾` with a dropdown of the three segments, `About us`), language switcher, nav CTA. Below `md` the links and language switcher move into a round menu button that drops a full-width cream panel (`nav-menu.tsx`).
 - **Education page:** crimson header with spec bar and a LINE CTA → "why" cards (cream) → program cards on a scrimmed classroom photo (`CLASS_PHOTOS.codeAlong`, ink scrim, cream/yellow heading) → sample certificate (uni/school and kids) → "own one" kit cards on ink beside the kit robot photo (factory and uni/school) → footer. Which optional sections a segment shows is `SEGMENT_META` in `education-page.tsx`.
-- **Hero:** eyebrow, two-line masked headline, lead, CTA; bench window on the right.
+- **Hero:** eyebrow, two-line masked headline, lead, Apply CTA plus a secondary LINE CTA; bench window on the right.
 - **Track card:** class photo bleeding to the edges, icon badge, kicker, name, MetaPill, blurb, dashed rule, `SyllabusList`, CTA pinned to the bottom.
 - **Team card:** square photo Card with a numbered accent chip, LinkedIn IconButton, name, mono role in crimson, blurb.
+- **Testimonial card:** white Card with an accent quote Badge (`“`), the quote (kept in Thai on every locale, `lang="th"`), a dashed rule, then a 56px photo badge and the name.
 - **Partner cards:** cream partner Card on ink.
 - **Footer:** mission ticker, photo CTA (scrim, LINE QR, location eyebrow, closer headline), bottom bar (lockup, nav, social marks, copyright).
 - **Apply flow:** form Sections with run picker and order summary; payment panel; OutcomePanel endings; skeleton cards (`border-ink/15`, `animate-pulse`) while courses stream in.

@@ -2,7 +2,7 @@ import type { StaticImageData } from "next/image";
 import generic1 from "../../public/class/generic1.jpg";
 import hardware4 from "../../public/class/hardware4.jpg";
 import programming2 from "../../public/class/programming2.jpg";
-import programming4 from "../../public/class/programming4.jpg";
+import programming5 from "../../public/class/programming5.jpg";
 import factory from "../../public/factory.jpg";
 import kids from "../../public/kids.jpeg";
 import university from "../../public/university.webp";
@@ -17,7 +17,7 @@ export const CLASS_PHOTOS = {
   groupWithRobots: hardware4,
   demoAtStand: generic1,
   codeAlong: programming2,
-  presenting: programming4,
+  presenting: programming5,
 };
 
 /** One real photo per private-training segment — the home card and the segment page header. */

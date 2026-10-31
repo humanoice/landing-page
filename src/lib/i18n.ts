@@ -77,6 +77,7 @@ const en = {
     description:
       "Thailand's first hands-on humanoid school. From raw materials to full deployment — you assemble, train, and deploy a real humanoid.",
     join: "Apply",
+    line: "Add LINE",
     reel: {
       alt: "Students laying out parts, testing a board with a multimeter, and walking a humanoid on a gantry at the Humanoice workshop",
     },
@@ -118,9 +119,15 @@ const en = {
     roles: ["CEO", "Staff Engineer", "Physical AI Engineer"],
     blurbs: [
       "Physics-loving engineer, now he works at a robotics and Physical AI company. Has taught computer science at top universities, including the National University of Singapore and Chulalongkorn.",
-      "Robot engineer with extensive experience from blockchain to AI technology. Now at an AI startup.",
+      "Computer engineer with a wide-ranging background. Spent 4 years teaching web, AI, and blockchain, and went through the Computer Olympiad camp at Khon Kaen University. Now works on AI and other nerdy tech.",
       "Senior product manager who loves putting AI to work in the real world. Now studying for a master's in Medical Robotics at Mahidol University.",
     ],
+  },
+  /** Section chrome only — the quotes stay in Thai on every locale, so they live with the names and photos in testimonials.tsx. */
+  testimonials: {
+    eyebrow: "// Testimonials",
+    title: "What students",
+    highlight: "say about us",
   },
   partners: {
     eyebrow: "// Open-Source Partners",
@@ -705,6 +712,7 @@ const th: Dictionary = {
     description:
       "โรงเรียนสอนประกอบฮิวแมนนอยด์ แบบลงมือทำแห่งแรกของไทย ตั้งแต่ชิ้นส่วนแรกจนพร้อมใช้งานจริง — คุณจะได้ประกอบ เขียนโปรแกรม และพาฮิวแมนนอยด์เดิน",
     join: "สมัคร",
+    line: "ติดต่อไลน์",
     reel: {
       alt: "นักเรียนกำลังจัดวางชิ้นส่วน ทดสอบบอร์ดด้วยมัลติมิเตอร์ และพาฮิวแมนนอยด์เดินบนราวช่วยพยุงที่เวิร์กช็อปของ Humanoice",
     },
@@ -746,9 +754,15 @@ const th: Dictionary = {
     roles: ["CEO", "Staff Engineer", "Physical AI Engineer"],
     blurbs: [
       "วิศวกรผู้ชื่นชอบฟิสิกส์ ปัจจุบันทำงานในบริษัทหุ่นยนต์และ Physical AI แห่งหนึ่งในกรุงเทพฯ มีประสบการณ์ในการสอนและอบรมด้านวิทยาการคอมพิวเตอร์ในมหาวิทยาลัยชั้นนำ เช่น National University of Singapore และจุฬาลงกรณ์",
-      "วิศวกรหุ่นยนต์ ประสบการณ์หลากหลายตั้งแต่งานสาย blockchain และ AI ตอนนี้ทำงานในบริษัทสตาร์ทอัพด้าน AI",
+      "วิศวกรคอมพิวเตอร์ประสบการณ์หลากหลาย มีประสบการณ์สอนเขียน Web, AI, Blockchain 4 ปี เคยเข้าร่วมค่ายโอลิมปิกวิชาการคอมพิวเตอร์ที่มหาวิทยาลัยขอนแก่น ปัจจุบันทำงานด้าน AI และเทคโนโลยีเนิร์ดๆ",
       "ผู้จัดการผลิตภัณฑ์อาวุโสที่สนุกกับการเอา AI มาใช้ในโลกจริง ปัจจุบันเรียนต่อปริญญาโทที่มหาวิทยาลัยมหิดล ด้าน Medical Robotics",
     ],
+  },
+  testimonials: {
+    eyebrow: "// เสียงจากผู้เรียน",
+    title: "ฟังจาก",
+    highlight: "ผู้เรียนตัวจริง",
+
   },
   partners: {
     eyebrow: "// พาร์ตเนอร์โอเพนซอร์ส",

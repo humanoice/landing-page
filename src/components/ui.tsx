@@ -126,8 +126,11 @@ export const INPUT =
 export const ERROR = "mt-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-crimson";
 export const CHIP =
   "inline-flex cursor-pointer select-none items-center rounded-full border-2 border-ink bg-white px-3.5 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink shadow-[2px_2px_0_0_var(--ink)] transition-all duration-150 hover:-translate-y-0.5 has-[:checked]:bg-ink has-[:checked]:text-yellow-main has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-yellow-main/60";
-export const CTA =
-  "group inline-flex items-center gap-2 rounded-full border-2 border-ink bg-yellow-main px-7 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.12em] text-ink shadow-[5px_5px_0_0_var(--ink)] transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[9px_9px_0_0_var(--ink)] active:translate-x-0 active:translate-y-0 active:shadow-[3px_3px_0_0_var(--ink)]";
+const CTA_BASE =
+  "group inline-flex items-center gap-2 rounded-full border-2 border-ink px-7 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.12em] text-ink shadow-[5px_5px_0_0_var(--ink)] transition-all duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[9px_9px_0_0_var(--ink)] active:translate-x-0 active:translate-y-0 active:shadow-[3px_3px_0_0_var(--ink)]";
+export const CTA = `${CTA_BASE} bg-yellow-main`;
+/** The quieter CTA beside a primary one: same shape and motion, cream fill. */
+export const CTA_SECONDARY = `${CTA_BASE} bg-cream`;
 /** CTA while its action runs: still, dimmed, and not pretending to be clickable. */
 export const CTA_BUSY =
   "disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[5px_5px_0_0_var(--ink)]";
@@ -323,11 +326,13 @@ type LineCtaProps = {
   label: string;
   /** The inset size, for a CTA inside a card. */
   small?: boolean;
+  /** Cream fill, for when it sits beside a primary CTA. */
+  secondary?: boolean;
   className?: string;
 };
 
 /** "Add us on LINE" — the way out of every dead end in this flow. */
-export function LineCta({ location, label, small, className = "" }: LineCtaProps) {
+export function LineCta({ location, label, small, secondary, className = "" }: LineCtaProps) {
   return (
     <TrackedAnchor
       event="line_click"
@@ -335,7 +340,7 @@ export function LineCta({ location, label, small, className = "" }: LineCtaProps
       href={siteConfig.lineAddUrl}
       target="_blank"
       rel="noreferrer"
-      className={`${CTA} ${small ? CTA_SMALL : ""} ${className}`}
+      className={`${secondary ? CTA_SECONDARY : CTA} ${small ? CTA_SMALL : ""} ${className}`}
     >
       {label}
       <Arrow />

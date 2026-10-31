@@ -1,7 +1,7 @@
 import { CursorCircle } from "@/components/cursor-circle";
 import { HeroReel } from "@/components/hero-reel";
 import { TrackedLink } from "@/components/track";
-import { Arrow, CTA, Eyebrow } from "@/components/ui";
+import { Arrow, CTA, Eyebrow, LineCta } from "@/components/ui";
 import { applyPath, type HomeDictionary, type Locale } from "@/lib/i18n";
 
 type HeroProps = { locale: Locale; copy: HomeDictionary["hero"] };
@@ -78,6 +78,7 @@ export function Hero({ locale, copy }: HeroProps) {
               {copy.join}
               <Arrow />
             </TrackedLink>
+            <LineCta secondary location="hero" label={copy.line} />
           </div>
         </div>
 
