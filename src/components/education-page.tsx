@@ -2,6 +2,7 @@ import Image from "next/image";
 import certificateExample from "../../public/certificate_example.png";
 import robotPhoto from "../../public/robot-rp0.jpeg";
 import { EDUCATION_PHOTOS } from "@/components/education";
+import { CursorCircle } from "@/components/cursor-circle";
 import { AssembleIcon, CodeIcon, WalkIcon } from "@/components/icons";
 import { Navbar } from "@/components/navbar";
 import { Reveal } from "@/components/reveal";
@@ -82,10 +83,7 @@ export function EducationPage({ locale, copy, segment }: EducationPageProps) {
             className="grid-lines absolute inset-0"
             style={{ "--line": "rgba(255,255,255,0.07)", "--cell": "80px" } as React.CSSProperties}
           />
-          <div
-            aria-hidden
-            className="float pointer-events-none absolute -right-16 top-16 size-56 rounded-full border-2 border-yellow-main/25"
-          />
+          <CursorCircle className="-right-16 top-16 size-56" />
 
           <div className="relative z-10 mx-auto max-w-7xl px-5 pb-20 pt-16 sm:px-8 lg:pb-24 lg:pt-24">
             <p className="hero-rise flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-yellow-main">

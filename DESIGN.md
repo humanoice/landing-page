@@ -168,7 +168,7 @@ Tailwind's default 4px scale; no custom spacing tokens.
 | **Blueprint grid** `.grid-lines` | 1px lines; set `--line` and `--cell` inline (defaults ink 6%, 72px) | Hero: white 7%, 80px · Partners: white 5%, 72px |
 | **Dot field** `.dots` | 1.6px dots on a 22px grid; set `--dot` inline | FAQ: ink 7% · Footer: yellow 25% at `opacity-30` · Hero accent patch: yellow 40% at `opacity-40` |
 | **Radial glow** | Inline `radial-gradient` | Hero: yellow 22% core · Partners: coral 18% |
-| **Floating shapes** | Outlined circle (`border-yellow-main/25`) and pill (`border-cream/15`), 2px, `.float` | Hero |
+| **Floating shapes** | Outlined circle (`border-yellow-main/25`) and pill (`border-cream/15`), 2px, `.float`. The circle is `CursorCircle`: it trails the mouse across the header and drifts home on leave (mouse only, still under reduced motion) | Hero, education header |
 
 - The hero field is flat crimson with the grid, glow, dots and floating outlines. Its one piece of media is the **bench window** (`HeroReel`): a 9:16 loop of real workshop footage (`/hero-loop.mp4`, poster `/hero-loop-poster.webp`) in a 3px ink frame with a 12px yellow shadow. It stands straight because it's evidence, not a sticker.
 - Gradients are never used as decoration. The two radial glows are atmosphere; the footer scrim is legibility.

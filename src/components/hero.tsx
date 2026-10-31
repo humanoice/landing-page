@@ -1,3 +1,4 @@
+import { CursorCircle } from "@/components/cursor-circle";
 import { HeroReel } from "@/components/hero-reel";
 import { TrackedLink } from "@/components/track";
 import { applyPath, type HomeDictionary, type Locale } from "@/lib/i18n";
@@ -21,10 +22,7 @@ export function Hero({ locale, copy }: HeroProps) {
             "radial-gradient(60% 55% at 68% 38%, rgba(250,226,81,0.22) 0%, rgba(189,17,74,0) 60%)",
         }}
       />
-      <div
-        aria-hidden
-        className="float pointer-events-none absolute -left-16 top-24 size-56 rounded-full border-2 border-yellow-main/25"
-      />
+      <CursorCircle className="-left-16 top-24 size-56" />
       <div
         aria-hidden
         className="float pointer-events-none absolute right-[8%] top-10 h-10 w-40 rounded-full border-2 border-cream/15"
