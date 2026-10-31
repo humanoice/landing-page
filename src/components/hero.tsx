@@ -101,25 +101,6 @@ export function Hero({ locale, copy }: HeroProps) {
           />
         </div>
       </div>
-
-      {/* ---------- Spec bar ---------- */}
-      <div className="relative z-10 border-t-2 border-cream/20">
-        <dl className="mx-auto grid max-w-7xl grid-cols-2 divide-cream/15 sm:grid-cols-4 sm:divide-x">
-          {copy.facts.map(([label, value]) => (
-            <div
-              key={label}
-              className="border-t border-cream/15 px-5 py-5 first:border-t-0 sm:border-t-0 sm:px-8 [&:nth-child(2)]:border-t-0"
-            >
-              <dt className="font-mono text-[10px] uppercase tracking-[0.22em] text-yellow-main">
-                {label}
-              </dt>
-              <dd className="mt-1 font-display text-lg font-bold tracking-tight text-cream">
-                {value}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </div>
     </section>
   );
 }

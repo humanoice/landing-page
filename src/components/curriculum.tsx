@@ -76,13 +76,13 @@ export function Curriculum({ locale, copy }: CurriculumProps) {
                 className="relative flex h-full flex-col rounded-3xl border-[3px] border-ink bg-white p-6 pt-9 text-ink shadow-[8px_8px_0_0_var(--shadow)] sm:p-7 sm:pt-10"
                 style={{ "--shadow": track.color } as React.CSSProperties}
               >
-                {/* Price sticker riding the top edge */}
+                {/* Price sticker riding the top edge
                 <span
                   className="absolute -top-5 right-5 z-10 rounded-xl border-2 border-ink bg-crimson px-3.5 py-1.5 font-mono text-base font-bold tracking-tight text-white shadow-[4px_4px_0_0_var(--ink)]"
                   style={{ transform: `rotate(${track.stickerRotate})` }}
                 >
                   {track.price}
-                </span>
+                </span> */}
 
                 {/* Class photo, bleeding to the card edges */}
                 <div className="relative -mx-6 -mt-9 mb-6 aspect-[16/10] overflow-hidden rounded-t-[1.3rem] border-b-[3px] border-ink bg-cream-deep sm:-mx-7 sm:-mt-10">

@@ -3,8 +3,6 @@ import { HomePage } from "@/components/home-page";
 import { getDictionary } from "@/lib/i18n";
 import { siteConfig } from "@/lib/site";
 
-const TICKER = ["ประกอบ", "จำลอง", "นำไปใช้งาน", "โอเพนซอร์ส", "สร้างในกรุงเทพฯ"];
-
 export const metadata: Metadata = {
   title: "Humanoice — โรงเรียนฮิวแมนนอยด์แห่งประเทศไทย",
   description: "บูตแคมป์ฮิวแมนนอยด์แบบลงมือทำแห่งแรกของไทย จากการประกอบสู่การทำให้หุ่นยนต์เดินได้",
@@ -25,7 +23,7 @@ export default function ThaiHome() {
 
   return (
     <div lang="th">
-      <HomePage locale="th" copy={copy} ticker={TICKER} />
+      <HomePage locale="th" copy={copy} />
     </div>
   );
 }
