@@ -20,7 +20,7 @@ export function SiteFooter({ locale, copy }: SiteFooterProps) {
   const socials = [
     {
       name: "LINE",
-      href: siteConfig.lineAddUrl,
+      href: siteConfig.linePath,
       icon: "/social/line-logo.png",
       size: "size-8",
       // LINE keeps its own event — the existing GA funnel counts on it.

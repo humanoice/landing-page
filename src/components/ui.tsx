@@ -337,7 +337,7 @@ export function LineCta({ location, label, small, secondary, className = "" }: L
     <TrackedAnchor
       event="line_click"
       params={{ location }}
-      href={siteConfig.lineAddUrl}
+      href={siteConfig.linePath}
       target="_blank"
       rel="noreferrer"
       className={`${secondary ? CTA_SECONDARY : CTA} ${small ? CTA_SMALL : ""} ${className}`}
@@ -362,14 +362,14 @@ export function LineQr({ location, label, large }: LineQrProps) {
     <TrackedAnchor
       event="line_click"
       params={{ location }}
-      href={siteConfig.lineAddUrl}
+      href={siteConfig.linePath}
       target="_blank"
       rel="noreferrer"
       aria-label={label}
       className="block shrink-0 justify-self-start rounded-[1.35rem] bg-cream p-3 shadow-[6px_6px_0_0_var(--ink)] transition-transform duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[9px_9px_0_0_var(--ink)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-main sm:justify-self-end"
     >
       <Image
-        src={siteConfig.lineQrUrl}
+        src={siteConfig.lineQr}
         alt={label}
         width={large ? 220 : 200}
         height={large ? 220 : 200}

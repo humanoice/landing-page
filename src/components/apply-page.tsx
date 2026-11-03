@@ -57,7 +57,7 @@ export function ApplyPage({ locale, copy: dictionary, course }: ApplyPageProps) 
           <TrackedAnchor
             event="line_click"
             params={{ location: "apply_private_training" }}
-            href={siteConfig.lineAddUrl}
+            href={siteConfig.linePath}
             target="_blank"
             rel="noreferrer"
             className="font-semibold text-ink underline decoration-2 underline-offset-4 transition-colors hover:text-crimson"

@@ -135,7 +135,7 @@ function renderHtml({ firstName, copy, directions, runs }: PaymentConfirmation):
       <tr><td style="padding-top:12px">${esc(directions.laptop)}</td></tr>
       <tr><td style="padding-top:12px;font-weight:700">${esc(directions.onTime)}</td></tr>
       <tr><td style="padding-top:12px">${esc(directions.questions)}</td></tr>
-      <tr><td style="padding-top:12px"><a href="${esc(siteConfig.lineAddUrl)}" style="display:inline-block;padding:12px 22px;border:2px solid ${INK};border-radius:999px;background:${YELLOW};color:${INK};font-family:${MONO};font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-decoration:none">${esc(copy.lineCta)} &rarr;</a></td></tr>
+      <tr><td style="padding-top:12px"><a href="${esc(siteConfig.lineUrl)}" style="display:inline-block;padding:12px 22px;border:2px solid ${INK};border-radius:999px;background:${YELLOW};color:${INK};font-family:${MONO};font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-decoration:none">${esc(copy.lineCta)} &rarr;</a></td></tr>
       <tr><td style="padding-top:22px">${esc(copy.calendar)}</td></tr>
       <tr><td style="padding-top:28px">${esc(copy.signoff)}<br><strong>${esc(copy.team)}</strong></td></tr>
       <tr><td style="padding-top:28px;font-family:${MONO};font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(27,10,17,.5)">${esc(siteConfig.url)}</td></tr>
@@ -155,7 +155,7 @@ function renderText({ firstName, copy, directions, runs }: PaymentConfirmation):
     `${copy.map}: ${siteConfig.venue.mapsUrl}`,
     "",
     directionsText(directions),
-    `${copy.lineCta}: ${siteConfig.lineAddUrl}`,
+    `${copy.lineCta}: ${siteConfig.lineUrl}`,
     "",
     copy.calendar,
     "",

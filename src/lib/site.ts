@@ -19,9 +19,17 @@ export const siteConfig = {
     "Thailand's first hands-on humanoid bootcamp. From assemble to make it walk.",
   url: "https://humanoice.com",
   locale: "en_US",
+  // Every "add us on LINE" goes through humanoice.com/line, which redirects
+  // (next.config.ts) to `lineAddUrl`. Swapping the LINE account is then a
+  // one-line edit here, and printed QR codes never go stale.
+  /** On-site links: the LINE CTAs, the QR tile, the footer mark. */
+  linePath: "/line",
+  /** Off-site links (emails, llms.txt). The QR in `lineQr` encodes this URL. */
+  lineUrl: "https://humanoice.com/line",
+  /** Where /line lands. Only the redirect and the JSON-LD `sameAs` read it. */
   lineAddUrl: "https://lin.ee/vlNRsOQ",
-  // Official LINE QR for the same account — the host is allow-listed in next.config.ts.
-  lineQrUrl: "https://qr-official.line.me/gs/M_178uukqb_BW.png?oat_content=qr",
+  /** QR for `lineUrl`. */
+  lineQr: "/line-qr.png",
   // Public profiles. Rendered in the footer and fed to the JSON-LD `sameAs` list,
   // which is how search engines tie these accounts back to the brand.
   socialUrls: {

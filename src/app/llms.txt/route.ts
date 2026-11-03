@@ -82,7 +82,7 @@ maintenance support. Quotes for training and kits come through LINE.
 
 ## Contact
 
-- LINE (primary channel, ${footer.qrLabel}): ${siteConfig.lineAddUrl}
+- LINE (primary channel, ${footer.qrLabel}): ${siteConfig.lineUrl}
 - Facebook: ${siteConfig.socialUrls.facebook}
 - Instagram: ${siteConfig.socialUrls.instagram}
 - X: ${siteConfig.socialUrls.x}
