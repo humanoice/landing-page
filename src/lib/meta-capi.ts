@@ -1,5 +1,5 @@
 import "server-only";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { siteConfig } from "@/lib/site";
 
 /**
@@ -8,9 +8,13 @@ import { siteConfig } from "@/lib/site";
  *
  * The browser Pixel (src/components/meta-pixel.tsx) sends PageViews and sets
  * the `_fbp` / `_fbc` cookies; server events pass those along so Meta can tie
- * them to the same person. Events sent here have no browser twin, so there's
- * nothing to deduplicate. Without the cookies (Pixel blocked, QR straight to
- * /line) matching falls back to IP + user agent.
+ * them to the same person. Without the cookies (Pixel blocked, QR straight to
+ * /line) matching falls back to IP + user agent — plus hashed contact details
+ * when the event comes from a form.
+ *
+ * An event the browser also reports (SubmitApplication) carries the same
+ * `eventId` on both sides, and Meta keeps whichever arrives first. /line's
+ * Contact is server-only.
  *
  * Env:
  *  - META_CONVERSION_ACCESS_TOKEN  — Conversions API token for `siteConfig.metaPixelId`
@@ -55,16 +59,62 @@ export function clientIp(headers: Headers): string | undefined {
   );
 }
 
+/** Contact details as typed. Hashed here, never sent raw. */
+export type MetaPerson = {
+  email?: string;
+  phone?: string;
+  firstName?: string;
+  lastName?: string;
+  /** Our own id for them (students.id) — stable across devices. */
+  externalId?: string;
+};
+
+const sha256 = (value: string) => createHash("sha256").update(value).digest("hex");
+
+/** Meta's normalisation: trimmed, lower-cased, then SHA-256. Empty → left out. */
+const hashed = (value: string | undefined) => {
+  const normal = value?.trim().toLowerCase();
+  return normal ? [sha256(normal)] : undefined;
+};
+
+/**
+ * Digits only, with the country code: a Thai "081-234-5678" becomes 66812345678.
+ * A number typed with its own "+" or "00" prefix keeps that country.
+ */
+function normalPhone(raw: string | undefined): string | undefined {
+  if (!raw) return undefined;
+  const international = /^\s*(\+|00)/.test(raw);
+  let digits = raw.replace(/\D/g, "");
+  if (international) digits = digits.replace(/^00/, "");
+  else if (digits.startsWith("0")) digits = `66${digits.slice(1)}`;
+  return digits.length >= 8 ? digits : undefined;
+}
+
+function personData(person: MetaPerson | undefined) {
+  if (!person) return {};
+  const phone = normalPhone(person.phone);
+  return {
+    em: hashed(person.email),
+    ph: phone ? [sha256(phone)] : undefined,
+    fn: hashed(person.firstName),
+    ln: hashed(person.lastName),
+    external_id: hashed(person.externalId),
+  };
+}
+
 type WebEvent = {
-  /** A Meta standard event ("Contact", "Lead", …) or a custom name. */
+  /** A Meta standard event ("Contact", "SubmitApplication", …) or a custom name. */
   name: string;
+  /** Shared with the browser Pixel's `eventID` when both report the event. Random otherwise. */
+  eventId?: string;
   /** Full URL the event happened on. Required for `action_source: "website"`. */
   url: string;
   ip?: string;
   userAgent: string;
   fbc?: string;
   fbp?: string;
-  customData?: Record<string, string | number>;
+  person?: MetaPerson;
+  customData?: Record<string, string | number | string[]>;
 };
 
 /** Sends one website event. Never throws — tracking must not break the page. */
@@ -78,7 +128,7 @@ export async function sendMetaEvent(event: WebEvent): Promise<void> {
       {
         event_name: event.name,
         event_time: Math.floor(Date.now() / 1000),
-        event_id: randomUUID(),
+        event_id: event.eventId ?? randomUUID(),
         event_source_url: event.url,
         action_source: "website",
         user_data: {
@@ -86,6 +136,7 @@ export async function sendMetaEvent(event: WebEvent): Promise<void> {
           client_user_agent: event.userAgent,
           fbc: event.fbc,
           fbp: event.fbp,
+          ...personData(event.person),
         },
         custom_data: event.customData,
       },

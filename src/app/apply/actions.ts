@@ -1,5 +1,7 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
+import { cookies, headers } from "next/headers";
 import { after } from "next/server";
 import { EMAIL, LANGUAGES, PROGRAMMING_LANGUAGES, SKILLS } from "@/lib/apply-options";
 import { buildIcs, googleCalendarUrl, type CalendarEvent } from "@/lib/calendar";
@@ -8,7 +10,8 @@ import { db } from "@/lib/db";
 import { findDiscount, type Discount, type DiscountReason } from "@/lib/discount";
 import { directionsText, sendPaymentConfirmation, type ConfirmationRun } from "@/lib/email";
 import { recordRevenue } from "@/lib/flowaccount";
-import { getDictionary, type ApplyCopy, type Locale } from "@/lib/i18n";
+import { applyPath, getDictionary, type ApplyCopy, type Locale } from "@/lib/i18n";
+import { clientIp, FBC_COOKIE, FBP_COOKIE, isLikelyBot, sendMetaEvent } from "@/lib/meta-capi";
 import { announceApplication, announceSlipVerdict, type DiscountNotice } from "@/lib/notify";
 import {
   amountDue,
@@ -123,15 +126,22 @@ export type PaymentSummary = {
   runs: RunSummary[];
 };
 
+/**
+ * On every saved application: the id the server's Meta `SubmitApplication` went
+ * out under, so the browser Pixel reports the same event and Meta keeps one.
+ * Absent when nothing was saved (the honeypot's fake success).
+ */
+type Tracked = { metaEventId?: string };
+
 export type ApplyState =
   | { status: "idle" }
   | { status: "error"; errors: ApplyErrors; values: ApplyValues }
   /** Saved, but nothing to pay for here: seats they'd already paid for. LINE takes it from there. */
-  | { status: "success" }
+  | ({ status: "success" } & Tracked)
   /** Saved and priced — step 2 is the transfer. */
-  | { status: "pay"; payment: PaymentSummary }
+  | ({ status: "pay"; payment: PaymentSummary } & Tracked)
   /** Saved, and a code took the whole fee: no transfer, no slip — the seat is already theirs. */
-  | { status: "paid"; confirmation: Confirmation };
+  | ({ status: "paid"; confirmation: Confirmation } & Tracked);
 
 const MAX_LENGTH = 200;
 /** Thai addresses run long: building, soi, khwaeng, khet, province, postcode. */
@@ -370,6 +380,14 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
       select id from student
     `) as { id: string }[];
 
+    // The application is in. Every ending from here reports it to Meta once, and
+    // hands the id back for the browser Pixel's copy of the same event.
+    const metaEventId = randomUUID();
+    const saved = async <S extends ApplyState>(state: S, dueThb?: number): Promise<S> => {
+      await reportApplication(metaEventId, values, student.id, locale, open, dueThb);
+      return { ...state, metaEventId };
+    };
+
     // What's left to pay for. A run they already paid for isn't billed twice —
     // if that's all of them, there's no transfer and LINE takes over.
     const unpaid = (await sql`
@@ -387,7 +405,7 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
 
     if (unpaid.length === 0) {
       announceApplication(values, picked, null);
-      return { status: "success" };
+      return saved({ status: "success" });
     }
 
     // The bundle is earned by what this payment covers: a track paid for on an
@@ -432,7 +450,7 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
     // an attempt, and there's nothing left to pay for here.
     if (!payment) {
       announceApplication(values, picked, null);
-      return { status: "success" };
+      return saved({ status: "success" });
     }
 
     // A code that covers the whole fee leaves nothing to transfer, so there's no
@@ -460,12 +478,12 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
       free: confirmed !== null,
     });
 
-    if (confirmed) return { status: "paid", confirmation: confirmed };
+    if (confirmed) return saved({ status: "paid", confirmation: confirmed }, 0);
     // Nothing to transfer, yet nothing settled here: a run priced at 0 with no
     // code, or a free seat another submit got to first. Either way, LINE's.
-    if (dueThb === 0) return { status: "success" };
+    if (dueThb === 0) return saved({ status: "success" }, 0);
 
-    return {
+    return saved({
       status: "pay",
       payment: {
         id: payment.id,
@@ -476,7 +494,7 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
         withholdingThb,
         runs: unpaid.map((run) => summarise(run, locale)),
       },
-    };
+    }, dueThb);
   } catch (error) {
     console.error("[apply] failed to save application", error);
     return { status: "error", errors: { form: "server" }, values };
@@ -807,6 +825,49 @@ function discountOf(payment: PaymentRow): DiscountNotice | null {
 }
 
 /** A run in the words the applicant saw it in. */
+/**
+ * Meta `SubmitApplication`, server side (src/lib/meta-capi.ts). The hashed
+ * email / phone / name are what let Meta match an applicant whose browser
+ * blocked the Pixel. Sent after the response, so Meta never slows the form.
+ * `dueThb` is what this application leaves to transfer — undefined when
+ * nothing new was billed.
+ */
+async function reportApplication(
+  eventId: string,
+  values: ApplyValues,
+  studentId: string,
+  locale: Locale,
+  runs: { id: number; name: string }[],
+  dueThb: number | undefined,
+) {
+  const [headerList, cookieStore] = await Promise.all([headers(), cookies()]);
+  const userAgent = headerList.get("user-agent");
+  if (!userAgent || isLikelyBot(userAgent)) return;
+
+  const event = {
+    name: "SubmitApplication",
+    eventId,
+    url: `${siteConfig.url}${applyPath(locale)}`,
+    ip: clientIp(headerList),
+    userAgent,
+    fbc: cookieStore.get(FBC_COOKIE)?.value,
+    fbp: cookieStore.get(FBP_COOKIE)?.value,
+    person: {
+      email: values.email,
+      phone: values.phone,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      externalId: studentId,
+    },
+    customData: {
+      content_name: runs.map((run) => run.name).join(" + "),
+      content_ids: runs.map((run) => String(run.id)),
+      ...(dueThb !== undefined && { value: dueThb, currency: "THB" }),
+    },
+  };
+  after(() => sendMetaEvent(event));
+}
+
 function summarise(run: { name: string; start_time: string; end_time: string | null }, locale: Locale): RunSummary {
   return { name: run.name, ...formatRun(run.start_time, run.end_time, locale) };
 }
