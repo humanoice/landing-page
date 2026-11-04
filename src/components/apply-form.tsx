@@ -17,7 +17,7 @@ import {
   TextField,
 } from "@/components/ui";
 import { PaidPanel, PaymentPanel } from "@/components/payment-panel";
-import { track } from "@/components/track";
+import { track, trackMeta } from "@/components/track";
 import {
   checkDiscountCode,
   lookupApplicant,
@@ -260,6 +260,14 @@ export function ApplyForm({ locale, copy, courses, preselected }: ApplyFormProps
   const clearTrack = (trackNo: number) => {
     setPicked((current) => current.filter((id) => trackOf(id) !== trackNo));
   };
+
+  // The application is saved, whichever ending follows. Meta's copy of the event
+  // the server already sent — same id, counted once. Keyed on the id, so a
+  // re-render of the same ending never reports it twice.
+  const metaEventId = state.status === "idle" || state.status === "error" ? undefined : state.metaEventId;
+  useEffect(() => {
+    if (metaEventId) trackMeta("SubmitApplication", {}, metaEventId);
+  }, [metaEventId]);
 
   if (state.status === "success") {
     return <SuccessPanel copy={copy.success} />;

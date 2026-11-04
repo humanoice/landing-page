@@ -339,7 +339,7 @@ export function LineCta({ location, label, small, secondary, className = "" }: L
       params={{ location }}
       href={siteConfig.linePath}
       target="_blank"
-      rel="noreferrer"
+      rel="noopener"
       className={`${secondary ? CTA_SECONDARY : CTA} ${small ? CTA_SMALL : ""} ${className}`}
     >
       {label}
@@ -364,7 +364,7 @@ export function LineQr({ location, label, large }: LineQrProps) {
       params={{ location }}
       href={siteConfig.linePath}
       target="_blank"
-      rel="noreferrer"
+      rel="noopener"
       aria-label={label}
       className="block shrink-0 justify-self-start rounded-[1.35rem] bg-cream p-3 shadow-[6px_6px_0_0_var(--ink)] transition-transform duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[9px_9px_0_0_var(--ink)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-main sm:justify-self-end"
     >

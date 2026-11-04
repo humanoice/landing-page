@@ -18,6 +18,15 @@ export function track(event: string, params?: EventParams) {
   sendGAEvent("event", event, params ?? {});
 }
 
+/**
+ * Report a Meta Pixel standard event. `eventId` matches the server's Conversions
+ * API copy (src/lib/meta-capi.ts) so Meta counts the pair once. A no-op when the
+ * Pixel isn't on the page (dev, blocked).
+ */
+export function trackMeta(event: string, params: EventParams, eventId: string) {
+  window.fbq?.("track", event, params, { eventID: eventId });
+}
+
 type TrackingProps = { event: string; params?: EventParams };
 
 /**

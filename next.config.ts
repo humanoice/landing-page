@@ -1,12 +1,6 @@
 import type { NextConfig } from "next";
-import { siteConfig } from "./src/lib/site";
 
 const nextConfig: NextConfig = {
-  // humanoice.com/line is the one LINE link the site, emails and printed QR use.
-  // Temporary (307), so changing `lineAddUrl` takes effect without stale browser caches.
-  async redirects() {
-    return [{ source: siteConfig.linePath, destination: siteConfig.lineAddUrl, permanent: false }];
-  },
   // The certificate PDF reads its fonts and images off disk at request time, which
   // the tracer can't see — ship them with that route (src/components/certificate-pdf.tsx).
   outputFileTracingIncludes: {
