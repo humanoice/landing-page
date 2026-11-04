@@ -142,7 +142,8 @@ export function SiteFooter({ locale, copy }: SiteFooterProps) {
                     params={social.params}
                     href={social.href}
                     target="_blank"
-                    rel="noreferrer"
+                    // Keep the referrer on our own /line so GA can tell site clicks from QR scans.
+                    rel={social.href.startsWith("/") ? "noopener" : "noreferrer"}
                     aria-label={`Follow Humanoice on ${social.name}`}
                     className="group grid size-9 place-items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-main"
                   >

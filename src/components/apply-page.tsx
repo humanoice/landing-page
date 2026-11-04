@@ -59,7 +59,7 @@ export function ApplyPage({ locale, copy: dictionary, course }: ApplyPageProps) 
             params={{ location: "apply_private_training" }}
             href={siteConfig.linePath}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener"
             className="font-semibold text-ink underline decoration-2 underline-offset-4 transition-colors hover:text-crimson"
           >
             {copy.privateTraining.link} →
