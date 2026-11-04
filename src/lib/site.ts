@@ -31,6 +31,12 @@ export const siteConfig = {
   lineAddUrl: "https://lin.ee/vlNRsOQ",
   /** QR for `lineUrl`. */
   lineQr: "/line-qr.png",
+  /**
+   * Meta Pixel / Conversions API dataset. Public — it ships in every page's HTML.
+   * The browser Pixel loads site-wide (meta-pixel.tsx) except on /line, which
+   * reports its `Contact` from the server instead (lib/meta-capi.ts).
+   */
+  metaPixelId: "983093654320711",
   // Public profiles. Rendered in the footer and fed to the JSON-LD `sameAs` list,
   // which is how search engines tie these accounts back to the brand.
   socialUrls: {

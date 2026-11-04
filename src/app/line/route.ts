@@ -1,3 +1,5 @@
+import { after, type NextRequest } from "next/server";
+import { FBC_COOKIE, FBP_COOKIE, clientIp, fbcFromClickId, isLikelyBot, sendMetaEvent } from "@/lib/meta-capi";
 import { siteConfig } from "@/lib/site";
 
 /**
@@ -23,8 +25,16 @@ import { siteConfig } from "@/lib/site";
  *  - emails: `utm_source=email`;
  *  - printed QR: no referrer, no UTM (direct). Tag future prints with
  *    `?utm_source=qr&utm_medium=print` to separate them from typed visits.
+ *
+ * Meta ads: every real visit also sends a `Contact` event through the
+ * Conversions API (src/lib/meta-capi.ts) from the server, after the response
+ * is out — so it doesn't wait on Meta and an ad blocker can't stop it. The
+ * ad click comes from `fbclid` on this URL, or the `_fbc` cookie the Pixel (or
+ * src/proxy.ts) saved when the ad landed elsewhere; `_fbp` ties it to the
+ * visitor's earlier PageViews. The browser Pixel isn't loaded here — it would
+ * hold up the hop to LINE, and the server event already covers it. That makes this route dynamic: a cached
+ * copy would skip the event, hence `no-store`.
  */
-export const dynamic = "force-static";
 
 const GA_ID = "G-F5KWLB1XNM";
 const FALLBACK_MS = 1000;
@@ -79,8 +89,37 @@ a{display:inline-block;margin-top:16px;padding:12px 22px;border:2px solid #1b0a1
 </html>`;
 }
 
-export function GET() {
-  return new Response(html(), {
-    headers: { "content-type": "text/html; charset=utf-8" },
+/** Rendered once per server instance — the page itself never changes. */
+const PAGE = html();
+
+export function GET(request: NextRequest) {
+  const userAgent = request.headers.get("user-agent");
+  const prefetch =
+    request.method !== "GET" ||
+    /prefetch/i.test(request.headers.get("sec-purpose") ?? request.headers.get("purpose") ?? "");
+
+  if (userAgent && !prefetch && !isLikelyBot(userAgent)) {
+    const fbclid = request.nextUrl.searchParams.get("fbclid");
+    const fbc = fbclid ? fbcFromClickId(fbclid) : request.cookies.get(FBC_COOKIE)?.value;
+    const { pathname, search } = request.nextUrl;
+
+    after(() =>
+      sendMetaEvent({
+        name: "Contact",
+        url: `${siteConfig.url}${pathname}${search}`,
+        ip: clientIp(request.headers),
+        userAgent,
+        fbc,
+        fbp: request.cookies.get(FBP_COOKIE)?.value,
+        customData: { content_name: "LINE" },
+      }),
+    );
+  }
+
+  return new Response(PAGE, {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "private, no-store",
+    },
   });
 }

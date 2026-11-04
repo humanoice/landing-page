@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Prompt, Unbounded, Space_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { MetaPixel } from "@/components/meta-pixel";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
@@ -136,6 +137,9 @@ export default function RootLayout({
       {process.env.NODE_ENV === "production" && (
         <GoogleAnalytics gaId="G-F5KWLB1XNM" />
       )}
+      {/* Meta Pixel — PageViews plus the _fbp/_fbc cookies the /line Conversions
+          API event reads. Production only, like GA. */}
+      {process.env.NODE_ENV === "production" && <MetaPixel />}
     </html>
   );
 }
