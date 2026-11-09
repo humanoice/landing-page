@@ -356,6 +356,8 @@ const en = {
     eyebrow: "// About us",
     heading: ["Make Thailand", "the Shenzhen of Southeast Asia."],
     lead: "Humanoice (ฮิวแมนน้อย) is a humanoid robotics lab in Phra Khanong, Bangkok. We teach people to build real open-source humanoids, and we sell and service the robots too.",
+    companyLabel: "Registered company",
+    registrationLabel: "Business ID",
   },
   footer: {
     ticker: "Make Thailand the Shenzhen of Southeast Asia",
@@ -984,6 +986,8 @@ const th: Dictionary = {
     eyebrow: "// เกี่ยวกับเรา",
     heading: ["เราสร้าง", "ฮิวแมนนอยด์"],
     lead: "ฮิวแมนน้อย (Humanoice) คือแล็บหุ่นยนต์ฮิวแมนนอยด์ที่พระโขนง กรุงเทพฯ เราสอนคนให้ประกอบฮิวแมนนอยด์โอเพนซอร์สของจริง และขายพร้อมดูแลหุ่นด้วย",
+    companyLabel: "ชื่อบริษัท",
+    registrationLabel: "เลขทะเบียนนิติบุคคล",
   },
   footer: {
     ticker: "เปลี่ยนประเทศไทยให้เป็น Shenzhen แห่ง Southeast Asia",

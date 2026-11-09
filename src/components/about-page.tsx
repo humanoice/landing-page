@@ -5,6 +5,7 @@ import { Team } from "@/components/team";
 import { Eyebrow } from "@/components/ui";
 import { CLASS_PHOTOS } from "@/lib/class-photos";
 import type { HomeDictionary, Locale } from "@/lib/i18n";
+import { siteConfig } from "@/lib/site";
 
 type AboutPageProps = { locale: Locale; copy: HomeDictionary };
 
@@ -43,6 +44,28 @@ export function AboutPage({ locale, copy }: AboutPageProps) {
             >
               {about.lead}
             </p>
+            <dl
+              className="hero-rise mt-10 grid max-w-2xl gap-y-4 border-t-2 border-cream/20 pt-5 sm:grid-cols-[auto_auto] sm:justify-start sm:divide-x sm:divide-cream/15"
+              style={{ animationDelay: "0.24s" }}
+            >
+              <div className="sm:pr-8">
+                <dt className="font-mono text-[10px] uppercase tracking-[0.22em] text-yellow-main">
+                  {about.companyLabel}
+                </dt>
+                {/* Thai script: Unbounded is latin-only, so set the name in Prompt. */}
+                <dd lang="th" className="mt-1 font-sans text-lg font-bold text-cream">
+                  {siteConfig.company.legalNameTh}
+                </dd>
+              </div>
+              <div className="sm:pl-8">
+                <dt className="font-mono text-[10px] uppercase tracking-[0.22em] text-yellow-main">
+                  {about.registrationLabel}
+                </dt>
+                <dd className="mt-1 font-mono text-lg font-bold tracking-[0.08em] text-cream">
+                  {siteConfig.company.registrationNo}
+                </dd>
+              </div>
+            </dl>
           </div>
         </section>
 
